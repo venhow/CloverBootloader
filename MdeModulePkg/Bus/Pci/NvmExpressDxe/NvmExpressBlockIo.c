@@ -395,14 +395,14 @@ AsyncIoCallback (
     // Remove the BlockIo2 request from the device asynchronous queue.
     //
     RemoveEntryList (&Request->Link);
-    FreePool (Request);
+    FreePool(Request);
     gBS->SignalEvent (Token->Event);
   }
 
-  FreePool (Subtask->CommandPacket->NvmeCmd);
-  FreePool (Subtask->CommandPacket->NvmeCompletion);
-  FreePool (Subtask->CommandPacket);
-  FreePool (Subtask);
+  FreePool(Subtask->CommandPacket->NvmeCmd);
+  FreePool(Subtask->CommandPacket->NvmeCompletion);
+  FreePool(Subtask->CommandPacket);
+  FreePool(Subtask);
 }
 
 /**
@@ -447,7 +447,7 @@ AsyncReadSectors (
   Command       = NULL;
   Completion    = NULL;
 
-  Subtask = AllocateZeroPool (sizeof (NVME_BLKIO2_SUBTASK));
+  Subtask = AllocateZeroPool(sizeof (NVME_BLKIO2_SUBTASK));
   if (Subtask == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto ErrorExit;
@@ -458,7 +458,7 @@ AsyncReadSectors (
   Subtask->NamespaceId     = Device->NamespaceId;
   Subtask->BlockIo2Request = Request;
 
-  CommandPacket = AllocateZeroPool (sizeof (EFI_NVM_EXPRESS_PASS_THRU_COMMAND_PACKET));
+  CommandPacket = AllocateZeroPool(sizeof (EFI_NVM_EXPRESS_PASS_THRU_COMMAND_PACKET));
   if (CommandPacket == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto ErrorExit;
@@ -466,13 +466,13 @@ AsyncReadSectors (
     Subtask->CommandPacket = CommandPacket;
   }
 
-  Command = AllocateZeroPool (sizeof (EFI_NVM_EXPRESS_COMMAND));
+  Command = AllocateZeroPool(sizeof (EFI_NVM_EXPRESS_COMMAND));
   if (Command == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto ErrorExit;
   }
 
-  Completion = AllocateZeroPool (sizeof (EFI_NVM_EXPRESS_COMPLETION));
+  Completion = AllocateZeroPool(sizeof (EFI_NVM_EXPRESS_COMPLETION));
   if (Completion == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto ErrorExit;
@@ -521,15 +521,15 @@ ErrorExit:
   // Resource cleanup if asynchronous read request has not been queued.
   //
   if (Completion != NULL) {
-    FreePool (Completion);
+    FreePool(Completion);
   }
 
   if (Command != NULL) {
-    FreePool (Command);
+    FreePool(Command);
   }
 
   if (CommandPacket != NULL) {
-    FreePool (CommandPacket);
+    FreePool(CommandPacket);
   }
 
   if (Subtask != NULL) {
@@ -537,7 +537,7 @@ ErrorExit:
       gBS->CloseEvent (Subtask->Event);
     }
 
-    FreePool (Subtask);
+    FreePool(Subtask);
   }
 
   return Status;
@@ -586,7 +586,7 @@ AsyncWriteSectors (
   Command       = NULL;
   Completion    = NULL;
 
-  Subtask = AllocateZeroPool (sizeof (NVME_BLKIO2_SUBTASK));
+  Subtask = AllocateZeroPool(sizeof (NVME_BLKIO2_SUBTASK));
   if (Subtask == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto ErrorExit;
@@ -597,7 +597,7 @@ AsyncWriteSectors (
   Subtask->NamespaceId     = Device->NamespaceId;
   Subtask->BlockIo2Request = Request;
 
-  CommandPacket = AllocateZeroPool (sizeof (EFI_NVM_EXPRESS_PASS_THRU_COMMAND_PACKET));
+  CommandPacket = AllocateZeroPool(sizeof (EFI_NVM_EXPRESS_PASS_THRU_COMMAND_PACKET));
   if (CommandPacket == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto ErrorExit;
@@ -605,13 +605,13 @@ AsyncWriteSectors (
     Subtask->CommandPacket = CommandPacket;
   }
 
-  Command = AllocateZeroPool (sizeof (EFI_NVM_EXPRESS_COMMAND));
+  Command = AllocateZeroPool(sizeof (EFI_NVM_EXPRESS_COMMAND));
   if (Command == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto ErrorExit;
   }
 
-  Completion = AllocateZeroPool (sizeof (EFI_NVM_EXPRESS_COMPLETION));
+  Completion = AllocateZeroPool(sizeof (EFI_NVM_EXPRESS_COMPLETION));
   if (Completion == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto ErrorExit;
@@ -663,15 +663,15 @@ ErrorExit:
   // Resource cleanup if asynchronous read request has not been queued.
   //
   if (Completion != NULL) {
-    FreePool (Completion);
+    FreePool(Completion);
   }
 
   if (Command != NULL) {
-    FreePool (Command);
+    FreePool(Command);
   }
 
   if (CommandPacket != NULL) {
-    FreePool (CommandPacket);
+    FreePool(CommandPacket);
   }
 
   if (Subtask != NULL) {
@@ -679,7 +679,7 @@ ErrorExit:
       gBS->CloseEvent (Subtask->Event);
     }
 
-    FreePool (Subtask);
+    FreePool(Subtask);
   }
 
   return Status;
@@ -721,7 +721,7 @@ NvmeAsyncRead (
   Private       = Device->Controller;
   BlockSize     = Device->Media.BlockSize;
   OrginalBlocks = Blocks;
-  BlkIo2Req     = AllocateZeroPool (sizeof (NVME_BLKIO2_REQUEST));
+  BlkIo2Req     = AllocateZeroPool(sizeof (NVME_BLKIO2_REQUEST));
   if (BlkIo2Req == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
@@ -777,7 +777,7 @@ NvmeAsyncRead (
         // Remove the BlockIo2 request from the device asynchronous queue.
         //
         RemoveEntryList (&BlkIo2Req->Link);
-        FreePool (BlkIo2Req);
+        FreePool(BlkIo2Req);
         Status = EFI_DEVICE_ERROR;
       } else {
         //
@@ -840,7 +840,7 @@ NvmeAsyncWrite (
   Private       = Device->Controller;
   BlockSize     = Device->Media.BlockSize;
   OrginalBlocks = Blocks;
-  BlkIo2Req     = AllocateZeroPool (sizeof (NVME_BLKIO2_REQUEST));
+  BlkIo2Req     = AllocateZeroPool(sizeof (NVME_BLKIO2_REQUEST));
   if (BlkIo2Req == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
@@ -897,7 +897,7 @@ NvmeAsyncWrite (
         // Remove the BlockIo2 request from the device asynchronous queue.
         //
         RemoveEntryList (&BlkIo2Req->Link);
-        FreePool (BlkIo2Req);
+        FreePool(BlkIo2Req);
         Status = EFI_DEVICE_ERROR;
       } else {
         //
@@ -961,7 +961,7 @@ NvmeBlockIoReset (
 
   Status  = NvmeControllerInit (Private);
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     Status = EFI_DEVICE_ERROR;
   }
 
@@ -1229,7 +1229,7 @@ NvmeBlockIoResetEx (
 
   Status  = NvmeControllerInit (Private);
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     Status = EFI_DEVICE_ERROR;
   }
 
@@ -1615,7 +1615,7 @@ TrustTransferNvmeDevice (
                                );
 
   if (!IsTrustSend) {
-    if (EFI_ERROR (Status))  {
+    if (EFI_ERROR(Status))  {
       *TransferLengthOut = 0;
     } else {
       *TransferLengthOut = (UINTN) TransferLength;

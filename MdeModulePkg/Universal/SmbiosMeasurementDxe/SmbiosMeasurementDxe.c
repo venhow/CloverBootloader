@@ -292,13 +292,13 @@ FilterSmbiosEntry (
             // The field is present in the SMBIOS entry.
             //
             if ((Filter[Index].Flags & SMBIOS_FILTER_TABLE_FLAG_IS_STRING) != 0) {
-              CopyMem (&StringId, (UINT8 *)TableEntry + Filter[Index].Offset, sizeof(StringId));
+              CopyMem(&StringId, (UINT8 *)TableEntry + Filter[Index].Offset, sizeof(StringId));
               if (StringId != 0) {
                 // set ' ' for string field
                 String = GetSmbiosStringById (TableEntry, StringId, &StringLen);
                 ASSERT (String != NULL);
                 //DEBUG ((EFI_D_INFO,"StrId(0x%x)-%a(%d)\n", StringId, String, StringLen));
-                SetMem (String, StringLen, ' ');
+                SetMem(String, StringLen, ' ');
               }
             }
             // zero non-string field
@@ -476,7 +476,7 @@ MeasureSmbiosTable (
                &gEfiSmbios3TableGuid,
                (VOID **) &Smbios3Table
                );
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       DEBUG ((EFI_D_INFO, "Smbios3Table:\n"));
       DEBUG ((EFI_D_INFO, "  AnchorString                - '%c%c%c%c%c'\n",
         Smbios3Table->AnchorString[0],
@@ -501,7 +501,7 @@ MeasureSmbiosTable (
                &gEfiSmbiosTableGuid,
                (VOID **) &SmbiosTable
                );
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       DEBUG ((EFI_D_INFO, "SmbiosTable:\n"));
       DEBUG ((EFI_D_INFO, "  AnchorString                - '%c%c%c%c'\n",
         SmbiosTable->AnchorString[0],
@@ -550,7 +550,7 @@ MeasureSmbiosTable (
     DEBUG ((DEBUG_INFO, "The Smbios Table size: 0x%x\n", TableLength));
     DEBUG_CODE (InternalDumpHex ((UINT8 *)(UINTN)SmbiosTableAddress, TableLength););
 
-    TableAddress = AllocateCopyPool ((UINTN)TableLength, (VOID *)(UINTN)SmbiosTableAddress);
+    TableAddress = AllocateCopyPool((UINTN)TableLength, (VOID *)(UINTN)SmbiosTableAddress);
     if (TableAddress == NULL) {
       return ;
     }
@@ -577,7 +577,7 @@ MeasureSmbiosTable (
                TableAddress,            // HashData
                TableLength              // HashDataLen
                );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return ;
     }
   }
@@ -606,7 +606,7 @@ SmbiosMeasurementDriverEntryPoint (
   EFI_EVENT             Event;
 
   Status = gBS->LocateProtocol (&gEfiSmbiosProtocolGuid, NULL, (VOID **) &mSmbios);
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
   DEBUG ((DEBUG_INFO, "The Smbios Table Version: %x.%x\n", mSmbios->MajorVersion, mSmbios->MinorVersion));
 
   if (mSmbios->MajorVersion < 2 || (mSmbios->MajorVersion == 2 && mSmbios->MinorVersion < 7)){

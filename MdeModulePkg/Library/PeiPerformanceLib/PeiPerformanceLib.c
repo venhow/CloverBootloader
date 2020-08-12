@@ -126,16 +126,16 @@ IsKnownTokens (
     return FALSE;
   }
 
-  if (AsciiStrCmp (Token, SEC_TOK) == 0 ||
-      AsciiStrCmp (Token, PEI_TOK) == 0 ||
-      AsciiStrCmp (Token, DXE_TOK) == 0 ||
-      AsciiStrCmp (Token, BDS_TOK) == 0 ||
-      AsciiStrCmp (Token, DRIVERBINDING_START_TOK) == 0 ||
-      AsciiStrCmp (Token, DRIVERBINDING_SUPPORT_TOK) == 0 ||
-      AsciiStrCmp (Token, DRIVERBINDING_STOP_TOK) == 0 ||
-      AsciiStrCmp (Token, LOAD_IMAGE_TOK) == 0 ||
-      AsciiStrCmp (Token, START_IMAGE_TOK) == 0 ||
-      AsciiStrCmp (Token, PEIM_TOK) == 0) {
+  if (AsciiStrCmp(Token, SEC_TOK) == 0 ||
+      AsciiStrCmp(Token, PEI_TOK) == 0 ||
+      AsciiStrCmp(Token, DXE_TOK) == 0 ||
+      AsciiStrCmp(Token, BDS_TOK) == 0 ||
+      AsciiStrCmp(Token, DRIVERBINDING_START_TOK) == 0 ||
+      AsciiStrCmp(Token, DRIVERBINDING_SUPPORT_TOK) == 0 ||
+      AsciiStrCmp(Token, DRIVERBINDING_STOP_TOK) == 0 ||
+      AsciiStrCmp(Token, LOAD_IMAGE_TOK) == 0 ||
+      AsciiStrCmp(Token, START_IMAGE_TOK) == 0 ||
+      AsciiStrCmp(Token, PEIM_TOK) == 0) {
     return TRUE;
   } else {
     return FALSE;
@@ -199,20 +199,20 @@ GetFpdtRecordId (
   // When PcdEdkiiFpdtStringRecordEnableOnly is TRUE, all records are with type of FPDT_DYNAMIC_STRING_EVENT_TYPE.
   //
   if (String != NULL) {
-    if (AsciiStrCmp (String, LOAD_IMAGE_TOK) == 0) {               // "LoadImage:"
+    if (AsciiStrCmp(String, LOAD_IMAGE_TOK) == 0) {               // "LoadImage:"
       if (Attribute == PerfStartEntry) {
         *ProgressID = MODULE_LOADIMAGE_START_ID;
       } else {
         *ProgressID = MODULE_LOADIMAGE_END_ID;
       }
-    } else if (AsciiStrCmp (String, SEC_TOK) == 0 ||               // "SEC"
-               AsciiStrCmp (String, PEI_TOK) == 0) {               // "PEI"
+    } else if (AsciiStrCmp(String, SEC_TOK) == 0 ||               // "SEC"
+               AsciiStrCmp(String, PEI_TOK) == 0) {               // "PEI"
       if (Attribute == PerfStartEntry) {
         *ProgressID = PERF_CROSSMODULE_START_ID;
       } else {
         *ProgressID = PERF_CROSSMODULE_END_ID;
       }
-    } else if (AsciiStrCmp (String, PEIM_TOK) == 0) {              // "PEIM"
+    } else if (AsciiStrCmp(String, PEIM_TOK) == 0) {              // "PEIM"
       if (Attribute == PerfStartEntry) {
         *ProgressID = MODULE_START_ID;
       } else {
@@ -267,7 +267,7 @@ CopyStringIntoPerfRecordAndUpdateLength (
       DestMax = STRING_SIZE;
     }
   }
-  StringLen = AsciiStrLen (Source);
+  StringLen = AsciiStrLen(Source);
   if (StringLen >= DestMax) {
     StringLen = DestMax -1;
   }
@@ -344,7 +344,7 @@ InsertFpdtRecord (
       }
     } else if (PerfId == 0) {
       Status = GetFpdtRecordId (Attribute, CallerIdentifier, String, &PerfId);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         return Status;
       }
     }
@@ -354,7 +354,7 @@ InsertFpdtRecord (
   // 2. Get the buffer to store the FPDT record.
   //
   Status = GetFpdtRecordPtr (PEI_MAX_RECORD_SIZE, &FpdtRecordPtr, &PeiPerformanceLogHeader);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -392,7 +392,7 @@ InsertFpdtRecord (
       FpdtRecordPtr.GuidEvent->Header.Revision   = FPDT_RECORD_REVISION_1;
       FpdtRecordPtr.GuidEvent->ProgressID        = PerfId;
       FpdtRecordPtr.GuidEvent->Timestamp         = TimeStamp;
-      CopyMem (&FpdtRecordPtr.GuidEvent->Guid, ModuleGuid, sizeof (EFI_GUID));
+      CopyMem(&FpdtRecordPtr.GuidEvent->Guid, ModuleGuid, sizeof (EFI_GUID));
     }
     break;
 
@@ -409,7 +409,7 @@ InsertFpdtRecord (
         PeiPerformanceLogHeader->LoadImageCount++;
       }
       FpdtRecordPtr.GuidQwordEvent->Qword           = PeiPerformanceLogHeader->LoadImageCount;
-      CopyMem (&FpdtRecordPtr.GuidQwordEvent->Guid, ModuleGuid, sizeof (EFI_GUID));
+      CopyMem(&FpdtRecordPtr.GuidQwordEvent->Guid, ModuleGuid, sizeof (EFI_GUID));
     }
     break;
 
@@ -421,7 +421,7 @@ InsertFpdtRecord (
       return EFI_INVALID_PARAMETER;
     }
     StringPtr = String;
-    if (AsciiStrLen (String) == 0) {
+    if (AsciiStrLen(String) == 0) {
       StringPtr = "unknown name";
     }
     if (!PcdGetBool (PcdEdkiiFpdtStringRecordEnableOnly)) {
@@ -430,8 +430,8 @@ InsertFpdtRecord (
       FpdtRecordPtr.DualGuidStringEvent->Header.Revision  = FPDT_RECORD_REVISION_1;
       FpdtRecordPtr.DualGuidStringEvent->ProgressID       = PerfId;
       FpdtRecordPtr.DualGuidStringEvent->Timestamp        = TimeStamp;
-      CopyMem (&FpdtRecordPtr.DualGuidStringEvent->Guid1, ModuleGuid, sizeof (FpdtRecordPtr.DualGuidStringEvent->Guid1));
-      CopyMem (&FpdtRecordPtr.DualGuidStringEvent->Guid2, Guid, sizeof (FpdtRecordPtr.DualGuidStringEvent->Guid2));
+      CopyMem(&FpdtRecordPtr.DualGuidStringEvent->Guid1, ModuleGuid, sizeof (FpdtRecordPtr.DualGuidStringEvent->Guid1));
+      CopyMem(&FpdtRecordPtr.DualGuidStringEvent->Guid2, Guid, sizeof (FpdtRecordPtr.DualGuidStringEvent->Guid2));
       CopyStringIntoPerfRecordAndUpdateLength (FpdtRecordPtr.DualGuidStringEvent->String, StringPtr, &FpdtRecordPtr.DualGuidStringEvent->Header.Length);
     }
     break;
@@ -443,7 +443,7 @@ InsertFpdtRecord (
   case PERF_INMODULE_END_ID:
   case PERF_CROSSMODULE_START_ID:
   case PERF_CROSSMODULE_END_ID:
-    if (String != NULL && AsciiStrLen (String) != 0) {
+    if (String != NULL && AsciiStrLen(String) != 0) {
       StringPtr = String;
     } else {
       StringPtr = "unknown name";
@@ -454,14 +454,14 @@ InsertFpdtRecord (
       FpdtRecordPtr.DynamicStringEvent->Header.Revision   = FPDT_RECORD_REVISION_1;
       FpdtRecordPtr.DynamicStringEvent->ProgressID        = PerfId;
       FpdtRecordPtr.DynamicStringEvent->Timestamp         = TimeStamp;
-      CopyMem (&FpdtRecordPtr.DynamicStringEvent->Guid, ModuleGuid, sizeof (EFI_GUID));
+      CopyMem(&FpdtRecordPtr.DynamicStringEvent->Guid, ModuleGuid, sizeof (EFI_GUID));
       CopyStringIntoPerfRecordAndUpdateLength (FpdtRecordPtr.DynamicStringEvent->String, StringPtr, &FpdtRecordPtr.DynamicStringEvent->Header.Length);
     }
     break;
 
   default:
     if (Attribute != PerfEntry) {
-     if (String != NULL && AsciiStrLen (String) != 0) {
+     if (String != NULL && AsciiStrLen(String) != 0) {
        StringPtr = String;
      } else {
        StringPtr = "unknown name";
@@ -472,7 +472,7 @@ InsertFpdtRecord (
        FpdtRecordPtr.DynamicStringEvent->Header.Revision   = FPDT_RECORD_REVISION_1;
        FpdtRecordPtr.DynamicStringEvent->ProgressID        = PerfId;
        FpdtRecordPtr.DynamicStringEvent->Timestamp         = TimeStamp;
-       CopyMem (&FpdtRecordPtr.DynamicStringEvent->Guid, ModuleGuid, sizeof (FpdtRecordPtr.DynamicStringEvent->Guid));
+       CopyMem(&FpdtRecordPtr.DynamicStringEvent->Guid, ModuleGuid, sizeof (FpdtRecordPtr.DynamicStringEvent->Guid));
        CopyStringIntoPerfRecordAndUpdateLength (FpdtRecordPtr.DynamicStringEvent->String, StringPtr, &FpdtRecordPtr.DynamicStringEvent->Header.Length);
      }
   } else {
@@ -494,9 +494,9 @@ InsertFpdtRecord (
       //
       // Cache the event guid in string event record.
       //
-      CopyMem (&FpdtRecordPtr.DynamicStringEvent->Guid, Guid, sizeof (EFI_GUID));
+      CopyMem(&FpdtRecordPtr.DynamicStringEvent->Guid, Guid, sizeof (EFI_GUID));
     } else {
-      CopyMem (&FpdtRecordPtr.DynamicStringEvent->Guid, ModuleGuid, sizeof (EFI_GUID));
+      CopyMem(&FpdtRecordPtr.DynamicStringEvent->Guid, ModuleGuid, sizeof (EFI_GUID));
     }
     CopyStringIntoPerfRecordAndUpdateLength (FpdtRecordPtr.DynamicStringEvent->String, StringPtr, &FpdtRecordPtr.DynamicStringEvent->Header.Length);
   }

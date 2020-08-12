@@ -71,7 +71,7 @@ PcatRootBridgeIoMemWrite (
 
 EFI_STATUS
 EFIAPI
-PcatRootBridgeIoCopyMem (
+PcatRootBridgeIoCopyMem(
   IN EFI_PCI_ROOT_BRIDGE_IO_PROTOCOL        *This,
   IN EFI_PCI_ROOT_BRIDGE_IO_PROTOCOL_WIDTH  Width,
   IN UINT64                                 DestAddress,
@@ -474,7 +474,7 @@ PcatRootBridgeIoMemWrite (
 
 EFI_STATUS
 EFIAPI
-PcatRootBridgeIoCopyMem (
+PcatRootBridgeIoCopyMem(
   IN EFI_PCI_ROOT_BRIDGE_IO_PROTOCOL        *This,
   IN EFI_PCI_ROOT_BRIDGE_IO_PROTOCOL_WIDTH  Width,
   IN UINT64                                 DestAddress,
@@ -514,7 +514,7 @@ PcatRootBridgeIoCopyMem (
                1,
                &Result
                );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
     Status = PcatRootBridgeIoMemWrite (
@@ -524,7 +524,7 @@ PcatRootBridgeIoCopyMem (
                1,
                &Result
                );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
     if (Direction) {
@@ -639,7 +639,7 @@ PcatRootBridgeIoMap (
                     sizeof(MAP_INFO), 
                     (VOID **)&MapInfo
                     );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       *NumberOfBytes = 0;
       return Status;
     }
@@ -668,7 +668,7 @@ PcatRootBridgeIoMap (
                     &MapInfo->MappedHostAddress
                     );
     if (EFI_ERROR(Status)) {
-      gBS->FreePool (MapInfo);
+      gBS->FreePool(MapInfo);
       *NumberOfBytes = 0;
       return Status;
     }
@@ -679,7 +679,7 @@ PcatRootBridgeIoMap (
     // so the Bus Master can read the contents of the real buffer.
     //
     if (Operation == EfiPciOperationBusMasterRead || Operation == EfiPciOperationBusMasterRead64) {
-      CopyMem (
+      CopyMem(
         (VOID *)(UINTN)MapInfo->MappedHostAddress, 
         (VOID *)(UINTN)MapInfo->HostAddress,
         MapInfo->NumberOfBytes
@@ -694,7 +694,7 @@ PcatRootBridgeIoMap (
                     );                    
     if (EFI_ERROR(Status)) {
       gBS->FreePages (MapInfo->MappedHostAddress,MapInfo->NumberOfPages);
-      gBS->FreePool (MapInfo);
+      gBS->FreePool(MapInfo);
       *NumberOfBytes = 0;
       return Status;
     }
@@ -769,7 +769,7 @@ PcatRootBridgeIoUnmap (
     // so the processor can read the contents of the real buffer.
     //
     if (MapInfo->Operation == EfiPciOperationBusMasterWrite || MapInfo->Operation == EfiPciOperationBusMasterWrite64) {
-      CopyMem (
+      CopyMem(
         (VOID *)(UINTN)MapInfo->HostAddress, 
         (VOID *)(UINTN)MapInfo->MappedHostAddress,
         MapInfo->NumberOfBytes
@@ -780,7 +780,7 @@ PcatRootBridgeIoUnmap (
     // Free the mapped buffer and the MAP_INFO structure.
     //
     gBS->FreePages (MapInfo->MappedHostAddress, MapInfo->NumberOfPages);
-    gBS->FreePool (Mapping);
+    gBS->FreePool(Mapping);
   }
 
   //
@@ -832,7 +832,7 @@ PcatRootBridgeIoAllocateBuffer (
   PhysicalAddress = (EFI_PHYSICAL_ADDRESS)(0xffffffff);
 
   Status = gBS->AllocatePages (AllocateMaxAddress, MemoryType, Pages, &PhysicalAddress);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 

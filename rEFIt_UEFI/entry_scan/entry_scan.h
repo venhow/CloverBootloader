@@ -35,31 +35,19 @@
 
 #include "Platform.h"
 
-extern REFIT_MENU_ENTRY MenuEntryReturn;
-extern REFIT_MENU_ENTRY MenuEntryOptions;
-extern REFIT_MENU_ENTRY MenuEntryAbout;
-extern REFIT_MENU_ENTRY MenuEntryReset;
-extern REFIT_MENU_ENTRY MenuEntryShutdown;
+extern REFIT_MENU_ITEM_RETURN MenuEntryReturn;
+extern REFIT_MENU_ITEM_OPTIONS MenuEntryOptions;
+extern REFIT_MENU_ITEM_ABOUT MenuEntryAbout;
+extern REFIT_MENU_ITEM_RESET MenuEntryReset;
+extern REFIT_MENU_ITEM_SHUTDOWN MenuEntryShutdown;
 //extern REFIT_MENU_ENTRY MenuEntryHelp;
-extern REFIT_MENU_ENTRY MenuEntryExit;
+//extern REFIT_MENU_ENTRY MenuEntryExit;
 extern REFIT_MENU_SCREEN MainMenu;
 
+extern XObjArray<REFIT_VOLUME> Volumes;
 // common
-EG_IMAGE *LoadBuiltinIcon(IN CHAR16 *IconName);
-LOADER_ENTRY * DuplicateLoaderEntry(IN LOADER_ENTRY *Entry);
-//CHAR16 *AddLoadOption(IN CHAR16 *LoadOptions, IN CHAR16 *LoadOption);
-//CHAR16 *RemoveLoadOption(IN CHAR16 *LoadOptions, IN CHAR16 *LoadOption);
-EG_IMAGE * ScanVolumeDefaultIcon(REFIT_VOLUME *Volume, IN UINT8 OSType, IN EFI_DEVICE_PATH_PROTOCOL *DevicePath);
-/*
-INTN StrniCmp(IN CHAR16 *Str1,
-              IN CHAR16 *Str2,
-              IN UINTN   Count);
-CHAR16 *StriStr(IN CHAR16 *Str,
-                IN CHAR16 *SearchFor);
-VOID StrToLower(IN CHAR16 *Str);
-VOID AlertMessage(IN CHAR16 *Title, IN CHAR16 *Message);
-BOOLEAN YesNoMessage(IN CHAR16 *Title, IN CHAR16 *Message);
- */
+const XIcon& ScanVolumeDefaultIcon(REFIT_VOLUME *Volume, IN UINT8 OSType, IN EFI_DEVICE_PATH_PROTOCOL *DevicePath);
+
 
 // Ask user for file path from directory menu
 BOOLEAN AskUserForFilePathFromDir(IN CHAR16 *Title OPTIONAL, IN REFIT_VOLUME *Volume,
@@ -84,7 +72,7 @@ VOID ScanTool(VOID);
 VOID AddCustomTool(VOID);
 
 // locked graphics
-CHAR16 *CustomBootModeToStr(IN UINT8 Mode);
+CONST CHAR8 *CustomBootModeToStr(IN UINT8 Mode);
 EFI_STATUS LockBootScreen(VOID);
 EFI_STATUS UnlockBootScreen(VOID);
 

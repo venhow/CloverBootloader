@@ -210,7 +210,7 @@ XhcReset (
     if (!XhcIsHalt (Xhc)) {
       Status = XhcHaltHC (Xhc, XHC_GENERIC_TIMEOUT);
 
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         Status = EFI_DEVICE_ERROR;
         goto ON_EXIT;
       }
@@ -219,7 +219,7 @@ XhcReset (
     Status = XhcResetHC (Xhc, XHC_RESET_TIMEOUT);
 //  ASSERT (!(XHC_REG_BIT_IS_SET (Xhc, XHC_USBSTS_OFFSET, XHC_USBSTS_CNR)));
 
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       goto ON_EXIT;
     }
     //
@@ -320,7 +320,7 @@ XhcSetState (
 
   Status = XhcGetState (This, &CurState);
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return EFI_DEVICE_ERROR;
   }
 
@@ -566,7 +566,7 @@ XhcSetRootHubPortFeature (
     if (XhcIsHalt (Xhc)) {
       Status = XhcRunHC (Xhc, XHC_GENERIC_TIMEOUT);
 
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
 //        DEBUG ((EFI_D_INFO, "XhcSetRootHubPortFeature :failed to start HC - %r\n", Status));
         DBG("XhcSetRootHubPortFeature :failed to start HC - %r\n", Status);
         break;
@@ -846,7 +846,7 @@ XhcTransfer (
   if ((*TransferResult == EFI_USB_ERR_STALL) || (*TransferResult == EFI_USB_ERR_BABBLE)) {
     ASSERT (Status == EFI_DEVICE_ERROR);
     RecoveryStatus = XhcRecoverHaltedEndpoint(Xhc, Urb);
-    if (EFI_ERROR (RecoveryStatus)) {
+    if (EFI_ERROR(RecoveryStatus)) {
       DEBUG ((DEBUG_ERROR, "XhcTransfer[Type=%d]: XhcRecoverHaltedEndpoint failed!\n", Type));
     }
   }
@@ -1028,7 +1028,7 @@ XhcControlTransfer (
              TransferResult
           );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DBG("XHC transfer failed\n");
     goto ON_EXIT;
   }
@@ -1051,7 +1051,7 @@ XhcControlTransfer (
         //
         // Store a copy of device scriptor as hub device need this info to configure endpoint.
         //
-        CopyMem (&Xhc->UsbDevContext[SlotId].DevDesc, Data, *DataLength);
+        CopyMem(&Xhc->UsbDevContext[SlotId].DevDesc, Data, *DataLength);
         if (Xhc->UsbDevContext[SlotId].DevDesc.BcdUSB >= 0x0300) {
           //
           // If it's a usb3.0 device, then its max packet size is a 2^n.
@@ -1060,7 +1060,7 @@ XhcControlTransfer (
         } else {
           MaxPacket0 = Xhc->UsbDevContext[SlotId].DevDesc.MaxPacketSize0;
         }
-        Xhc->UsbDevContext[SlotId].ConfDesc = AllocateZeroPool (Xhc->UsbDevContext[SlotId].DevDesc.NumConfigurations * sizeof (EFI_USB_CONFIG_DESCRIPTOR *));
+        Xhc->UsbDevContext[SlotId].ConfDesc = AllocateZeroPool(Xhc->UsbDevContext[SlotId].DevDesc.NumConfigurations * sizeof (EFI_USB_CONFIG_DESCRIPTOR *));
         if (Xhc->HcCParams.Data.Csz == 0) {
           Status = XhcEvaluateContext (Xhc, SlotId, MaxPacket0);
         } else {
@@ -1083,11 +1083,11 @@ XhcControlTransfer (
           Index = Xhc->UsbDevContext[SlotId].DevDesc.NumConfigurations - 1;
         }
         Xhc->UsbDevContext[SlotId].ConfDesc[Index] = AllocateZeroPool(*DataLength);
-        CopyMem (Xhc->UsbDevContext[SlotId].ConfDesc[Index], Data, *DataLength);
+        CopyMem(Xhc->UsbDevContext[SlotId].ConfDesc[Index], Data, *DataLength);
         //
         // Default to use AlternateSetting 0 for all interfaces.
         //
-        Xhc->UsbDevContext[SlotId].ActiveAlternateSetting = AllocateZeroPool (Xhc->UsbDevContext[SlotId].ConfDesc[Index]->NumInterfaces * sizeof (UINT8));
+        Xhc->UsbDevContext[SlotId].ActiveAlternateSetting = AllocateZeroPool(Xhc->UsbDevContext[SlotId].ConfDesc[Index]->NumInterfaces * sizeof (UINT8));
       }
     } else if (((DescriptorType == USB_DESC_TYPE_HUB) ||
                (DescriptorType == USB_DESC_TYPE_HUB_SUPER_SPEED)) && (*DataLength > 2)) {
@@ -1235,7 +1235,7 @@ XhcControlTransfer (
   }
 
 ON_EXIT:
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
 //    DEBUG ((EFI_D_ERROR, "XhcControlTransfer: error - %r, transfer - %x\n", Status, *TransferResult));
     DBG("XhcControlTransfer: error - %r, transfer - %x\n", Status, *TransferResult);
   }
@@ -1357,7 +1357,7 @@ XhcBulkTransfer (
           );
 
 ON_EXIT:
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
 //    DEBUG ((EFI_D_ERROR, "XhcBulkTransfer: error - %r, transfer - %x\n", Status, *TransferResult));
     DBG("XhcBulkTransfer: error - %r, transfer - %x\n", Status, *TransferResult);
   }
@@ -1486,7 +1486,7 @@ XhcAsyncInterruptTransfer (
     goto ON_EXIT;
   }
 
-  Data = AllocateZeroPool (DataLength);
+  Data = AllocateZeroPool(DataLength);
 
   if (Data == NULL) {
 //    DEBUG ((EFI_D_ERROR, "XhcAsyncInterruptTransfer: failed to allocate buffer\n"));
@@ -1512,7 +1512,7 @@ XhcAsyncInterruptTransfer (
   if (Urb == NULL) {
 //    DEBUG ((EFI_D_ERROR, "XhcAsyncInterruptTransfer: failed to create URB\n"));
     DBG("XhcAsyncInterruptTransfer: failed to create URB\n");
-    FreePool (Data);
+    FreePool(Data);
     Status = EFI_OUT_OF_RESOURCES;
     goto ON_EXIT;
   }
@@ -1633,7 +1633,7 @@ XhcSyncInterruptTransfer (
           );
 
 ON_EXIT:
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
 //    DEBUG ((EFI_D_ERROR, "XhcSyncInterruptTransfer: error - %r, transfer - %x\n", Status, *TransferResult));
     DBG("XhcSyncInterruptTransfer: error - %r, transfer - %x\n", Status, *TransferResult);
   }
@@ -1793,7 +1793,7 @@ XhcDriverBindingSupported (
                   EFI_OPEN_PROTOCOL_BY_DRIVER
                   );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return EFI_UNSUPPORTED;
   }
 
@@ -1805,7 +1805,7 @@ XhcDriverBindingSupported (
                         &UsbClassCReg
                         );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     Status = EFI_UNSUPPORTED;
     goto ON_EXIT;
   }
@@ -1855,7 +1855,7 @@ XhcCreateUsbHc (
   UINT32                  PageSize;
   UINT16                  ExtCapReg;
 
-  Xhc = AllocateZeroPool (sizeof (USB_XHCI_INSTANCE));
+  Xhc = AllocateZeroPool(sizeof (USB_XHCI_INSTANCE));
 
   if (Xhc == NULL) {
     return NULL;
@@ -1868,7 +1868,7 @@ XhcCreateUsbHc (
   Xhc->PciIo                 = PciIo;
   Xhc->DevicePath            = DevicePath;
   Xhc->OriginalPciAttributes = OriginalPciAttributes;
-  CopyMem (&Xhc->Usb2Hc, &gXhciUsb2HcTemplate, sizeof (EFI_USB2_HC_PROTOCOL));
+  CopyMem(&Xhc->Usb2Hc, &gXhciUsb2HcTemplate, sizeof (EFI_USB2_HC_PROTOCOL));
 
   InitializeListHead (&Xhc->AsyncIntTransfers);
 
@@ -1900,15 +1900,15 @@ XhcCreateUsbHc (
   Xhc->UsbLegSupOffset = XhcGetCapabilityAddr (Xhc, XHC_CAP_USB_LEGACY);
   Xhc->DebugCapSupOffset = XhcGetCapabilityAddr (Xhc, XHC_CAP_USB_DEBUG);
 
-  DBG ("XhcCreateUsb3Hc: Capability length 0x%x\n", Xhc->CapLength);
-  DBG ("XhcCreateUsb3Hc: ExtCapRegBase 0x%x\n", Xhc->ExtCapRegBase);
-  DBG ("XhcCreateUsb3Hc: HcSParams1 0x%x\n", Xhc->HcSParams1);
-  DBG ("XhcCreateUsb3Hc: HcSParams2 0x%x\n", Xhc->HcSParams2);
-  DBG ("XhcCreateUsb3Hc: HcCParams 0x%x\n", Xhc->HcCParams);
-  DBG ("XhcCreateUsb3Hc: DBOff 0x%x\n", Xhc->DBOff);
-  DBG ("XhcCreateUsb3Hc: RTSOff 0x%x\n", Xhc->RTSOff);
-  DBG ("XhcCreateUsb3Hc: UsbLegSupOffset 0x%x\n", Xhc->UsbLegSupOffset);
-  DBG ("XhcCreateUsb3Hc: DebugCapSupOffset 0x%x\n", Xhc->DebugCapSupOffset);
+  DBG("XhcCreateUsb3Hc: Capability length 0x%x\n", Xhc->CapLength);
+  DBG("XhcCreateUsb3Hc: ExtCapRegBase 0x%x\n", Xhc->ExtCapRegBase);
+  DBG("XhcCreateUsb3Hc: HcSParams1 0x%x\n", Xhc->HcSParams1);
+  DBG("XhcCreateUsb3Hc: HcSParams2 0x%x\n", Xhc->HcSParams2);
+  DBG("XhcCreateUsb3Hc: HcCParams 0x%x\n", Xhc->HcCParams);
+  DBG("XhcCreateUsb3Hc: DBOff 0x%x\n", Xhc->DBOff);
+  DBG("XhcCreateUsb3Hc: RTSOff 0x%x\n", Xhc->RTSOff);
+  DBG("XhcCreateUsb3Hc: UsbLegSupOffset 0x%x\n", Xhc->UsbLegSupOffset);
+  DBG("XhcCreateUsb3Hc: DebugCapSupOffset 0x%x\n", Xhc->DebugCapSupOffset);
 
   //
   // Create AsyncRequest Polling Timer
@@ -1921,14 +1921,14 @@ XhcCreateUsbHc (
                   &Xhc->PollTimer
                   );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto ON_ERROR;
   }
 
   return Xhc;
 
 ON_ERROR:
-  FreePool (Xhc);
+  FreePool(Xhc);
   return NULL;
 }
 
@@ -2019,7 +2019,7 @@ XhcDriverBindingStart (
                   EFI_OPEN_PROTOCOL_BY_DRIVER
                   );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
   DBG("PciIo started\n");
@@ -2049,7 +2049,7 @@ XhcDriverBindingStart (
                     &OriginalPciAttributes
                     );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto CLOSE_PCIIO;
   }
   PciAttributesSaved = TRUE;
@@ -2062,7 +2062,7 @@ XhcDriverBindingStart (
                     &Supports
                     );
   DBG("attribute supports=%x Status=%r\n", Supports, Status);
-  if (!EFI_ERROR (Status)) {
+  if (!EFI_ERROR(Status)) {
     Supports &= (UINT64)EFI_PCI_DEVICE_ENABLE;
     Status = PciIo->Attributes (
                       PciIo,
@@ -2073,7 +2073,7 @@ XhcDriverBindingStart (
     DBG("device enable status=%r\n", Status);
   }
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DBG("XhcDriverBindingStart: failed to enable controller\n");
 //    DEBUG ((EFI_D_ERROR, "XhcDriverBindingStart: failed to enable controller\n"));
     goto CLOSE_PCIIO;
@@ -2102,7 +2102,7 @@ XhcDriverBindingStart (
                       EFI_PCI_IO_ATTRIBUTE_DUAL_ADDRESS_CYCLE,
                       NULL
                       );
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       Xhc->Support64BitDma = TRUE;
     } else {
       DEBUG ((EFI_D_WARN,
@@ -2149,7 +2149,7 @@ DBG("XhcResetHC\n");
   // Start the asynchronous interrupt monitor
   //
   Status = gBS->SetTimer (Xhc->PollTimer, TimerPeriodic, XHC_ASYNC_TIMER_INTERVAL);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DBG("XhcDriverBindingStart: failed to start async interrupt monitor\n");
 //    DEBUG ((EFI_D_ERROR, "XhcDriverBindingStart: failed to start async interrupt monitor\n"));
     XhcHaltHC (Xhc, XHC_GENERIC_TIMEOUT);
@@ -2167,7 +2167,7 @@ DBG("XhcResetHC\n");
                   &gEfiEventExitBootServicesGuid,
                   &Xhc->ExitBootServiceEvent
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto FREE_POOL;
   }
 
@@ -2196,7 +2196,7 @@ DBG("XhcResetHC\n");
                   EFI_NATIVE_INTERFACE,
                   &Xhc->Usb2Hc
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DBG("XhcDriverBindingStart: failed to install USB2_HC Protocol\n");
 //    DEBUG ((EFI_D_ERROR, "XhcDriverBindingStart: failed to install USB2_HC Protocol\n"));
     goto FREE_POOL;
@@ -2208,7 +2208,7 @@ DBG("XhcResetHC\n");
 FREE_POOL:
   gBS->CloseEvent (Xhc->PollTimer);
   XhcFreeSched (Xhc);
-  FreePool (Xhc);
+  FreePool(Xhc);
 
 CLOSE_PCIIO:
   if (PciAttributesSaved) {
@@ -2276,7 +2276,7 @@ XhcDriverBindingStop (
                   EFI_OPEN_PROTOCOL_GET_PROTOCOL
                   );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -2286,7 +2286,7 @@ XhcDriverBindingStop (
                   Usb2Hc
                   );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -2349,7 +2349,7 @@ XhcDriverBindingStop (
          Controller
          );
 
-  FreePool (Xhc);
+  FreePool(Xhc);
 
   return EFI_SUCCESS;
 }

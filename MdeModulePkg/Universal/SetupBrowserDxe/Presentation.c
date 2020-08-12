@@ -40,7 +40,7 @@ CheckConfigAccess(
                   &gEfiHiiConfigAccessProtocolGuid,
                   (VOID **) &FormSet->ConfigAccess
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     //
     // Configuration Driver don't attach ConfigAccess protocol to its HII package
     // list, then there will be no configuration action required.
@@ -88,7 +88,7 @@ EvaluateFormExpressions (
     }
 
     Status = EvaluateExpression (FormSet, Form, Expression);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
   }
@@ -144,7 +144,7 @@ FreeRefreshEvent (
 
     gBS->CloseEvent (EventNode->RefreshEvent);
 
-    FreePool (EventNode);
+    FreePool(EventNode);
   }
 }
 
@@ -244,9 +244,9 @@ CreateRefreshEventForStatement (
                     Statement,
                     &Statement->RefreshGuid,
                     &RefreshEvent);
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
-  EventNode = AllocateZeroPool (sizeof (FORM_BROWSER_REFRESH_EVENT_NODE));
+  EventNode = AllocateZeroPool(sizeof (FORM_BROWSER_REFRESH_EVENT_NODE));
   ASSERT (EventNode != NULL);
   EventNode->RefreshEvent = RefreshEvent;
   InsertTailList(&mRefreshEventList, &EventNode->Link);
@@ -277,9 +277,9 @@ CreateRefreshEventForForm (
                     Form,
                     &Form->RefreshGuid,
                     &RefreshEvent);
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
-  EventNode = AllocateZeroPool (sizeof (FORM_BROWSER_REFRESH_EVENT_NODE));
+  EventNode = AllocateZeroPool(sizeof (FORM_BROWSER_REFRESH_EVENT_NODE));
   ASSERT (EventNode != NULL);
   EventNode->RefreshEvent = RefreshEvent;
   InsertTailList(&mRefreshEventList, &EventNode->Link);
@@ -328,7 +328,7 @@ InitializeDisplayStatement (
       continue;
     }
 
-    DisplayOption = AllocateZeroPool (sizeof (DISPLAY_QUESTION_OPTION));
+    DisplayOption = AllocateZeroPool(sizeof (DISPLAY_QUESTION_OPTION));
     ASSERT (DisplayOption != NULL);
 
     DisplayOption->ImageId      = Option->ImageId;
@@ -337,7 +337,7 @@ InitializeDisplayStatement (
     InsertTailList(&DisplayStatement->OptionListHead, &DisplayOption->Link);
   }
 
-  CopyMem (&DisplayStatement->CurrentValue, &Statement->HiiValue, sizeof (EFI_HII_VALUE));
+  CopyMem(&DisplayStatement->CurrentValue, &Statement->HiiValue, sizeof (EFI_HII_VALUE));
 
   //
   // Some special op code need an extra buffer to save the data.
@@ -544,7 +544,7 @@ AddStatementToDisplayForm (
     Statement = FORM_BROWSER_STATEMENT_FROM_LINK (Link);
     Link = GetNextNode (&gCurrentSelection->FormSet->StatementListOSF, Link);
 
-    DisplayStatement = AllocateZeroPool (sizeof (FORM_DISPLAY_ENGINE_STATEMENT));
+    DisplayStatement = AllocateZeroPool(sizeof (FORM_DISPLAY_ENGINE_STATEMENT));
     ASSERT (DisplayStatement != NULL);
     DisplayStatement->Signature = FORM_DISPLAY_ENGINE_STATEMENT_SIGNATURE;
     DisplayStatement->Version   = FORM_DISPLAY_ENGINE_STATEMENT_VERSION_1;
@@ -559,7 +559,7 @@ AddStatementToDisplayForm (
   //
   // treat formset as statement outside the form,get its opcode.
   //
-  DisplayStatement = AllocateZeroPool (sizeof (FORM_DISPLAY_ENGINE_STATEMENT));
+  DisplayStatement = AllocateZeroPool(sizeof (FORM_DISPLAY_ENGINE_STATEMENT));
   ASSERT (DisplayStatement != NULL);
 
   DisplayStatement->Signature = FORM_DISPLAY_ENGINE_STATEMENT_SIGNATURE;
@@ -594,7 +594,7 @@ AddStatementToDisplayForm (
       continue;
     }
 
-    DisplayStatement = AllocateZeroPool (sizeof (FORM_DISPLAY_ENGINE_STATEMENT));
+    DisplayStatement = AllocateZeroPool(sizeof (FORM_DISPLAY_ENGINE_STATEMENT));
     ASSERT (DisplayStatement != NULL);
 
     //
@@ -625,11 +625,11 @@ AddStatementToDisplayForm (
   //
   if (MinRefreshInterval != 0) {
     Status = gBS->CreateEvent (EVT_TIMER | EVT_NOTIFY_SIGNAL, TPL_CALLBACK, RefreshIntervalProcess, NULL, &RefreshIntervalEvent);
-    ASSERT_EFI_ERROR (Status);
+    ASSERT_EFI_ERROR(Status);
     Status = gBS->SetTimer (RefreshIntervalEvent, TimerPeriodic, MinRefreshInterval * ONE_SECOND);
-    ASSERT_EFI_ERROR (Status);
+    ASSERT_EFI_ERROR(Status);
 
-    EventNode = AllocateZeroPool (sizeof (FORM_BROWSER_REFRESH_EVENT_NODE));
+    EventNode = AllocateZeroPool(sizeof (FORM_BROWSER_REFRESH_EVENT_NODE));
     ASSERT (EventNode != NULL);
     EventNode->RefreshEvent = RefreshIntervalEvent;
     InsertTailList(&mRefreshEventList, &EventNode->Link);
@@ -732,7 +732,7 @@ InitializeDisplayFormData (
         NULL,
         &mValueChangedEvent
         );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 }
 
 /**
@@ -754,9 +754,9 @@ FreeHotkeyList (
 
     RemoveEntryList (&HotKey->Link);
 
-    FreePool (HotKey->KeyData);
-    FreePool (HotKey->HelpString);
-    FreePool (HotKey);
+    FreePool(HotKey->KeyData);
+    FreePool(HotKey->HelpString);
+    FreePool(HotKey);
   }
 }
 
@@ -818,7 +818,7 @@ FreeStatementData (
       OptionLink = GetFirstNode (&Statement->OptionListHead);
       Option = DISPLAY_QUESTION_OPTION_FROM_LINK (OptionLink);
       RemoveEntryList (&Option->Link);
-      FreePool (Option);
+      FreePool(Option);
     }
 
     //
@@ -829,7 +829,7 @@ FreeStatementData (
     }
 
     RemoveEntryList (&Statement->DisplayLink);
-    FreePool (Statement);
+    FreePool(Statement);
   }
 }
 
@@ -1085,7 +1085,7 @@ GetFormsetGuidFromHiiHandle (
 
     Status = mHiiDatabase->ExportPackageLists (mHiiDatabase, HiiHandle, &BufferSize, HiiPackageList);
   }
-  if (EFI_ERROR (Status) || HiiPackageList == NULL) {
+  if (EFI_ERROR(Status) || HiiPackageList == NULL) {
     return FALSE;
   }
 
@@ -1094,11 +1094,11 @@ GetFormsetGuidFromHiiHandle (
   //
   Offset = sizeof (EFI_HII_PACKAGE_LIST_HEADER);
   Offset2 = 0;
-  CopyMem (&PackageListLength, &HiiPackageList->PackageLength, sizeof (UINT32));
+  CopyMem(&PackageListLength, &HiiPackageList->PackageLength, sizeof (UINT32));
 
   while (Offset < PackageListLength) {
     Package = ((UINT8 *) HiiPackageList) + Offset;
-    CopyMem (&PackageHeader, Package, sizeof (EFI_HII_PACKAGE_HEADER));
+    CopyMem(&PackageHeader, Package, sizeof (EFI_HII_PACKAGE_HEADER));
     Offset += PackageHeader.Length;
 
     if (PackageHeader.Type == EFI_HII_PACKAGE_FORMS) {
@@ -1124,7 +1124,7 @@ GetFormsetGuidFromHiiHandle (
     }
   }
 
-  FreePool (HiiPackageList);
+  FreePool(HiiPackageList);
 
   return FindGuid;
 }
@@ -1168,7 +1168,7 @@ DevicePathToHiiHandle (
                   &TmpDevicePath,
                   &DriverHandle
                   );
-  if (EFI_ERROR (Status) || !IsDevicePathEnd (TmpDevicePath)) {
+  if (EFI_ERROR(Status) || !IsDevicePathEnd (TmpDevicePath)) {
     return NULL;
   }
 
@@ -1190,7 +1190,7 @@ DevicePathToHiiHandle (
                              HiiHandles[Index],
                              &Handle
                              );
-    if (!EFI_ERROR (Status) && (Handle == DriverHandle)) {
+    if (!EFI_ERROR(Status) && (Handle == DriverHandle)) {
       if (GetFormsetGuidFromHiiHandle(HiiHandles[Index], FormsetGuid)) {
         HiiHandle = HiiHandles[Index];
         break;
@@ -1202,7 +1202,7 @@ DevicePathToHiiHandle (
     }
   }
 
-  FreePool (HiiHandles);
+  FreePool(HiiHandles);
   return HiiHandle;
 }
 
@@ -1251,7 +1251,7 @@ FormSetGuidToHiiHandle (
     }
   }
 
-  FreePool (HiiHandles);
+  FreePool(HiiHandles);
 
   return HiiHandle;
 }
@@ -1286,7 +1286,7 @@ ProcessChangedData (
 
     case BROWSER_ACTION_SUBMIT:
       Status = SubmitForm (Selection->FormSet, Selection->Form, Scope);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         RetValue = FALSE;
       }
       break;
@@ -1325,7 +1325,7 @@ FindParentFormSet (
   ParentMenu  = UiFindParentMenu(CurrentMenu, FormSetLevel);
 
   if (ParentMenu != NULL) {
-    CopyMem (&Selection->FormSetGuid, &ParentMenu->FormSetGuid, sizeof (EFI_GUID));
+    CopyMem(&Selection->FormSetGuid, &ParentMenu->FormSetGuid, sizeof (EFI_GUID));
     Selection->Handle = ParentMenu->HiiHandle;
     Selection->FormId     = ParentMenu->FormId;
     Selection->QuestionId = ParentMenu->QuestionId;
@@ -1384,15 +1384,15 @@ ProcessGotoOpCode (
       DevicePath = mPathFromText->ConvertTextToDevicePath(StringPtr);
       if (DevicePath != NULL) {
         HiiHandle = DevicePathToHiiHandle (DevicePath, &Statement->HiiValue.Value.ref.FormSetGuid);
-        FreePool (DevicePath);
+        FreePool(DevicePath);
       }
-      FreePool (StringPtr);
+      FreePool(StringPtr);
     } else {
       //
       // Not found the EFI_DEVICE_PATH_FROM_TEXT_PROTOCOL protocol.
       //
       PopupErrorMessage(BROWSER_PROTOCOL_NOT_FOUND, NULL, NULL, NULL);
-      FreePool (StringPtr);
+      FreePool(StringPtr);
       return Status;
     }
 
@@ -1418,7 +1418,7 @@ ProcessGotoOpCode (
       return EFI_SUCCESS;
     }
 
-    CopyMem (&Selection->FormSetGuid,&Statement->HiiValue.Value.ref.FormSetGuid, sizeof (EFI_GUID));
+    CopyMem(&Selection->FormSetGuid,&Statement->HiiValue.Value.ref.FormSetGuid, sizeof (EFI_GUID));
     Selection->FormId = Statement->HiiValue.Value.ref.FormId;
     Selection->QuestionId = Statement->HiiValue.Value.ref.QuestionId;
   } else if (!IsZeroGuid (&Statement->HiiValue.Value.ref.FormSetGuid)) {
@@ -1447,7 +1447,7 @@ ProcessGotoOpCode (
       return EFI_SUCCESS;
     }
 
-    CopyMem (&Selection->FormSetGuid, &Statement->HiiValue.Value.ref.FormSetGuid, sizeof (EFI_GUID));
+    CopyMem(&Selection->FormSetGuid, &Statement->HiiValue.Value.ref.FormSetGuid, sizeof (EFI_GUID));
     Selection->FormId = Statement->HiiValue.Value.ref.FormId;
     Selection->QuestionId = Statement->HiiValue.Value.ref.QuestionId;
   } else if (Statement->HiiValue.Value.ref.FormId != 0) {
@@ -1612,8 +1612,8 @@ ProcessUserInput (
       case EFI_IFR_STRING_OP:
         DeleteString(Statement->HiiValue.Value.string, gCurrentSelection->FormSet->HiiHandle);
         Statement->HiiValue.Value.string = UserInput->InputValue.Value.string;
-        CopyMem (Statement->BufferValue, UserInput->InputValue.Buffer, (UINTN) UserInput->InputValue.BufferLen);
-        FreePool (UserInput->InputValue.Buffer);
+        CopyMem(Statement->BufferValue, UserInput->InputValue.Buffer, (UINTN) UserInput->InputValue.BufferLen);
+        FreePool(UserInput->InputValue.Buffer);
         break;
 
       case EFI_IFR_PASSWORD_OP:
@@ -1626,9 +1626,9 @@ ProcessUserInput (
 
         DeleteString(Statement->HiiValue.Value.string, gCurrentSelection->FormSet->HiiHandle);
         Statement->HiiValue.Value.string = UserInput->InputValue.Value.string;
-        CopyMem (Statement->BufferValue, UserInput->InputValue.Buffer, (UINTN) UserInput->InputValue.BufferLen);
+        CopyMem(Statement->BufferValue, UserInput->InputValue.Buffer, (UINTN) UserInput->InputValue.BufferLen);
         ZeroMem (UserInput->InputValue.Buffer, (UINTN) UserInput->InputValue.BufferLen);
-        FreePool (UserInput->InputValue.Buffer);
+        FreePool(UserInput->InputValue.Buffer);
         //
         // Two password match, send it to Configuration Driver
         //
@@ -1645,11 +1645,11 @@ ProcessUserInput (
         break;
 
       case EFI_IFR_ORDERED_LIST_OP:
-        CopyMem (Statement->BufferValue, UserInput->InputValue.Buffer, UserInput->InputValue.BufferLen);
+        CopyMem(Statement->BufferValue, UserInput->InputValue.Buffer, UserInput->InputValue.BufferLen);
         break;
 
       default:
-        CopyMem (&Statement->HiiValue, &UserInput->InputValue, sizeof (EFI_HII_VALUE));
+        CopyMem(&Statement->HiiValue, &UserInput->InputValue, sizeof (EFI_HII_VALUE));
         break;
       }
       break;
@@ -1705,7 +1705,7 @@ DisplayForm (
   }
 
   Status = EvaluateFormExpressions (gCurrentSelection->FormSet, gCurrentSelection->Form);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -1713,7 +1713,7 @@ DisplayForm (
 
   ASSERT (gDisplayFormData.BrowserStatus == BROWSER_SUCCESS);
   Status = mFormDisplay->FormDisplay (&gDisplayFormData, &UserInput);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     FreeDisplayFormData();
     return Status;
   }
@@ -1890,7 +1890,7 @@ FindNextMenu (
       Selection->Action = UI_ACTION_REFRESH_FORM;
     } else {
       Selection->Action = UI_ACTION_REFRESH_FORMSET;
-      CopyMem (&Selection->FormSetGuid, &ParentMenu->FormSetGuid, sizeof (EFI_GUID));
+      CopyMem(&Selection->FormSetGuid, &ParentMenu->FormSetGuid, sizeof (EFI_GUID));
       Selection->Handle = ParentMenu->HiiHandle;
     }
 
@@ -1931,7 +1931,7 @@ ReconnectController (
   EFI_STATUS                      Status;
 
   Status = gBS->DisconnectController(DriverHandle, NULL, NULL);
-  if (!EFI_ERROR (Status)) {
+  if (!EFI_ERROR(Status)) {
     Status = gBS->ConnectController(DriverHandle, NULL, NULL, TRUE);
   }
 
@@ -2035,7 +2035,7 @@ ProcessCallBackFunction (
         BackUpBuffer = AllocateCopyPool(Statement->StorageWidth, Statement->BufferValue);
         ASSERT (BackUpBuffer != NULL);
       } else {
-        CopyMem (&BackUpValue, &HiiValue->Value, sizeof (EFI_IFR_TYPE_VALUE));
+        CopyMem(&BackUpValue, &HiiValue->Value, sizeof (EFI_IFR_TYPE_VALUE));
       }
     }
 
@@ -2048,7 +2048,7 @@ ProcessCallBackFunction (
                              TypeValue,
                              &ActionRequest
                              );
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       //
       // Need to sync the value between Statement->HiiValue->Value and Statement->BufferValue
       //
@@ -2059,11 +2059,11 @@ ProcessCallBackFunction (
         ASSERT (StrLen (NewString) * sizeof (CHAR16) <= Statement->StorageWidth);
         if (StrLen (NewString) * sizeof (CHAR16) <= Statement->StorageWidth) {
           ZeroMem (Statement->BufferValue, Statement->StorageWidth);
-          CopyMem (Statement->BufferValue, NewString, StrSize (NewString));
+          CopyMem(Statement->BufferValue, NewString, StrSize (NewString));
         } else {
-          CopyMem (Statement->BufferValue, NewString, Statement->StorageWidth);
+          CopyMem(Statement->BufferValue, NewString, Statement->StorageWidth);
         }
-        FreePool (NewString);
+        FreePool(NewString);
       }
 
       //
@@ -2125,7 +2125,7 @@ ProcessCallBackFunction (
         // Do the question validation.
         //
         Status = ValueChangedValidation (gCurrentSelection->FormSet, gCurrentSelection->Form, Statement);
-        if (!EFI_ERROR (Status)) {
+        if (!EFI_ERROR(Status)) {
           //
           //check whether the question value  changed compared with edit buffer before updating edit buffer
           // if changed, set the ValueChanged flag to TRUE,in order to trig the CHANGED callback function
@@ -2158,16 +2158,16 @@ ProcessCallBackFunction (
       //
       if (Action  == EFI_BROWSER_ACTION_CHANGING && Status == EFI_UNSUPPORTED) {
         if (HiiValue->Type == EFI_IFR_TYPE_BUFFER) {
-          CopyMem (Statement->BufferValue, BackUpBuffer, Statement->StorageWidth);
+          CopyMem(Statement->BufferValue, BackUpBuffer, Statement->StorageWidth);
         } else {
-          CopyMem (&HiiValue->Value, &BackUpValue, sizeof (EFI_IFR_TYPE_VALUE));
+          CopyMem(&HiiValue->Value, &BackUpValue, sizeof (EFI_IFR_TYPE_VALUE));
         }
 
         //
         // Do the question validation.
         //
         InternalStatus = ValueChangedValidation (gCurrentSelection->FormSet, gCurrentSelection->Form, Statement);
-        if (!EFI_ERROR (InternalStatus)) {
+        if (!EFI_ERROR(InternalStatus)) {
           //
           //check whether the question value  changed compared with edit buffer before updating edit buffer
           // if changed, set the ValueChanged flag to TRUE,in order to trig the CHANGED callback function
@@ -2202,7 +2202,7 @@ ProcessCallBackFunction (
     }
 
     if (BackUpBuffer != NULL) {
-      FreePool (BackUpBuffer);
+      FreePool(BackUpBuffer);
     }
 
     //
@@ -2303,18 +2303,18 @@ ProcessRetrieveForQuestion (
                            TypeValue,
                            &ActionRequest
                            );
-  if (!EFI_ERROR (Status) && HiiValue->Type == EFI_IFR_TYPE_STRING) {
+  if (!EFI_ERROR(Status) && HiiValue->Type == EFI_IFR_TYPE_STRING) {
     NewString = GetToken (Statement->HiiValue.Value.string, FormSet->HiiHandle);
     ASSERT (NewString != NULL);
 
     ASSERT (StrLen (NewString) * sizeof (CHAR16) <= Statement->StorageWidth);
     if (StrLen (NewString) * sizeof (CHAR16) <= Statement->StorageWidth) {
       ZeroMem (Statement->BufferValue, Statement->StorageWidth);
-      CopyMem (Statement->BufferValue, NewString, StrSize (NewString));
+      CopyMem(Statement->BufferValue, NewString, StrSize (NewString));
     } else {
-      CopyMem (Statement->BufferValue, NewString, Statement->StorageWidth);
+      CopyMem(Statement->BufferValue, NewString, Statement->StorageWidth);
     }
-    FreePool (NewString);
+    FreePool(NewString);
   }
 
   return Status;
@@ -2357,7 +2357,7 @@ SetupBrowser (
                            EFI_HII_DATABASE_NOTIFY_REMOVE_PACK,
                            &NotifyHandle
                            );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -2453,7 +2453,7 @@ SetupBrowser (
 
       if (ConfigAccess != NULL) {
         Status = ProcessCallBackFunction (Selection, Selection->FormSet, Selection->Form, NULL, EFI_BROWSER_ACTION_FORM_OPEN, FALSE);
-        if (EFI_ERROR (Status)) {
+        if (EFI_ERROR(Status)) {
           goto Done;
         }
 
@@ -2472,7 +2472,7 @@ SetupBrowser (
     // Load Questions' Value for display
     //
     Status = LoadFormSetConfig (Selection, Selection->FormSet);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       goto Done;
     }
 
@@ -2484,7 +2484,7 @@ SetupBrowser (
 
       if (ConfigAccess != NULL) {
         Status = ProcessCallBackFunction (Selection, Selection->FormSet, Selection->Form, NULL, EFI_BROWSER_ACTION_RETRIEVE, FALSE);
-        if (EFI_ERROR (Status)) {
+        if (EFI_ERROR(Status)) {
           goto Done;
         }
 
@@ -2503,7 +2503,7 @@ SetupBrowser (
     // Display form
     //
     Status = DisplayForm ();
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       goto Done;
     }
 
@@ -2520,19 +2520,19 @@ SetupBrowser (
           //
           // Process dynamic update ref opcode.
           //
-          if (!EFI_ERROR (Status)) {
+          if (!EFI_ERROR(Status)) {
             Status = ProcessGotoOpCode(Statement, Selection);
           }
 
           //
           // Callback return error status or status return from process goto opcode.
           //
-          if (EFI_ERROR (Status)) {
+          if (EFI_ERROR(Status)) {
             //
             // Cross reference will not be taken, restore all essential field
             //
             Selection->Handle = mCurrentHiiHandle;
-            CopyMem (&Selection->FormSetGuid, &mCurrentFormSetGuid, sizeof (EFI_GUID));
+            CopyMem(&Selection->FormSetGuid, &mCurrentFormSetGuid, sizeof (EFI_GUID));
             Selection->FormId = mCurrentFormId;
             Selection->QuestionId = 0;
             Selection->Action = UI_ACTION_REFRESH_FORM;
@@ -2540,7 +2540,7 @@ SetupBrowser (
         }
 
 
-        if (!EFI_ERROR (Status) &&
+        if (!EFI_ERROR(Status) &&
             (Statement->Operand != EFI_IFR_REF_OP) &&
             ((Statement->Storage == NULL) || (Statement->Storage != NULL && Statement->ValueChanged))) {
           //
@@ -2558,7 +2558,7 @@ SetupBrowser (
         // Do the question validation.
         //
         Status = ValueChangedValidation (gCurrentSelection->FormSet, gCurrentSelection->Form, Statement);
-        if (!EFI_ERROR (Status) && (Statement->Operand != EFI_IFR_PASSWORD_OP)) {
+        if (!EFI_ERROR(Status) && (Statement->Operand != EFI_IFR_PASSWORD_OP)) {
           SetQuestionValue (gCurrentSelection->FormSet, gCurrentSelection->Form, Statement, GetSetValueWithEditBuffer);
           //
           // Verify whether question value has checked, update the ValueChanged flag in Question.
@@ -2616,7 +2616,7 @@ SetupBrowser (
          (Selection->FormId != mCurrentFormId))) {
 
       Status = ProcessCallBackFunction (Selection, Selection->FormSet, Selection->Form, NULL, EFI_BROWSER_ACTION_FORM_CLOSE, FALSE);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         goto Done;
       }
     }
@@ -2626,7 +2626,7 @@ Done:
   //
   // Reset current form information to the initial setting when error happens or form exit.
   //
-  if (EFI_ERROR (Status) || Selection->Action == UI_ACTION_EXIT) {
+  if (EFI_ERROR(Status) || Selection->Action == UI_ACTION_EXIT) {
     mCurrentHiiHandle = NULL;
     CopyGuid (&mCurrentFormSetGuid, &gZeroGuid);
     mCurrentFormId = 0;

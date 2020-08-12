@@ -100,21 +100,21 @@ MeasureVariable (
   VarLogSize = (UINT32)(sizeof (*VarLog) + VarNameLength * sizeof (*VarName) + VarSize
                         - sizeof (VarLog->UnicodeName) - sizeof (VarLog->VariableData));
 
-  VarLog = (UEFI_VARIABLE_DATA *) AllocateZeroPool (VarLogSize);
+  VarLog = (UEFI_VARIABLE_DATA *) AllocateZeroPool(VarLogSize);
   if (VarLog == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
 
-  CopyMem (&VarLog->VariableName, VendorGuid, sizeof(VarLog->VariableName));
+  CopyMem(&VarLog->VariableName, VendorGuid, sizeof(VarLog->VariableName));
   VarLog->UnicodeNameLength  = VarNameLength;
   VarLog->VariableDataLength = VarSize;
-  CopyMem (
+  CopyMem(
      VarLog->UnicodeName,
      VarName,
      VarNameLength * sizeof (*VarName)
      );
   if (VarSize != 0) {
-    CopyMem (
+    CopyMem(
        (CHAR16 *)VarLog->UnicodeName + VarNameLength,
        VarData,
        VarSize
@@ -132,7 +132,7 @@ MeasureVariable (
              VarLog,
              VarLogSize
              );
-  FreePool (VarLog);
+  FreePool(VarLog);
   return Status;
 }
 
@@ -192,7 +192,7 @@ InternalGetVariable (
   // Get the variable data.
   //
   Status = gRT->GetVariable ((CHAR16 *) Name, (EFI_GUID *) Guid, NULL, &BufferSize, *Value);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     FreePool(*Value);
     *Value = NULL;
   }
@@ -237,7 +237,7 @@ SecureBootHook (
              &VariableData,
              &VariableDataSize
              );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     //
     // Measure DBT only if present and not empty
     //
@@ -260,7 +260,7 @@ SecureBootHook (
   DEBUG ((EFI_D_INFO, "MeasureBootPolicyVariable - %r\n", Status));
 
   if (VariableData != NULL) {
-    FreePool (VariableData);
+    FreePool(VariableData);
   }
 
   //
@@ -274,7 +274,7 @@ SecureBootHook (
                 &VariableData,
                 &VariableDataSize
                 );
-     if (EFI_ERROR (Status)) {
+     if (EFI_ERROR(Status)) {
        return;
      }
 

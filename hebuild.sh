@@ -33,14 +33,14 @@ PLATFORMFILE=
 MODULEFILE=
 TARGETRULE=
 
-SCRIPT_VERS="2019-11-09"
+SCRIPT_VERS="2020-04-20"
 
 # Macro
 M_NOGRUB=0
 M_APPLEHFS=0
 
 # Default values
-export TOOLCHAIN=XCODE8
+export TOOLCHAIN=GCC53
 export TARGETARCH=X64
 export BUILDTARGET=RELEASE
 export BUILDTHREADS=$(( NUMBER_OF_CPUS + 1 ))
@@ -188,6 +188,7 @@ isNASMGood() {
   # nasm should be greater or equal to 2.12.02 to be good building Clover.
   # There was a bad macho relocation in outmacho.c, fixed by Zenith432
   # and accepted by nasm devel during 2.12.rcxx (release candidate)
+  # modern nasm is 2.14
 
   result=1
   local nasmver=$( "${1}" -v | grep 'NASM version' | awk '{print $3}' )
@@ -239,10 +240,10 @@ usage() {
     print_option_help "-clang"     "use XCode Clang toolchain"
     print_option_help "-llvm"      "use LLVM toolchain"
     print_option_help "-gcc49"     "use GCC 4.9 toolchain"
-    print_option_help "-gcc53"     "use GCC 5.3 toolchain"
-    print_option_help "-unixgcc"   "use UNIXGCC toolchain"
+    print_option_help "-gcc53"     "use GCC 5.3 toolchain, including gcc-9"
+    print_option_help "-unixgcc"   "use UNIXGCC toolchain, unsupported"
     print_option_help "-xcode"     "use XCode 3.2 toolchain"
-    print_option_help "-xcode5"     "use XCode 5-7 toolchain "
+    print_option_help "-xcode5"     "use XCode 5 toolchain, "
     print_option_help "-xcode8"     "use XCode 8 toolchain  [Default]"
     print_option_help "-t TOOLCHAIN, --tagname=TOOLCHAIN" "force to use a specific toolchain"
     echo
@@ -410,6 +411,7 @@ checkCmdlineArguments() {
 checkToolchain() {
     case "$TOOLCHAIN" in
         XCLANG|XCODE*) checkXcode ;;
+                *) export MTOC_PREFIX="${TOOLCHAIN_DIR}/bin/" ;;
     esac
 
   if [[ "$SYSNAME" == Linux ]]; then
@@ -423,7 +425,7 @@ checkToolchain() {
     export GCC53_BIN="$TOOLCHAIN_DIR/cross/bin/x86_64-clover-linux-gnu-"
     if [[ $TOOLCHAIN == GCC* ]] && [[ ! -x "${GCC53_BIN}gcc" ]]; then
       echo "No clover toolchain found !" >&2
-      echo "Build it with the build_gcc8.sh script or define the TOOLCHAIN_DIR variable." >&2
+      echo "Build it with the build_gcc9.sh script or define the TOOLCHAIN_DIR variable." >&2
       exit 1
     fi
   fi
@@ -462,8 +464,8 @@ MainBuildScript() {
     # we are building the same rev as before?
     local SkipAutoGen=0
     #
-    if [[ -f "$CLOVERROOT"/rEFIt_UEFI/Version.h ]]; then
-        local builtedRev=$(cat "$CLOVERROOT"/rEFIt_UEFI/Version.h  \
+    if [[ -f "$CLOVERROOT"/Version.h ]]; then
+        local builtedRev=$(cat "$CLOVERROOT"/Version.h  \
                            | grep '#define FIRMWARE_REVISION L' | awk -v FS="(\"|\")" '{print $2}')
 #    echo "old revision ${builtedRev}" >echo.txt
 #    echo "new revision ${repoRev}" >>echo.txt
@@ -612,7 +614,7 @@ MainBuildScript() {
 
       echo "#define BUILDINFOS_STR \"${clover_build_info}\"" >> "$CLOVERROOT"/Version.h
 
-      cp "$CLOVERROOT"/Version.h "$CLOVERROOT"/rEFIt_UEFI/
+#      cp "$CLOVERROOT"/Version.h "$CLOVERROOT"/rEFIt_UEFI/
     fi
 
     eval "$cmd"
@@ -763,8 +765,8 @@ MainPostBuildScript() {
     if [[ "$GENPAGE" -eq 0 ]]; then
       setInitBootMsg "$CLOVER_PKG_DIR"/Bootloaders/x64/$cloverEFIFile
     fi
-    copyBin "$BUILD_DIR_ARCH"/CLOVER.efi "$CLOVER_PKG_DIR"/EFI/BOOT/BOOTX64.efi
-    copyBin "$BUILD_DIR_ARCH"/CLOVER.efi "$CLOVER_PKG_DIR"/EFI/CLOVER/CLOVERX64.efi
+    copyBin "$BUILD_DIR_ARCH"/CLOVERX64.efi "$CLOVER_PKG_DIR"/EFI/BOOT/BOOTX64.efi
+    copyBin "$BUILD_DIR_ARCH"/CLOVERX64.efi "$CLOVER_PKG_DIR"/EFI/CLOVER/CLOVERX64.efi
 
     # Mandatory drivers
     echo "Copy Mandatory drivers:"
@@ -846,12 +848,14 @@ MainPostBuildScript() {
     done
 
     # drivers64UEFI/MemoryFix
-    binArray=( OsxAptioFixDrv OsxLowMemFixDrv OsxAptioFix3Drv AptioMemoryFix )
+    binArray=( OsxAptioFixDrv OsxLowMemFixDrv OsxAptioFix3Drv AptioMemoryFix OcQuirks OpenRuntime )
 
     for efi in "${binArray[@]}"
     do
       copyBin "$BUILD_DIR_ARCH"/$efi.efi "$CLOVER_PKG_DIR"/EFI/CLOVER/drivers/$DRIVERS_OFF/$DRIVERS_UEFI/MemoryFix/$efi.efi
     done
+    
+    copyBin "${CLOVERROOT}"/MemoryFix/OcQuirks/OcQuirks.plist "$CLOVER_PKG_DIR"/EFI/CLOVER/drivers/$DRIVERS_OFF/$DRIVERS_UEFI/MemoryFix/
 
     # Applications
     echo "Copy Applications:"
@@ -895,8 +899,8 @@ export BUILD_DIR_ARCH="${BUILD_DIR}/$TARGETARCH"
 if [[ -z $MODULEFILE  ]] && (( $NOBOOTFILES == 0 )); then
     MainPostBuildScript
 else
- copyBin "$BUILD_DIR_ARCH"/CLOVER.efi "$CLOVER_PKG_DIR"/EFI/CLOVER/CLOVERX64.efi
- copyBin "$BUILD_DIR_ARCH"/CLOVER.efi "$CLOVER_PKG_DIR"/EFI/BOOT/BOOTX64.efi
+ copyBin "$BUILD_DIR_ARCH"/CLOVERX64.efi "$CLOVER_PKG_DIR"/EFI/CLOVER/CLOVERX64.efi
+ copyBin "$BUILD_DIR_ARCH"/CLOVERX64.efi "$CLOVER_PKG_DIR"/EFI/BOOT/BOOTX64.efi
 fi
 
 # Local Variables:      #

@@ -37,7 +37,7 @@ HdaControllerInitCorb(
     EFI_PCI_IO_PROTOCOL *PciIo = HdaDev->PciIo;
 
     // HDA register values.
-    UINT8 HdaCorbSize;
+    UINT8 HdaCorbSize = 0;
     UINT32 HdaLowerCorbBaseAddr;
     UINT32 HdaUpperCorbBaseAddr;
     UINT16 HdaCorbWp;
@@ -75,7 +75,7 @@ HdaControllerInitCorb(
     Status = PciIo->AllocateBuffer(PciIo, AllocateAnyPages, EfiBootServicesData, EFI_SIZE_TO_PAGES(CorbLength), &CorbBuffer, 0);
     if (EFI_ERROR(Status))
         return Status;
-    gBS->SetMem(CorbBuffer, CorbLength, 0);
+    SetMem(CorbBuffer, CorbLength, 0);
 
     // Map outbound buffer.
     CorbLengthActual = CorbLength;
@@ -197,7 +197,7 @@ HdaControllerSetCorb(
     // Create variables.
     EFI_STATUS Status;
     EFI_PCI_IO_PROTOCOL *PciIo = HdaDev->PciIo;
-    UINT8 HdaCorbCtl;
+    UINT8 HdaCorbCtl = 0;
     UINT64 Tmp;
 
     // Get current value of CORBCTL.
@@ -464,7 +464,7 @@ HdaControllerInitStreams(
             (VOID**)&HdaStream->BufferList, 0);
         if (EFI_ERROR(Status))
             goto FREE_BUFFER;
-        gBS->SetMem(HdaStream->BufferList, HDA_BDL_SIZE, 0);
+        SetMem(HdaStream->BufferList, HDA_BDL_SIZE, 0);
 
         // Map buffer descriptor list.
         BdlLengthActual = HDA_BDL_SIZE;
@@ -487,7 +487,7 @@ HdaControllerInitStreams(
             (VOID**)&HdaStream->BufferData, 0);
         if (EFI_ERROR(Status))
             goto FREE_BUFFER;
-        gBS->SetMem(HdaStream->BufferData, HDA_STREAM_BUF_SIZE, 0);
+        SetMem(HdaStream->BufferData, HDA_STREAM_BUF_SIZE, 0);
 
         // Map buffer descriptor list.
         DataLengthActual = HDA_STREAM_BUF_SIZE;
@@ -517,7 +517,7 @@ HdaControllerInitStreams(
         EFI_SIZE_TO_PAGES(HdaControllerDev->DmaPositionsSize), (VOID**)&HdaControllerDev->DmaPositions, 0);
     if (EFI_ERROR(Status))
         goto FREE_BUFFER;
-    gBS->SetMem(HdaControllerDev->DmaPositions, HdaControllerDev->DmaPositionsSize, 0);
+    SetMem(HdaControllerDev->DmaPositions, HdaControllerDev->DmaPositionsSize, 0);
 
     // Map buffer descriptor list.
     DmaPositionsLengthActual = HdaControllerDev->DmaPositionsSize;

@@ -174,7 +174,7 @@ INTN find_entry(CONST CHAR8 *propName, CONST CHAR8 *propValue, DTEntry *entryH)
 
 		startingP += sizeof (*propP) + ((propP->length + 3) & -4);
 
-		if (AsciiStrCmp ((CHAR8*)propP->name, (CHAR8*)propName) == 0) {
+		if (AsciiStrCmp((CHAR8*)propP->name, (CHAR8*)propName) == 0) {
 			if (propValue == NULL || AsciiStrCmp( (CHAR8*)(propP + 1), (CHAR8*)propValue) == 0)
 			{
 				*entryH = (DTEntry)nodeP;
@@ -191,7 +191,9 @@ INTN find_entry(CONST CHAR8 *propName, CONST CHAR8 *propValue, DTEntry *entryH)
 	}
 	return(kError);
 }
+
 //if(DTLookupEntry(NULL,"/",&efiPlatform)==kSuccess)
+
 INTN
 DTLookupEntry(CONST DTEntry searchPoint, CONST CHAR8 *pathName, DTEntry *foundEntry)
 {

@@ -337,7 +337,7 @@ InstallDefaultKeyboardLayout (
                   NULL,
                   (VOID **) &HiiDatabase
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -388,7 +388,7 @@ IsUSBKeyboard (
                     &InterfaceDescriptor
                     );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return FALSE;
   }
 
@@ -427,7 +427,7 @@ GetCurrentKeyboardLayout (
                   NULL,
                   (VOID **) &HiiDatabase
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return NULL;
   }
 
@@ -452,8 +452,8 @@ GetCurrentKeyboardLayout (
                             &Length,
                             KeyboardLayout
                             );
-    if (EFI_ERROR (Status)) {
-      FreePool (KeyboardLayout);
+    if (EFI_ERROR(Status)) {
+      FreePool(KeyboardLayout);
       KeyboardLayout = NULL;
     }
   }
@@ -619,7 +619,7 @@ SetKeyboardLayoutEvent (
   // Re-allocate resource for KeyConvertionTable
   //
   ReleaseKeyboardLayoutResources (UsbKeyboardDevice);
-  UsbKeyboardDevice->KeyConvertionTable = AllocateZeroPool ((NUMBER_OF_VALID_USB_KEYCODE) * sizeof (EFI_KEY_DESCRIPTOR));
+  UsbKeyboardDevice->KeyConvertionTable = AllocateZeroPool((NUMBER_OF_VALID_USB_KEYCODE) * sizeof (EFI_KEY_DESCRIPTOR));
   ASSERT (UsbKeyboardDevice->KeyConvertionTable != NULL);
 
   //
@@ -630,7 +630,7 @@ SetKeyboardLayoutEvent (
     //
     // Copy from HII keyboard layout package binary for alignment
     //
-    CopyMem (&TempKey, KeyDescriptor, sizeof (EFI_KEY_DESCRIPTOR));
+    CopyMem(&TempKey, KeyDescriptor, sizeof (EFI_KEY_DESCRIPTOR));
 
     //
     // Fill the key into KeyConvertionTable, whose index is calculated from USB keycode.
@@ -639,16 +639,16 @@ SetKeyboardLayoutEvent (
     TableEntry = GetKeyDescriptor (UsbKeyboardDevice, KeyCode);
     if (TableEntry == NULL) {
       ReleaseKeyboardLayoutResources (UsbKeyboardDevice);
-      FreePool (KeyboardLayout);
+      FreePool(KeyboardLayout);
       return;
     }
-    CopyMem (TableEntry, KeyDescriptor, sizeof (EFI_KEY_DESCRIPTOR));
+    CopyMem(TableEntry, KeyDescriptor, sizeof (EFI_KEY_DESCRIPTOR));
 
     //
     // For non-spacing key, create the list with a non-spacing key followed by physical keys.
     //
     if (TempKey.Modifier == EFI_NS_KEY_MODIFIER) {
-      UsbNsKey = AllocateZeroPool (sizeof (USB_NS_KEY));
+      UsbNsKey = AllocateZeroPool(sizeof (USB_NS_KEY));
       ASSERT (UsbNsKey != NULL);
 
       //
@@ -657,7 +657,7 @@ SetKeyboardLayoutEvent (
       KeyCount = 0;
       NsKey = KeyDescriptor + 1;
       for (Index2 = (UINT8) Index + 1; Index2 < KeyboardLayout->DescriptorCount; Index2++) {
-        CopyMem (&TempKey, NsKey, sizeof (EFI_KEY_DESCRIPTOR));
+        CopyMem(&TempKey, NsKey, sizeof (EFI_KEY_DESCRIPTOR));
         if (TempKey.Modifier == EFI_NS_KEY_DEPENDENCY_MODIFIER) {
           KeyCount++;
         } else {
@@ -668,7 +668,7 @@ SetKeyboardLayoutEvent (
 
       UsbNsKey->Signature = USB_NS_KEY_SIGNATURE;
       UsbNsKey->KeyCount = KeyCount;
-      UsbNsKey->NsKey = AllocateCopyPool (
+      UsbNsKey->NsKey = AllocateCopyPool(
                           (KeyCount + 1) * sizeof (EFI_KEY_DESCRIPTOR),
                           KeyDescriptor
                           );
@@ -689,9 +689,9 @@ SetKeyboardLayoutEvent (
   //
   TableEntry = GetKeyDescriptor (UsbKeyboardDevice, 0x58);
   KeyDescriptor = GetKeyDescriptor (UsbKeyboardDevice, 0x28);
-  CopyMem (TableEntry, KeyDescriptor, sizeof (EFI_KEY_DESCRIPTOR));
+  CopyMem(TableEntry, KeyDescriptor, sizeof (EFI_KEY_DESCRIPTOR));
 
-  FreePool (KeyboardLayout);
+  FreePool(KeyboardLayout);
 }
 
 /**
@@ -709,7 +709,7 @@ ReleaseKeyboardLayoutResources (
   LIST_ENTRY      *Link;
 
   if (UsbKeyboardDevice->KeyConvertionTable != NULL) {
-    FreePool (UsbKeyboardDevice->KeyConvertionTable);
+    FreePool(UsbKeyboardDevice->KeyConvertionTable);
   }
   UsbKeyboardDevice->KeyConvertionTable = NULL;
 
@@ -718,8 +718,8 @@ ReleaseKeyboardLayoutResources (
     UsbNsKey = USB_NS_KEY_FORM_FROM_LINK (Link);
     RemoveEntryList (&UsbNsKey->Link);
 
-    FreePool (UsbNsKey->NsKey);
-    FreePool (UsbNsKey);
+    FreePool(UsbNsKey->NsKey);
+    FreePool(UsbNsKey);
   }
 }
 
@@ -746,7 +746,7 @@ InitKeyboardLayout (
   EFI_HII_KEYBOARD_LAYOUT   *KeyboardLayout;
   EFI_STATUS                Status;
 
-  UsbKeyboardDevice->KeyConvertionTable = AllocateZeroPool ((NUMBER_OF_VALID_USB_KEYCODE) * sizeof (EFI_KEY_DESCRIPTOR));
+  UsbKeyboardDevice->KeyConvertionTable = AllocateZeroPool((NUMBER_OF_VALID_USB_KEYCODE) * sizeof (EFI_KEY_DESCRIPTOR));
   ASSERT (UsbKeyboardDevice->KeyConvertionTable != NULL);
 
   InitializeListHead (&UsbKeyboardDevice->NsKeyList);
@@ -765,7 +765,7 @@ InitKeyboardLayout (
                   &gEfiHiiKeyBoardLayoutGuid,
                   &UsbKeyboardDevice->KeyboardLayoutEvent
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -833,7 +833,7 @@ InitUSBKeyboard (
              &ConfigValue,
              &TransferResult
              );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     ConfigValue = 0x01;
     //
     // Uses default configuration to configure the USB Keyboard device.
@@ -843,7 +843,7 @@ InitUSBKeyboard (
                ConfigValue,
                &TransferResult
                );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       //
       // If configuration could not be set here, it means
       // the keyboard interface has some errors and could
@@ -1732,7 +1732,7 @@ InitQueue (
   Queue->Tail      = 0;
 
   if (Queue->Buffer[0] != NULL) {
-    FreePool (Queue->Buffer[0]);
+    FreePool(Queue->Buffer[0]);
   }
 
   Queue->Buffer[0] = AllocatePool (sizeof (Queue->Buffer) / sizeof (Queue->Buffer[0]) * ItemSize);
@@ -1753,7 +1753,7 @@ DestroyQueue (
   IN OUT USB_SIMPLE_QUEUE   *Queue
   )
 {
-  FreePool (Queue->Buffer[0]);
+  FreePool(Queue->Buffer[0]);
 }
 
 
@@ -1819,7 +1819,7 @@ Enqueue (
     Queue->Head = (Queue->Head + 1) % (MAX_KEY_ALLOWED + 1);
   }
 
-  CopyMem (Queue->Buffer[Queue->Tail], Item, ItemSize);
+  CopyMem(Queue->Buffer[Queue->Tail], Item, ItemSize);
 
   //
   // Adjust the tail pointer of the FIFO keyboard buffer.
@@ -1852,7 +1852,7 @@ Dequeue (
     return EFI_DEVICE_ERROR;
   }
 
-  CopyMem (Item, Queue->Buffer[Queue->Head], ItemSize);
+  CopyMem(Item, Queue->Buffer[Queue->Head], ItemSize);
 
   //
   // Adjust the head pointer of the FIFO keyboard buffer.

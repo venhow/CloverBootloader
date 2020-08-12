@@ -455,7 +455,7 @@ SmbiosAdd (
   // Enter into critical section
   //
   Status = EfiAcquireLockOrFail (&Private->DataLock);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -465,12 +465,12 @@ SmbiosAdd (
   //
   // Allocate internal buffer
   //
-  SmbiosEntry = AllocateZeroPool (TotalSize);
+  SmbiosEntry = AllocateZeroPool(TotalSize);
   if (SmbiosEntry == NULL) {
     EfiReleaseLock (&Private->DataLock);
     return EFI_OUT_OF_RESOURCES;
   }
-  HandleEntry = AllocateZeroPool (sizeof(SMBIOS_HANDLE_ENTRY));
+  HandleEntry = AllocateZeroPool(sizeof(SMBIOS_HANDLE_ENTRY));
   if (HandleEntry == NULL) {
     EfiReleaseLock (&Private->DataLock);
     return EFI_OUT_OF_RESOURCES;
@@ -504,7 +504,7 @@ SmbiosAdd (
   SmbiosEntry->Smbios64BitTable = Smbios64BitTable;
   InsertTailList (&Private->DataListHead, &SmbiosEntry->Link);
 
-  CopyMem (Raw, Record, StructureSize);
+  CopyMem(Raw, Record, StructureSize);
   ((EFI_SMBIOS_TABLE_HEADER*)Raw)->Handle = *SmbiosHandle;
 
   //
@@ -610,7 +610,7 @@ SmbiosUpdateString (
   // Enter into critical section
   //
   Status = EfiAcquireLockOrFail (&Private->DataLock);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -715,7 +715,7 @@ SmbiosUpdateString (
       // Re-allocate buffer is needed.
       //
       NewEntrySize = SmbiosEntry->RecordSize + InputStrLen - TargetStrLen;
-      ResizedSmbiosEntry = AllocateZeroPool (NewEntrySize);
+      ResizedSmbiosEntry = AllocateZeroPool(NewEntrySize);
 
       if (ResizedSmbiosEntry == NULL) {
         EfiReleaseLock (&Private->DataLock);
@@ -737,9 +737,9 @@ SmbiosUpdateString (
       //
       // Copy SMBIOS structure and optional strings.
       //
-      CopyMem (Raw, SmbiosEntry->RecordHeader + 1, Record->Length + TargetStrOffset);
-      CopyMem ((VOID*)((UINTN)Raw + Record->Length + TargetStrOffset), String, InputStrLen + 1);
-      CopyMem ((CHAR8*)((UINTN)Raw + Record->Length + TargetStrOffset + InputStrLen + 1),
+      CopyMem(Raw, SmbiosEntry->RecordHeader + 1, Record->Length + TargetStrOffset);
+      CopyMem((VOID*)((UINTN)Raw + Record->Length + TargetStrOffset), String, InputStrLen + 1);
+      CopyMem((CHAR8*)((UINTN)Raw + Record->Length + TargetStrOffset + InputStrLen + 1),
                (CHAR8*)Record + Record->Length + TargetStrOffset + TargetStrLen + 1,
                SmbiosEntry->RecordHeader->RecordSize - sizeof (EFI_SMBIOS_RECORD_HEADER) - Record->Length - TargetStrOffset - TargetStrLen - 1);
 
@@ -814,7 +814,7 @@ SmbiosRemove (
   // Enter into critical section
   //
   Status = EfiAcquireLockOrFail (&Private->DataLock);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -1063,7 +1063,7 @@ SmbiosCreateTable (
                     EFI_SIZE_TO_PAGES (sizeof (SMBIOS_TABLE_ENTRY_POINT)),
                     &PhysicalAddress
                     );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       DEBUG ((EFI_D_ERROR, "SmbiosCreateTable () could not allocate EntryPointStructure < 4GB\n"));
       Status = gBS->AllocatePages (
                       AllocateAnyPages,
@@ -1071,14 +1071,14 @@ SmbiosCreateTable (
                       EFI_SIZE_TO_PAGES (sizeof (SMBIOS_TABLE_ENTRY_POINT)),
                       &PhysicalAddress
                       );
-     if (EFI_ERROR (Status)) {
+     if (EFI_ERROR(Status)) {
         return EFI_OUT_OF_RESOURCES;
       }
     }
 
     EntryPointStructure = (SMBIOS_TABLE_ENTRY_POINT *) (UINTN) PhysicalAddress;
 
-    CopyMem (
+    CopyMem(
       EntryPointStructure,
       &EntryPointStructureData,
       sizeof (SMBIOS_TABLE_ENTRY_POINT)
@@ -1158,7 +1158,7 @@ SmbiosCreateTable (
                     EFI_SIZE_TO_PAGES (EntryPointStructure->TableLength),
                     &PhysicalAddress
                     );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       DEBUG ((EFI_D_ERROR, "SmbiosCreateTable() could not allocate SMBIOS table < 4GB\n"));
       EntryPointStructure->TableAddress = 0;
       return EFI_OUT_OF_RESOURCES;
@@ -1179,7 +1179,7 @@ SmbiosCreateTable (
 
     if ((Status == EFI_SUCCESS) && (CurrentSmbiosEntry->Smbios32BitTable)) {
       GetSmbiosStructureSize(SmbiosProtocol, SmbiosRecord, &RecordSize, &NumOfStr);
-      CopyMem (BufferPointer, SmbiosRecord, RecordSize);
+      CopyMem(BufferPointer, SmbiosRecord, RecordSize);
       BufferPointer = BufferPointer + RecordSize;
     }
   } while (!EFI_ERROR(Status));
@@ -1187,7 +1187,7 @@ SmbiosCreateTable (
   //
   // Assemble End-Of-Table structure
   //
-  CopyMem (BufferPointer, &EndStructure, sizeof (EndStructure));
+  CopyMem(BufferPointer, &EndStructure, sizeof (EndStructure));
 
   //
   // Fixup checksums in the Entry Point Structure
@@ -1254,14 +1254,14 @@ SmbiosCreate64BitTable (
                     EFI_SIZE_TO_PAGES (sizeof (SMBIOS_TABLE_3_0_ENTRY_POINT)),
                     &PhysicalAddress
                     );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       DEBUG ((EFI_D_ERROR, "SmbiosCreate64BitTable() could not allocate Smbios30EntryPointStructure\n"));
       return EFI_OUT_OF_RESOURCES;
     }
 
     Smbios30EntryPointStructure = (SMBIOS_TABLE_3_0_ENTRY_POINT *) (UINTN) PhysicalAddress;
 
-    CopyMem (
+    CopyMem(
       Smbios30EntryPointStructure,
       &Smbios30EntryPointStructureData,
       sizeof (SMBIOS_TABLE_3_0_ENTRY_POINT)
@@ -1326,7 +1326,7 @@ SmbiosCreate64BitTable (
                     EFI_SIZE_TO_PAGES (Smbios30EntryPointStructure->TableMaximumSize),
                     &PhysicalAddress
                     );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       DEBUG ((EFI_D_ERROR, "SmbiosCreateTable() could not allocate SMBIOS 64-bit table\n"));
       Smbios30EntryPointStructure->TableAddress = 0;
       return EFI_OUT_OF_RESOURCES;
@@ -1350,7 +1350,7 @@ SmbiosCreate64BitTable (
       // This record can be added to 64-bit table
       //
       GetSmbiosStructureSize(SmbiosProtocol, SmbiosRecord, &RecordSize, &NumOfStr);
-      CopyMem (BufferPointer, SmbiosRecord, RecordSize);
+      CopyMem(BufferPointer, SmbiosRecord, RecordSize);
       BufferPointer = BufferPointer + RecordSize;
     }
   } while (!EFI_ERROR(Status));
@@ -1358,7 +1358,7 @@ SmbiosCreate64BitTable (
   //
   // Assemble End-Of-Table structure
   //
-  CopyMem (BufferPointer, &EndStructure, sizeof (EndStructure));
+  CopyMem(BufferPointer, &EndStructure, sizeof (EndStructure));
 
   //
   // Fixup checksums in the Entry Point Structure
@@ -1395,14 +1395,14 @@ SmbiosTableConstruction (
 
   if (Smbios32BitTable) {
     Status = SmbiosCreateTable ((VOID **) &Eps);
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       gBS->InstallConfigurationTable (&gEfiSmbiosTableGuid, Eps);
     }
   }
 
   if (Smbios64BitTable) {
     Status = SmbiosCreate64BitTable ((VOID **) &Eps64Bit);
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       gBS->InstallConfigurationTable (&gEfiSmbios3TableGuid, Eps64Bit);
     }
   }

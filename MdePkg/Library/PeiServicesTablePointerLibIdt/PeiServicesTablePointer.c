@@ -111,11 +111,11 @@ MigratePeiServicesTablePointer (
                             EFI_SIZE_TO_PAGES(Idtr.Limit + 1 + sizeof (UINTN)),
                             &IdtBase
                             );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
   //
   // Idt table needs to be migrated into memory.
   //
-  CopyMem ((VOID *) (UINTN) IdtBase, (VOID *) (Idtr.Base - sizeof (UINTN)), Idtr.Limit + 1 + sizeof (UINTN));
+  CopyMem((VOID *) (UINTN) IdtBase, (VOID *) (Idtr.Base - sizeof (UINTN)), Idtr.Limit + 1 + sizeof (UINTN));
   Idtr.Base = (UINTN) IdtBase + sizeof (UINTN);
   AsmWriteIdtr (&Idtr);
 

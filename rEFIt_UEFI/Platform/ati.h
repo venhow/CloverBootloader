@@ -7,8 +7,11 @@
  *  big thank to Islam M. Ahmed Zaid for the updating the collection
  */
 
-#include "Platform.h"  //this include needed for Uefi types
-#include "ati_reg.h"
+//#include "Platform.h"  //this include needed for Uefi types
+//#include "ati_reg.h"
+#include "../include/Pci.h"
+#include "device_inject.h"
+
 
 #define OFFSET_TO_GET_ATOMBIOS_STRINGS_START 0x6e
 #define DATVAL(x)   {kPtr, sizeof(x), (UINT8 *)x}
@@ -277,7 +280,7 @@ typedef struct {
 typedef struct {
   UINT32    flags;
   BOOLEAN   all_ports;
-  CHAR8     *name;
+  CONST CHAR8     *name;
   BOOLEAN   (*get_value)(value_t *val, INTN index, BOOLEAN Sier);
   value_t   default_val;
 } AtiDevProp;
@@ -307,4 +310,11 @@ extern card_config_t card_configs[];
 extern radeon_card_info_t radeon_cards[];
 extern AtiDevProp ati_devprop_list[];
 extern const CHAR8 *chip_family_name[];
+
+
+BOOLEAN
+setup_ati_devprop (
+  LOADER_ENTRY *Entry,
+  pci_dt_t     *ati_dev
+  );
 

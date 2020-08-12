@@ -16,6 +16,7 @@
   ENTRY_POINT                    = OsxAptioFixDrvEntrypoint
 
 [Packages]
+  CloverPkg.dec
   MdePkg/MdePkg.dec
   MdeModulePkg/MdeModulePkg.dec
 
@@ -29,6 +30,7 @@
   BaseLib
   CpuLib
   DevicePathLib
+  DeviceTreeLib
   
 [Sources]
   OsxAptioFixDrv.c
@@ -43,12 +45,12 @@
   VMem.h
   Lib.c
   Lib.h
-  FlatDevTree/device_tree.h
-  FlatDevTree/device_tree.c
+#  FlatDevTree/device_tree.h
+#  FlatDevTree/device_tree.c
   NVRAMDebug.h
   NVRAMDebug.c
-  Mach-O/UefiLoader.h
-  Mach-O/loader.h
+#  Mach-O/UefiLoader.h
+#  Mach-O/loader.h
   Mach-O/Mach-O.h
   Mach-O/Mach-O.c
   Hibernate.h

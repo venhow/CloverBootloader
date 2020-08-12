@@ -131,7 +131,7 @@ GenericProtocolNotify (
   // See if the expected protocol is present in the handle database
   //
   Status = CoreLocateProtocol (Entry->ProtocolGuid, Entry->Registration, &Protocol);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return;
   }
 
@@ -174,14 +174,14 @@ GenericProtocolNotify (
     // Copy all the registered Image to new gRuntime protocol
     //
     for (Link = gRuntimeTemplate.ImageHead.ForwardLink; Link != &gRuntimeTemplate.ImageHead; Link = TempLinkNode.ForwardLink) {
-      CopyMem (&TempLinkNode, Link, sizeof(LIST_ENTRY));
+      CopyMem(&TempLinkNode, Link, sizeof(LIST_ENTRY));
       InsertTailList (&gRuntime->ImageHead, Link);
     }
     //
     // Copy all the registered Event to new gRuntime protocol
     //
     for (Link = gRuntimeTemplate.EventHead.ForwardLink; Link != &gRuntimeTemplate.EventHead; Link = TempLinkNode.ForwardLink) {
-      CopyMem (&TempLinkNode, Link, sizeof(LIST_ENTRY));
+      CopyMem(&TempLinkNode, Link, sizeof(LIST_ENTRY));
       InsertTailList (&gRuntime->EventHead, Link);
     }
 

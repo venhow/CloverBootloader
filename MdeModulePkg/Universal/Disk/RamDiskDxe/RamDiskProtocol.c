@@ -87,7 +87,7 @@ RamDiskPublishSsdt (
                (VOID **) &Table,
                &TableSize
                );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       break;
     }
 
@@ -98,16 +98,16 @@ RamDiskPublishSsdt (
                                      TableSize,
                                      &mRamDiskSsdtTableKey
                                      );
-      ASSERT_EFI_ERROR (Status);
+      ASSERT_EFI_ERROR(Status);
 
-      if (!EFI_ERROR (Status)) {
+      if (!EFI_ERROR(Status)) {
         mRamDiskSsdtTableKeyValid = TRUE;
       }
 
-      FreePool (Table);
+      FreePool(Table);
       return Status;
     } else {
-      FreePool (Table);
+      FreePool(Table);
       SectionInstance++;
     }
   }
@@ -177,11 +177,11 @@ RamDiskPublishNfit (
                     &DescriptorSize,
                     &DescriptorVersion
                     );
-    if (EFI_ERROR (Status)) {
-      FreePool (MemoryMap);
+    if (EFI_ERROR(Status)) {
+      FreePool(MemoryMap);
     }
   } while (Status == EFI_BUFFER_TOO_SMALL);
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   MemoryMapEntry = MemoryMap;
   MemoryMapEnd   = (EFI_MEMORY_DESCRIPTOR *) ((UINT8 *) MemoryMap + MemoryMapSize);
@@ -200,7 +200,7 @@ RamDiskPublishNfit (
     }
     MemoryMapEntry = NEXT_MEMORY_DESCRIPTOR (MemoryMapEntry, DescriptorSize);
   }
-  FreePool (MemoryMap);
+  FreePool(MemoryMap);
 
   if (!MemoryFound) {
     return EFI_NOT_FOUND;
@@ -214,14 +214,14 @@ RamDiskPublishNfit (
   TableKey    = 0;
   TableHeader = NULL;
 
-  while (!EFI_ERROR (Status)) {
+  while (!EFI_ERROR(Status)) {
     Status = mAcpiSdtProtocol->GetAcpiTable (
                                  TableIndex,
                                  (EFI_ACPI_SDT_HEADER **)&TableHeader,
                                  &TableVersion,
                                  &TableKey
                                  );
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       TableIndex++;
 
       if (((EFI_ACPI_SDT_HEADER *)TableHeader)->Signature ==
@@ -231,7 +231,7 @@ RamDiskPublishNfit (
     }
   }
 
-  if (!EFI_ERROR (Status)) {
+  if (!EFI_ERROR(Status)) {
     //
     // A NFIT is already in the ACPI table.
     //
@@ -242,11 +242,11 @@ RamDiskPublishNfit (
 
     NfitHeader = (EFI_ACPI_DESCRIPTION_HEADER *)TableHeader;
     NfitLen    = NfitHeader->Length + sizeof (EFI_ACPI_6_1_NFIT_SYSTEM_PHYSICAL_ADDRESS_RANGE_STRUCTURE);
-    Nfit       = AllocateZeroPool (NfitLen);
+    Nfit       = AllocateZeroPool(NfitLen);
     if (Nfit == NULL) {
       return EFI_OUT_OF_RESOURCES;
     }
-    CopyMem (Nfit, TableHeader, NfitHeader->Length);
+    CopyMem(Nfit, TableHeader, NfitHeader->Length);
 
     //
     // Update the NFIT head pointer.
@@ -260,10 +260,10 @@ RamDiskPublishNfit (
                                    mAcpiTableProtocol,
                                    TableKey
                                    );
-    ASSERT_EFI_ERROR (Status);
+    ASSERT_EFI_ERROR(Status);
 
-    if (EFI_ERROR (Status)) {
-      FreePool (Nfit);
+    if (EFI_ERROR(Status)) {
+      FreePool(Nfit);
       return Status;
     }
 
@@ -291,7 +291,7 @@ RamDiskPublishNfit (
     // Description Table (SSDT).
     //
     Status = RamDiskPublishSsdt ();
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
 
@@ -305,7 +305,7 @@ RamDiskPublishNfit (
 
     NfitLen = sizeof (EFI_ACPI_6_1_NVDIMM_FIRMWARE_INTERFACE_TABLE) +
               sizeof (EFI_ACPI_6_1_NFIT_SYSTEM_PHYSICAL_ADDRESS_RANGE_STRUCTURE);
-    Nfit    = AllocateZeroPool (NfitLen);
+    Nfit    = AllocateZeroPool(NfitLen);
     if (Nfit == NULL) {
       return EFI_OUT_OF_RESOURCES;
     }
@@ -322,8 +322,8 @@ RamDiskPublishNfit (
     NfitHeader->CreatorId       = PcdGet32 (PcdAcpiDefaultCreatorId);
     NfitHeader->CreatorRevision = PcdGet32 (PcdAcpiDefaultCreatorRevision);
     CurrentData                 = PcdGet64 (PcdAcpiDefaultOemTableId);
-    CopyMem (NfitHeader->OemId, PcdGetPtr (PcdAcpiDefaultOemId), sizeof (NfitHeader->OemId));
-    CopyMem (&NfitHeader->OemTableId, &CurrentData, sizeof (UINT64));
+    CopyMem(NfitHeader->OemId, PcdGetPtr (PcdAcpiDefaultOemId), sizeof (NfitHeader->OemId));
+    CopyMem(&NfitHeader->OemTableId, &CurrentData, sizeof (UINT64));
   }
 
   //
@@ -349,11 +349,11 @@ RamDiskPublishNfit (
                                  NfitHeader->Length,
                                  &TableKey
                                  );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
-  FreePool (Nfit);
+  FreePool(Nfit);
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -401,14 +401,14 @@ RamDiskUnpublishNfit (
   TableKey    = 0;
   TableHeader = NULL;
 
-  while (!EFI_ERROR (Status)) {
+  while (!EFI_ERROR(Status)) {
     Status = mAcpiSdtProtocol->GetAcpiTable (
                                  TableIndex,
                                  (EFI_ACPI_SDT_HEADER **)&TableHeader,
                                  &TableVersion,
                                  &TableKey
                                  );
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       TableIndex++;
 
       if (((EFI_ACPI_SDT_HEADER *)TableHeader)->Signature ==
@@ -418,7 +418,7 @@ RamDiskUnpublishNfit (
     }
   }
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     //
     // No NFIT is found in the ACPI table.
     //
@@ -441,8 +441,8 @@ RamDiskUnpublishNfit (
                                    mAcpiTableProtocol,
                                    TableKey
                                    );
-    ASSERT_EFI_ERROR (Status);
-    if (EFI_ERROR (Status)) {
+    ASSERT_EFI_ERROR(Status);
+    if (EFI_ERROR(Status)) {
       return Status;
     }
 
@@ -465,7 +465,7 @@ RamDiskUnpublishNfit (
     return EFI_SUCCESS;
   }
 
-  NewNfit = AllocateZeroPool (NewNfitLen);
+  NewNfit = AllocateZeroPool(NewNfitLen);
   if (NewNfit == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
@@ -473,7 +473,7 @@ RamDiskUnpublishNfit (
   //
   // Get a copy of the old NFIT header content.
   //
-  CopyMem (NewNfit, TableHeader, sizeof (EFI_ACPI_6_1_NVDIMM_FIRMWARE_INTERFACE_TABLE));
+  CopyMem(NewNfit, TableHeader, sizeof (EFI_ACPI_6_1_NVDIMM_FIRMWARE_INTERFACE_TABLE));
   NewNfitHeader           = (EFI_ACPI_DESCRIPTION_HEADER *)NewNfit;
   NewNfitHeader->Length   = NewNfitLen;
   NewNfitHeader->Checksum = 0;
@@ -506,7 +506,7 @@ RamDiskUnpublishNfit (
     //
     // Copy the content of origin NFIT.
     //
-    CopyMem (NewNfitPtr, NfitStructHeader, NfitStructHeader->Length);
+    CopyMem(NewNfitPtr, NfitStructHeader, NfitStructHeader->Length);
     NewNfitPtr = (UINT8 *)NewNfitPtr + NfitStructHeader->Length;
 
     //
@@ -524,10 +524,10 @@ RamDiskUnpublishNfit (
                                  mAcpiTableProtocol,
                                  TableKey
                                  );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
-  if (EFI_ERROR (Status)) {
-    FreePool (NewNfit);
+  if (EFI_ERROR(Status)) {
+    FreePool(NewNfit);
     return Status;
   }
 
@@ -542,10 +542,10 @@ RamDiskUnpublishNfit (
                                  NewNfitLen,
                                  &TableKey
                                  );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
-  FreePool (NewNfit);
-  if (EFI_ERROR (Status)) {
+  FreePool(NewNfit);
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -617,7 +617,7 @@ RamDiskRegister (
   //
   // Create a new RAM disk instance and initialize its private data
   //
-  PrivateData = AllocateCopyPool (
+  PrivateData = AllocateCopyPool(
                   sizeof (RAM_DISK_PRIVATE_DATA),
                   &mRamDiskPrivateDataTemplate
                   );
@@ -633,7 +633,7 @@ RamDiskRegister (
   //
   // Generate device path information for the registered RAM disk
   //
-  RamDiskDevNode = AllocateCopyPool (
+  RamDiskDevNode = AllocateCopyPool(
                      sizeof (MEDIA_RAM_DISK_DEVICE_PATH),
                      &mRamDiskDeviceNodeTemplate
                      );
@@ -699,7 +699,7 @@ RamDiskRegister (
                   PrivateData->DevicePath,
                   NULL
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto ErrorExit;
   }
 
@@ -710,7 +710,7 @@ RamDiskRegister (
 
   gBS->ConnectController (PrivateData->Handle, NULL, NULL, TRUE);
 
-  FreePool (RamDiskDevNode);
+  FreePool(RamDiskDevNode);
 
   if ((mAcpiTableProtocol != NULL) && (mAcpiSdtProtocol != NULL)) {
     RamDiskPublishNfit (PrivateData);
@@ -720,15 +720,15 @@ RamDiskRegister (
 
 ErrorExit:
   if (RamDiskDevNode != NULL) {
-    FreePool (RamDiskDevNode);
+    FreePool(RamDiskDevNode);
   }
 
   if (PrivateData != NULL) {
     if (PrivateData->DevicePath) {
-      FreePool (PrivateData->DevicePath);
+      FreePool(PrivateData->DevicePath);
     }
 
-    FreePool (PrivateData);
+    FreePool(PrivateData);
   }
 
   return Status;
@@ -836,11 +836,11 @@ RamDiskUnregister (
           // driver is responsible for freeing the allocated memory for the
           // RAM disk.
           //
-          FreePool ((VOID *)(UINTN) PrivateData->StartingAddr);
+          FreePool((VOID *)(UINTN) PrivateData->StartingAddr);
         }
 
-        FreePool (PrivateData->DevicePath);
-        FreePool (PrivateData);
+        FreePool(PrivateData->DevicePath);
+        FreePool(PrivateData);
         Found = TRUE;
 
         break;

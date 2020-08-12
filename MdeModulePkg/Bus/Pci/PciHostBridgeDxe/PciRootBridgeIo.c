@@ -171,7 +171,7 @@ CreateRootBridge (
     }
   }
 
-  RootBridge = AllocateZeroPool (sizeof (PCI_ROOT_BRIDGE_INSTANCE));
+  RootBridge = AllocateZeroPool(sizeof (PCI_ROOT_BRIDGE_INSTANCE));
   ASSERT (RootBridge != NULL);
 
   RootBridge->Signature = PCI_ROOT_BRIDGE_SIGNATURE;
@@ -188,12 +188,12 @@ CreateRootBridge (
   ASSERT (RootBridge->ConfigBuffer != NULL);
   InitializeListHead (&RootBridge->Maps);
 
-  CopyMem (&RootBridge->Bus, &Bridge->Bus, sizeof (PCI_ROOT_BRIDGE_APERTURE));
-  CopyMem (&RootBridge->Io, &Bridge->Io, sizeof (PCI_ROOT_BRIDGE_APERTURE));
-  CopyMem (&RootBridge->Mem, &Bridge->Mem, sizeof (PCI_ROOT_BRIDGE_APERTURE));
-  CopyMem (&RootBridge->MemAbove4G, &Bridge->MemAbove4G, sizeof (PCI_ROOT_BRIDGE_APERTURE));
-  CopyMem (&RootBridge->PMem, &Bridge->PMem, sizeof (PCI_ROOT_BRIDGE_APERTURE));
-  CopyMem (&RootBridge->PMemAbove4G, &Bridge->PMemAbove4G, sizeof (PCI_ROOT_BRIDGE_APERTURE));
+  CopyMem(&RootBridge->Bus, &Bridge->Bus, sizeof (PCI_ROOT_BRIDGE_APERTURE));
+  CopyMem(&RootBridge->Io, &Bridge->Io, sizeof (PCI_ROOT_BRIDGE_APERTURE));
+  CopyMem(&RootBridge->Mem, &Bridge->Mem, sizeof (PCI_ROOT_BRIDGE_APERTURE));
+  CopyMem(&RootBridge->MemAbove4G, &Bridge->MemAbove4G, sizeof (PCI_ROOT_BRIDGE_APERTURE));
+  CopyMem(&RootBridge->PMem, &Bridge->PMem, sizeof (PCI_ROOT_BRIDGE_APERTURE));
+  CopyMem(&RootBridge->PMemAbove4G, &Bridge->PMemAbove4G, sizeof (PCI_ROOT_BRIDGE_APERTURE));
 
   for (Index = TypeIo; Index < TypeMax; Index++) {
     switch (Index) {
@@ -628,7 +628,7 @@ RootBridgeIoPollMem (
   // No matter what, always do a single poll.
   //
   Status = This->Mem.Read (This, Width, Address, 1, Result);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -653,7 +653,7 @@ RootBridgeIoPollMem (
         ; ElapsedTick += GetElapsedTick (&CurrentTick, StartTick, EndTick)
         ) {
       Status = This->Mem.Read (This, Width, Address, 1, Result);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         return Status;
       }
 
@@ -731,7 +731,7 @@ RootBridgeIoPollIo (
   }
 
   Status = This->Io.Read (This, Width, Address, 1, Result);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
   if ((*Result & Mask) == Value) {
@@ -755,7 +755,7 @@ RootBridgeIoPollIo (
         ; ElapsedTick += GetElapsedTick (&CurrentTick, StartTick, EndTick)
         ) {
       Status = This->Io.Read (This, Width, Address, 1, Result);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         return Status;
       }
 
@@ -810,13 +810,13 @@ RootBridgeIoMemRead (
 
   Status = RootBridgeIoCheckParameter (This, MemOperation, Width, Address,
                                        Count, Buffer);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
   RootBridge = ROOT_BRIDGE_FROM_THIS (This);
   Status = RootBridgeIoGetMemTranslationByAddress (RootBridge, Address, &Translation);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -869,13 +869,13 @@ RootBridgeIoMemWrite (
 
   Status = RootBridgeIoCheckParameter (This, MemOperation, Width, Address,
                                        Count, Buffer);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
   RootBridge = ROOT_BRIDGE_FROM_THIS (This);
   Status = RootBridgeIoGetMemTranslationByAddress (RootBridge, Address, &Translation);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -923,7 +923,7 @@ RootBridgeIoIoRead (
              This, IoOperation, Width,
              Address, Count, Buffer
              );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -973,7 +973,7 @@ RootBridgeIoIoWrite (
              This, IoOperation, Width,
              Address, Count, Buffer
              );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -1018,7 +1018,7 @@ RootBridgeIoIoWrite (
 **/
 EFI_STATUS
 EFIAPI
-RootBridgeIoCopyMem (
+RootBridgeIoCopyMem(
   IN EFI_PCI_ROOT_BRIDGE_IO_PROTOCOL              *This,
   IN EFI_PCI_ROOT_BRIDGE_IO_PROTOCOL_WIDTH        Width,
   IN UINT64                                       DestAddress,
@@ -1058,7 +1058,7 @@ RootBridgeIoCopyMem (
                1,
                &Result
                );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
     Status = RootBridgeIoMemWrite (
@@ -1068,7 +1068,7 @@ RootBridgeIoCopyMem (
                1,
                &Result
                );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
     if (Forward) {
@@ -1118,7 +1118,7 @@ RootBridgeIoPciAccess (
   UINTN                                        Size;
 
   Status = RootBridgeIoCheckParameter (This, PciOperation, Width, Address, Count, Buffer);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -1126,7 +1126,7 @@ RootBridgeIoPciAccess (
   // Read Pci configuration space
   //
   RootBridge = ROOT_BRIDGE_FROM_THIS (This);
-  CopyMem (&PciAddress, &Address, sizeof (PciAddress));
+  CopyMem(&PciAddress, &Address, sizeof (PciAddress));
 
   if (PciAddress.ExtendedRegister == 0) {
     PciAddress.ExtendedRegister = PciAddress.Register;
@@ -1333,8 +1333,8 @@ RootBridgeIoMap (
                     MapInfo->NumberOfPages,
                     &MapInfo->MappedHostAddress
                     );
-    if (EFI_ERROR (Status)) {
-      FreePool (MapInfo);
+    if (EFI_ERROR(Status)) {
+      FreePool(MapInfo);
       *NumberOfBytes = 0;
       return Status;
     }
@@ -1346,7 +1346,7 @@ RootBridgeIoMap (
     //
     if (Operation == EfiPciOperationBusMasterRead ||
         Operation == EfiPciOperationBusMasterRead64) {
-      CopyMem (
+      CopyMem(
         (VOID *) (UINTN) MapInfo->MappedHostAddress,
         (VOID *) (UINTN) MapInfo->HostAddress,
         MapInfo->NumberOfBytes
@@ -1449,7 +1449,7 @@ RootBridgeIoUnmap (
   //
   if (MapInfo->Operation == EfiPciOperationBusMasterWrite ||
       MapInfo->Operation == EfiPciOperationBusMasterWrite64) {
-    CopyMem (
+    CopyMem(
       (VOID *) (UINTN) MapInfo->HostAddress,
       (VOID *) (UINTN) MapInfo->MappedHostAddress,
       MapInfo->NumberOfBytes
@@ -1460,7 +1460,7 @@ RootBridgeIoUnmap (
   // Free the mapped buffer and the MAP_INFO structure.
   //
   gBS->FreePages (MapInfo->MappedHostAddress, MapInfo->NumberOfPages);
-  FreePool (Mapping);
+  FreePool(Mapping);
   return EFI_SUCCESS;
 }
 
@@ -1564,7 +1564,7 @@ RootBridgeIoAllocateBuffer (
                   Pages,
                   &PhysicalAddress
                   );
-  if (!EFI_ERROR (Status)) {
+  if (!EFI_ERROR(Status)) {
     *HostAddress = (VOID *) (UINTN) PhysicalAddress;
   }
 

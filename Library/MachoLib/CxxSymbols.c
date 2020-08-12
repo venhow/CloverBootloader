@@ -52,7 +52,7 @@ MachoSymbolNameIsPureVirtual (
   )
 {
   ASSERT (Name != NULL);
-  return (AsciiStrCmp (Name, CXX_PURE_VIRTUAL) == 0);
+  return (AsciiStrCmp(Name, CXX_PURE_VIRTUAL) == 0);
 }
 
 /**
@@ -173,13 +173,13 @@ MachoGetClassNameFromSuperMetaClassPointer (
   PrefixSize = L_STR_LEN (OSOBJ_PREFIX);
   SuffixSize = L_STR_LEN (SMCP_TOKEN);
 
-  OutputSize = (AsciiStrLen (SmcpName) - PrefixSize - SuffixSize);
+  OutputSize = (AsciiStrLen(SmcpName) - PrefixSize - SuffixSize);
 
   if ((OutputSize + 1) > ClassNameSize) {
     return FALSE;
   }
 
-  CopyMem (ClassName, &SmcpName[PrefixSize], OutputSize);
+  CopyMem(ClassName, &SmcpName[PrefixSize], OutputSize);
   ClassName[OutputSize] = '\0';
 
   return TRUE;
@@ -237,14 +237,14 @@ MachoGetFunctionPrefixFromClassName (
   }
 
   Index = 0;
-  CopyMem (
+  CopyMem(
     &FunctionPrefix[Index],
     OSOBJ_PREFIX,
     L_STR_LEN (OSOBJ_PREFIX)
     );
 
   Index += L_STR_LEN (OSOBJ_PREFIX);
-  CopyMem (
+  CopyMem(
     &FunctionPrefix[Index],
     ClassName,
     BodySize
@@ -288,12 +288,12 @@ MachoGetClassNameFromMetaClassPointer (
   PrefixSize = L_STR_LEN (OSOBJ_PREFIX);
   SuffixSize = L_STR_LEN (METACLASS_TOKEN);
 
-  ClassNameLength = (AsciiStrLen (MetaClassName) - PrefixSize - SuffixSize);
+  ClassNameLength = (AsciiStrLen(MetaClassName) - PrefixSize - SuffixSize);
   if ((ClassNameLength + 1) > ClassNameSize) {
     return FALSE;
   }
 
-  CopyMem (ClassName, &MetaClassName[PrefixSize], ClassNameLength);
+  CopyMem(ClassName, &MetaClassName[PrefixSize], ClassNameLength);
   ClassName[ClassNameLength] = '\0';
 
   return TRUE;
@@ -337,14 +337,14 @@ MachoGetVtableNameFromClassName (
   }
 
   Index = 0;
-  CopyMem (
+  CopyMem(
     &VtableName[Index],
     VTABLE_PREFIX,
     L_STR_LEN (VTABLE_PREFIX)
     );
 
   Index += L_STR_LEN (VTABLE_PREFIX);
-  CopyMem (&VtableName[Index], ClassName, BodySize);
+  CopyMem(&VtableName[Index], ClassName, BodySize);
 
   return TRUE;
 }
@@ -375,7 +375,7 @@ MachoGetMetaVtableNameFromClassName (
   ASSERT (VtableNameSize > 0);
   ASSERT (VtableName != NULL);
 
-  BodyLength = AsciiStrLen (ClassName);
+  BodyLength = AsciiStrLen(ClassName);
 
   Result = OcOverflowTriAddUN (
              L_STR_LEN (METACLASS_VTABLE_PREFIX),
@@ -388,17 +388,17 @@ MachoGetMetaVtableNameFromClassName (
   }
 
   Index = 0;
-  CopyMem (
+  CopyMem(
     &VtableName[Index],
     METACLASS_VTABLE_PREFIX,
     L_STR_LEN (METACLASS_VTABLE_PREFIX)
     );
 
   Index += L_STR_LEN (METACLASS_VTABLE_PREFIX);
-  CopyMem (&VtableName[Index], ClassName, BodyLength);
+  CopyMem(&VtableName[Index], ClassName, BodyLength);
 
   Index += BodyLength;
-  CopyMem (
+  CopyMem(
     &VtableName[Index],
     METACLASS_VTABLE_SUFFIX,
     L_STR_SIZE (METACLASS_VTABLE_SUFFIX)
@@ -433,7 +433,7 @@ MachoGetFinalSymbolNameFromClassName (
   ASSERT (FinalSymbolNameSize > 0);
   ASSERT (FinalSymbolName != NULL);
 
-  BodyLength = AsciiStrLen (ClassName);
+  BodyLength = AsciiStrLen(ClassName);
 
   Result = OcOverflowTriAddUN (
              L_STR_LEN (OSOBJ_PREFIX),
@@ -446,21 +446,21 @@ MachoGetFinalSymbolNameFromClassName (
   }
 
   Index = 0;
-  CopyMem (
+  CopyMem(
     &FinalSymbolName[Index],
     OSOBJ_PREFIX,
     L_STR_LEN (OSOBJ_PREFIX)
     );
 
   Index += L_STR_LEN (OSOBJ_PREFIX);
-  CopyMem (
+  CopyMem(
     &FinalSymbolName[Index],
     ClassName,
     BodyLength
     );
 
   Index += BodyLength;
-  CopyMem (
+  CopyMem(
     &FinalSymbolName[Index],
     FINAL_CLASS_TOKEN,
     L_STR_SIZE (FINAL_CLASS_TOKEN)

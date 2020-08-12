@@ -51,7 +51,7 @@ USBKeyboardDriverBindingEntryPoint (
              &gUsbKeyboardComponentName,
              &gUsbKeyboardComponentName2
              );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   return EFI_SUCCESS;
 }
@@ -89,7 +89,7 @@ USBKeyboardDriverBindingSupported (
                   Controller,
                   EFI_OPEN_PROTOCOL_BY_DRIVER
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -162,11 +162,11 @@ USBKeyboardDriverBindingStart (
                   Controller,
                   EFI_OPEN_PROTOCOL_BY_DRIVER
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto ErrorExit1;
   }
 
-  UsbKeyboardDevice = AllocateZeroPool (sizeof (USB_KB_DEV));
+  UsbKeyboardDevice = AllocateZeroPool(sizeof (USB_KB_DEV));
   ASSERT (UsbKeyboardDevice != NULL);
 
   //
@@ -181,7 +181,7 @@ USBKeyboardDriverBindingStart (
                   EFI_OPEN_PROTOCOL_GET_PROTOCOL
                   );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto ErrorExit;
   }
   //
@@ -276,10 +276,10 @@ USBKeyboardDriverBindingStart (
                   UsbKeyboardDevice,
                   &UsbKeyboardDevice->TimerEvent
                   );
-  if (!EFI_ERROR (Status)) {
+  if (!EFI_ERROR(Status)) {
     Status = gBS->SetTimer (UsbKeyboardDevice->TimerEvent, TimerPeriodic, KEYBOARD_TIMER_INTERVAL);
   }
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto ErrorExit;
   }
 
@@ -291,7 +291,7 @@ USBKeyboardDriverBindingStart (
                   &(UsbKeyboardDevice->SimpleInputEx.WaitForKeyEx)
                   );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto ErrorExit;
   }
 
@@ -302,7 +302,7 @@ USBKeyboardDriverBindingStart (
                   UsbKeyboardDevice,
                   &(UsbKeyboardDevice->SimpleInput.WaitForKey)
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto ErrorExit;
   }
 
@@ -313,7 +313,7 @@ USBKeyboardDriverBindingStart (
                   UsbKeyboardDevice,
                   &UsbKeyboardDevice->KeyNotifyProcessEvent
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto ErrorExit;
   }
 
@@ -332,13 +332,13 @@ USBKeyboardDriverBindingStart (
                   &UsbKeyboardDevice->SimpleInputEx,
                   NULL
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto ErrorExit;
   }
 
   UsbKeyboardDevice->ControllerHandle = Controller;
   Status = InitKeyboardLayout (UsbKeyboardDevice);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     gBS->UninstallMultipleProtocolInterfaces (
       Controller,
       &gEfiSimpleTextInProtocolGuid,
@@ -358,7 +358,7 @@ USBKeyboardDriverBindingStart (
                                             &UsbKeyboardDevice->SimpleInputEx,
                                             TRUE
                                             );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     gBS->UninstallMultipleProtocolInterfaces (
            Controller,
            &gEfiSimpleTextInProtocolGuid,
@@ -387,7 +387,7 @@ USBKeyboardDriverBindingStart (
                     UsbKeyboardDevice
                     );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     gBS->UninstallMultipleProtocolInterfaces (
            Controller,
            &gEfiSimpleTextInProtocolGuid,
@@ -439,7 +439,7 @@ ErrorExit:
       ReleaseKeyboardLayoutResources (UsbKeyboardDevice);
       gBS->CloseEvent (UsbKeyboardDevice->KeyboardLayoutEvent);
     }
-    FreePool (UsbKeyboardDevice);
+    FreePool(UsbKeyboardDevice);
     UsbKeyboardDevice = NULL;
   }
   gBS->CloseProtocol (
@@ -493,7 +493,7 @@ USBKeyboardDriverBindingStop (
                   Controller,
                   EFI_OPEN_PROTOCOL_GET_PROTOCOL
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return EFI_UNSUPPORTED;
   }
 
@@ -505,7 +505,7 @@ USBKeyboardDriverBindingStop (
                   Controller,
                   EFI_OPEN_PROTOCOL_TEST_PROTOCOL
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return EFI_UNSUPPORTED;
   }
 
@@ -570,7 +570,7 @@ USBKeyboardDriverBindingStop (
   DestroyQueue (&UsbKeyboardDevice->EfiKeyQueue);
   DestroyQueue (&UsbKeyboardDevice->EfiKeyQueueForNotify);
 
-  FreePool (UsbKeyboardDevice);
+  FreePool(UsbKeyboardDevice);
 
   return Status;
 }
@@ -668,7 +668,7 @@ USBKeyboardReset (
   // Exhaustive reset
   //
   Status = InitUSBKeyboard (UsbKeyboardDevice);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return EFI_DEVICE_ERROR;
   }
 
@@ -709,7 +709,7 @@ USBKeyboardReadKeyStroke (
   //
   while (1) {
     Status = USBKeyboardReadKeyStrokeWorker (UsbKeyboardDevice, &KeyData);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
     //
@@ -730,7 +730,7 @@ USBKeyboardReadKeyStroke (
       }
     }
 
-    CopyMem (Key, &KeyData.Key, sizeof (EFI_INPUT_KEY));
+    CopyMem(Key, &KeyData.Key, sizeof (EFI_INPUT_KEY));
     return EFI_SUCCESS;
   }
 }
@@ -772,7 +772,7 @@ USBKeyboardWaitForKey (
     //
     // If there is pending key, signal the event.
     //
-    CopyMem (
+    CopyMem(
       &KeyData,
       UsbKeyboardDevice->EfiKeyQueue.Buffer[UsbKeyboardDevice->EfiKeyQueue.Head],
       sizeof (EFI_KEY_DATA)
@@ -815,7 +815,7 @@ USBKeyboardTimerHandler (
   // and translate it into USB keycode.
   //
   Status = USBParseKey (UsbKeyboardDevice, &KeyCode);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return ;
   }
 
@@ -823,7 +823,7 @@ USBKeyboardTimerHandler (
   // Translate saved USB keycode into EFI_INPUT_KEY
   //
   Status = UsbKeyCodeToEfiInputKey (UsbKeyboardDevice, KeyCode, &KeyData);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return ;
   }
 
@@ -857,7 +857,7 @@ KbdFreeNotifyList (
     Link = GetFirstNode (NotifyList);
     NotifyNode = CR (Link, KEYBOARD_CONSOLE_IN_EX_NOTIFY, NotifyEntry, USB_KB_CONSOLE_IN_EX_NOTIFY_SIGNATURE);
     RemoveEntryList (Link);
-    FreePool (NotifyNode);
+    FreePool(NotifyNode);
   }
 
   return EFI_SUCCESS;
@@ -939,7 +939,7 @@ USBKeyboardResetEx (
   UsbKeyboardDevice = TEXT_INPUT_EX_USB_KB_DEV_FROM_THIS (This);
 
   Status = UsbKeyboardDevice->SimpleInput.Reset (&UsbKeyboardDevice->SimpleInput, ExtendedVerification);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return EFI_DEVICE_ERROR;
   }
 
@@ -1112,14 +1112,14 @@ USBKeyboardRegisterKeyNotify (
   //
   // Allocate resource to save the notification function
   //
-  NewNotify = (KEYBOARD_CONSOLE_IN_EX_NOTIFY *) AllocateZeroPool (sizeof (KEYBOARD_CONSOLE_IN_EX_NOTIFY));
+  NewNotify = (KEYBOARD_CONSOLE_IN_EX_NOTIFY *) AllocateZeroPool(sizeof (KEYBOARD_CONSOLE_IN_EX_NOTIFY));
   if (NewNotify == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
 
   NewNotify->Signature         = USB_KB_CONSOLE_IN_EX_NOTIFY_SIGNATURE;
   NewNotify->KeyNotificationFn = KeyNotificationFunction;
-  CopyMem (&NewNotify->KeyData, KeyData, sizeof (EFI_KEY_DATA));
+  CopyMem(&NewNotify->KeyData, KeyData, sizeof (EFI_KEY_DATA));
   InsertTailList (&UsbKeyboardDevice->NotifyList, &NewNotify->NotifyEntry);
 
 
@@ -1176,7 +1176,7 @@ USBKeyboardUnregisterKeyNotify (
       //
       RemoveEntryList (&CurrentNotify->NotifyEntry);
 
-      FreePool (CurrentNotify);
+      FreePool(CurrentNotify);
       return EFI_SUCCESS;
     }
   }
@@ -1224,7 +1224,7 @@ KeyNotifyProcessHandler (
     // Leave critical section
     //
     gBS->RestoreTPL (OldTpl);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       break;
     }
     for (Link = GetFirstNode (NotifyList); !IsNull (NotifyList, Link); Link = GetNextNode (NotifyList, Link)) {

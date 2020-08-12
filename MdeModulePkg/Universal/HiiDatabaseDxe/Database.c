@@ -53,15 +53,15 @@ GenerateHiiDatabaseRecord (
     return EFI_INVALID_PARAMETER;
   }
 
-  DatabaseRecord = (HII_DATABASE_RECORD *) AllocateZeroPool (sizeof (HII_DATABASE_RECORD));
+  DatabaseRecord = (HII_DATABASE_RECORD *) AllocateZeroPool(sizeof (HII_DATABASE_RECORD));
   if (DatabaseRecord == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
   DatabaseRecord->Signature = HII_DATABASE_RECORD_SIGNATURE;
 
-  DatabaseRecord->PackageList = AllocateZeroPool (sizeof (HII_DATABASE_PACKAGE_LIST_INSTANCE));
+  DatabaseRecord->PackageList = AllocateZeroPool(sizeof (HII_DATABASE_PACKAGE_LIST_INSTANCE));
   if (DatabaseRecord->PackageList == NULL) {
-    FreePool (DatabaseRecord);
+    FreePool(DatabaseRecord);
     return EFI_OUT_OF_RESOURCES;
   }
 
@@ -79,10 +79,10 @@ GenerateHiiDatabaseRecord (
   //
   // Create a new hii handle
   //
-  HiiHandle = (HII_HANDLE *) AllocateZeroPool (sizeof (HII_HANDLE));
+  HiiHandle = (HII_HANDLE *) AllocateZeroPool(sizeof (HII_HANDLE));
   if (HiiHandle == NULL) {
-    FreePool (DatabaseRecord->PackageList);
-    FreePool (DatabaseRecord);
+    FreePool(DatabaseRecord->PackageList);
+    FreePool(DatabaseRecord);
     return EFI_OUT_OF_RESOURCES;
   }
   HiiHandle->Signature = HII_HANDLE_SIGNATURE;
@@ -200,14 +200,14 @@ InvokeRegisteredFunction (
 
   case EFI_HII_PACKAGE_FORMS:
     BufferSize = ((HII_IFR_PACKAGE_INSTANCE *) PackageInstance)->FormPkgHdr.Length;
-    Buffer = (UINT8 *) AllocateZeroPool (BufferSize);
+    Buffer = (UINT8 *) AllocateZeroPool(BufferSize);
     ASSERT (Buffer != NULL);
-    CopyMem (
+    CopyMem(
       Buffer,
       &((HII_IFR_PACKAGE_INSTANCE *) PackageInstance)->FormPkgHdr,
       sizeof (EFI_HII_PACKAGE_HEADER)
       );
-    CopyMem (
+    CopyMem(
       Buffer + sizeof (EFI_HII_PACKAGE_HEADER),
       ((HII_IFR_PACKAGE_INSTANCE *) PackageInstance)->IfrData,
       BufferSize - sizeof (EFI_HII_PACKAGE_HEADER)
@@ -222,14 +222,14 @@ InvokeRegisteredFunction (
   case EFI_HII_PACKAGE_STRINGS:
     BufferSize = ((HII_STRING_PACKAGE_INSTANCE *) PackageInstance)->StringPkgHdr->Header.Length;
     HeaderSize = ((HII_STRING_PACKAGE_INSTANCE *) PackageInstance)->StringPkgHdr->HdrSize;
-    Buffer = (UINT8 *) AllocateZeroPool (BufferSize);
+    Buffer = (UINT8 *) AllocateZeroPool(BufferSize);
     ASSERT (Buffer != NULL);
-    CopyMem (
+    CopyMem(
       Buffer,
       ((HII_STRING_PACKAGE_INSTANCE *) PackageInstance)->StringPkgHdr,
       HeaderSize
       );
-    CopyMem (
+    CopyMem(
       Buffer + HeaderSize,
       ((HII_STRING_PACKAGE_INSTANCE *) PackageInstance)->StringBlock,
       BufferSize - HeaderSize
@@ -240,14 +240,14 @@ InvokeRegisteredFunction (
   case EFI_HII_PACKAGE_FONTS:
     BufferSize = ((HII_FONT_PACKAGE_INSTANCE *) PackageInstance)->FontPkgHdr->Header.Length;
     HeaderSize = ((HII_FONT_PACKAGE_INSTANCE *) PackageInstance)->FontPkgHdr->HdrSize;
-    Buffer = (UINT8 *) AllocateZeroPool (BufferSize);
+    Buffer = (UINT8 *) AllocateZeroPool(BufferSize);
     ASSERT (Buffer != NULL);
-    CopyMem (
+    CopyMem(
       Buffer,
       ((HII_FONT_PACKAGE_INSTANCE *) PackageInstance)->FontPkgHdr,
       HeaderSize
       );
-    CopyMem (
+    CopyMem(
       Buffer + HeaderSize,
       ((HII_FONT_PACKAGE_INSTANCE *) PackageInstance)->GlyphBlock,
       BufferSize - HeaderSize
@@ -258,15 +258,15 @@ InvokeRegisteredFunction (
   case EFI_HII_PACKAGE_IMAGES:
     BufferSize = ((HII_IMAGE_PACKAGE_INSTANCE *) PackageInstance)->ImagePkgHdr.Header.Length;
     HeaderSize = sizeof (EFI_HII_IMAGE_PACKAGE_HDR);
-    Buffer = (UINT8 *) AllocateZeroPool (BufferSize);
+    Buffer = (UINT8 *) AllocateZeroPool(BufferSize);
     ASSERT (Buffer != NULL);
 
-    CopyMem (
+    CopyMem(
       Buffer,
       &((HII_IMAGE_PACKAGE_INSTANCE *) PackageInstance)->ImagePkgHdr,
       HeaderSize
       );
-    CopyMem (
+    CopyMem(
       Buffer + sizeof (EFI_HII_PACKAGE_HEADER),
       &HeaderSize,
       sizeof (UINT32)
@@ -274,7 +274,7 @@ InvokeRegisteredFunction (
 
     ImageBlockSize = ((HII_IMAGE_PACKAGE_INSTANCE *) PackageInstance)->ImageBlockSize;
     if (ImageBlockSize != 0) {
-      CopyMem (
+      CopyMem(
         Buffer + HeaderSize,
         ((HII_IMAGE_PACKAGE_INSTANCE *) PackageInstance)->ImageBlock,
         ImageBlockSize
@@ -283,13 +283,13 @@ InvokeRegisteredFunction (
 
     PaletteInfoSize = ((HII_IMAGE_PACKAGE_INSTANCE *) PackageInstance)->PaletteInfoSize;
     if (PaletteInfoSize != 0) {
-      CopyMem (
+      CopyMem(
         Buffer + HeaderSize + ImageBlockSize,
         ((HII_IMAGE_PACKAGE_INSTANCE *) PackageInstance)->PaletteBlock,
         PaletteInfoSize
         );
       HeaderSize += ImageBlockSize;
-      CopyMem (
+      CopyMem(
         Buffer + sizeof (EFI_HII_PACKAGE_HEADER) + sizeof (UINT32),
         &HeaderSize,
         sizeof (UINT32)
@@ -300,9 +300,9 @@ InvokeRegisteredFunction (
 
   case EFI_HII_PACKAGE_SIMPLE_FONTS:
     BufferSize = ((HII_SIMPLE_FONT_PACKAGE_INSTANCE *) PackageInstance)->SimpleFontPkgHdr->Header.Length;
-    Buffer = (UINT8 *) AllocateZeroPool (BufferSize);
+    Buffer = (UINT8 *) AllocateZeroPool(BufferSize);
     ASSERT (Buffer != NULL);
-    CopyMem (
+    CopyMem(
       Buffer,
       ((HII_SIMPLE_FONT_PACKAGE_INSTANCE *) PackageInstance)->SimpleFontPkgHdr,
       BufferSize
@@ -344,7 +344,7 @@ InvokeRegisteredFunction (
   }
 
   if (Buffer != NULL) {
-    FreePool (Buffer);
+    FreePool(Buffer);
   }
 
   return EFI_SUCCESS;
@@ -383,23 +383,23 @@ InsertGuidPackage (
     return EFI_INVALID_PARAMETER;
   }
 
-  CopyMem (&PackageHeader, PackageHdr, sizeof (EFI_HII_PACKAGE_HEADER));
+  CopyMem(&PackageHeader, PackageHdr, sizeof (EFI_HII_PACKAGE_HEADER));
 
   //
   // Create a GUID package node
   //
-  GuidPackage = (HII_GUID_PACKAGE_INSTANCE *) AllocateZeroPool (sizeof (HII_GUID_PACKAGE_INSTANCE));
+  GuidPackage = (HII_GUID_PACKAGE_INSTANCE *) AllocateZeroPool(sizeof (HII_GUID_PACKAGE_INSTANCE));
   if (GuidPackage == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
-  GuidPackage->GuidPkg = (UINT8 *) AllocateZeroPool (PackageHeader.Length);
+  GuidPackage->GuidPkg = (UINT8 *) AllocateZeroPool(PackageHeader.Length);
   if (GuidPackage->GuidPkg == NULL) {
-    FreePool (GuidPackage);
+    FreePool(GuidPackage);
     return EFI_OUT_OF_RESOURCES;
   }
 
   GuidPackage->Signature = HII_GUID_PACKAGE_SIGNATURE;
-  CopyMem (GuidPackage->GuidPkg, PackageHdr, PackageHeader.Length);
+  CopyMem(GuidPackage->GuidPkg, PackageHdr, PackageHeader.Length);
   InsertTailList (&PackageList->GuidPkgHdr, &GuidPackage->GuidEntry);
   *Package = GuidPackage;
 
@@ -458,7 +458,7 @@ ExportGuidPackages (
 
   for (Link = PackageList->GuidPkgHdr.ForwardLink; Link != &PackageList->GuidPkgHdr; Link = Link->ForwardLink) {
     GuidPackage = CR (Link, HII_GUID_PACKAGE_INSTANCE, GuidEntry, HII_GUID_PACKAGE_SIGNATURE);
-    CopyMem (&PackageHeader, GuidPackage->GuidPkg, sizeof (EFI_HII_PACKAGE_HEADER));
+    CopyMem(&PackageHeader, GuidPackage->GuidPkg, sizeof (EFI_HII_PACKAGE_HEADER));
     PackageLength += PackageHeader.Length;
     if (PackageLength + *ResultSize + UsedSize <= BufferSize) {
       Status = InvokeRegisteredFunction (
@@ -468,8 +468,8 @@ ExportGuidPackages (
                  EFI_HII_PACKAGE_TYPE_GUID,
                  Handle
                  );
-      ASSERT_EFI_ERROR (Status);
-      CopyMem (Buffer, GuidPackage->GuidPkg, PackageHeader.Length);
+      ASSERT_EFI_ERROR(Status);
+      CopyMem(Buffer, GuidPackage->GuidPkg, PackageHeader.Length);
       Buffer = (UINT8 *) Buffer + PackageHeader.Length;
     }
   }
@@ -521,15 +521,15 @@ RemoveGuidPackages (
                EFI_HII_PACKAGE_TYPE_GUID,
                Handle
                );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
 
     RemoveEntryList (&Package->GuidEntry);
-    CopyMem (&PackageHeader, Package->GuidPkg, sizeof (EFI_HII_PACKAGE_HEADER));
+    CopyMem(&PackageHeader, Package->GuidPkg, sizeof (EFI_HII_PACKAGE_HEADER));
     PackageList->PackageListHdr.PackageLength -= PackageHeader.Length;
-    FreePool (Package->GuidPkg);
-    FreePool (Package);
+    FreePool(Package->GuidPkg);
+    FreePool(Package);
   }
 
   return EFI_SUCCESS;
@@ -670,7 +670,7 @@ FindQuestionDefaultSetting (
     NvStoreBuffer  = (VARIABLE_STORE_HEADER *) ((UINT8 *) DataHeader + sizeof (DataHeader->DataSize) + DataHeader->HeaderSize);
     VariableStorage   = AllocatePool (NvStoreBuffer->Size);
     ASSERT (VariableStorage != NULL);
-    CopyMem (VariableStorage, NvStoreBuffer, NvStoreBuffer->Size);
+    CopyMem(VariableStorage, NvStoreBuffer, NvStoreBuffer->Size);
 
     //
     // Find the matched SkuId and DefaultId in the first section
@@ -716,7 +716,7 @@ FindQuestionDefaultSetting (
     // Cache the found result in VarStorageList
     //
     if (!IsFound) {
-      FreePool (VariableStorage);
+      FreePool(VariableStorage);
       VariableStorage = NULL;
     }
     Entry = AllocatePool (sizeof (VARSTORAGE_DEFAULT_DATA));
@@ -725,7 +725,7 @@ FindQuestionDefaultSetting (
       Entry->VariableStorage = VariableStorage;
       InsertTailList (&gVarStorageList, &Entry->Entry);
     } else if (VariableStorage != NULL) {
-      FreePool (VariableStorage);
+      FreePool(VariableStorage);
       VariableStorage = NULL;
     }
   }
@@ -763,11 +763,11 @@ FindQuestionDefaultSetting (
   //
   if (ValueBuffer != NULL) {
     if (BitFieldQuestion) {
-      CopyMem (&BufferValue, (UINT8 *) VariableHeader + sizeof (VARIABLE_HEADER) + VariableHeader->NameSize + ByteOffset, Width);
+      CopyMem(&BufferValue, (UINT8 *) VariableHeader + sizeof (VARIABLE_HEADER) + VariableHeader->NameSize + ByteOffset, Width);
       BitFieldVal = BitFieldRead32 (BufferValue, StartBit, EndBit);
-      CopyMem (ValueBuffer, &BitFieldVal, Width);
+      CopyMem(ValueBuffer, &BitFieldVal, Width);
     } else {
-      CopyMem (ValueBuffer, (UINT8 *) VariableHeader + sizeof (VARIABLE_HEADER) + VariableHeader->NameSize + IfrQuestionHdr->VarStoreInfo.VarOffset, Width);
+      CopyMem(ValueBuffer, (UINT8 *) VariableHeader + sizeof (VARIABLE_HEADER) + VariableHeader->NameSize + IfrQuestionHdr->VarStoreInfo.VarOffset, Width);
     }
   }
 
@@ -861,13 +861,13 @@ UpdateDefaultSettingInFormPackage (
       if (EfiVarStoreList [EfiVarStoreNumber] == NULL) {
         break;
       }
-      CopyMem (EfiVarStoreList [EfiVarStoreNumber], IfrEfiVarStore, IfrEfiVarStore->Header.Length);
+      CopyMem(EfiVarStoreList [EfiVarStoreNumber], IfrEfiVarStore, IfrEfiVarStore->Header.Length);
       AsciiStrToUnicodeStrS ((CHAR8 *)IfrEfiVarStore->Name, (CHAR16 *) &(EfiVarStoreList [EfiVarStoreNumber]->Name[0]), AsciiStrSize ((CHAR8 *)IfrEfiVarStore->Name) * sizeof (CHAR16));
       Status = FindQuestionDefaultSetting (EFI_HII_DEFAULT_CLASS_STANDARD, EfiVarStoreList[EfiVarStoreNumber], &VarStoreQuestionHeader, NULL, IfrEfiVarStore->Size, FALSE);
-      if (!EFI_ERROR (Status)) {
+      if (!EFI_ERROR(Status)) {
         EfiVarStoreNumber ++;
       } else {
-        FreePool (EfiVarStoreList [EfiVarStoreNumber]);
+        FreePool(EfiVarStoreList [EfiVarStoreNumber]);
         EfiVarStoreList [EfiVarStoreNumber] = NULL;
       }
       break;
@@ -904,7 +904,7 @@ UpdateDefaultSettingInFormPackage (
         for (Index = 0; Index < DefaultIdNumber; Index ++) {
           if (DefaultIdList[Index] == EFI_HII_DEFAULT_CLASS_STANDARD) {
             Status = FindQuestionDefaultSetting (DefaultIdList[Index], EfiVarStoreList[EfiVarStoreIndex], IfrQuestionHdr, &IfrValue, sizeof (BOOLEAN), QuestionReferBitField);
-            if (!EFI_ERROR (Status)) {
+            if (!EFI_ERROR(Status)) {
               if (IfrValue.b) {
                 IfrCheckBox->Flags = IfrCheckBox->Flags | EFI_IFR_CHECKBOX_DEFAULT;
               } else {
@@ -913,7 +913,7 @@ UpdateDefaultSettingInFormPackage (
             }
           } else if (DefaultIdList[Index] == EFI_HII_DEFAULT_CLASS_MANUFACTURING) {
             Status = FindQuestionDefaultSetting (DefaultIdList[Index], EfiVarStoreList[EfiVarStoreIndex], IfrQuestionHdr, &IfrValue, sizeof (BOOLEAN), QuestionReferBitField);
-            if (!EFI_ERROR (Status)) {
+            if (!EFI_ERROR(Status)) {
               if (IfrValue.b) {
                 IfrCheckBox->Flags = IfrCheckBox->Flags | EFI_IFR_CHECKBOX_DEFAULT_MFG;
               } else {
@@ -953,12 +953,12 @@ UpdateDefaultSettingInFormPackage (
         for (Index = 0; Index < DefaultIdNumber; Index ++) {
           if (DefaultIdList[Index] == EFI_HII_DEFAULT_CLASS_STANDARD) {
             Status = FindQuestionDefaultSetting (EFI_HII_DEFAULT_CLASS_STANDARD, EfiVarStoreList[EfiVarStoreIndex], IfrQuestionHdr, &IfrValue, Width, QuestionReferBitField);
-            if (!EFI_ERROR (Status)) {
+            if (!EFI_ERROR(Status)) {
               StandardDefaultIsSet = TRUE;
             }
           } else if (DefaultIdList[Index] == EFI_HII_DEFAULT_CLASS_MANUFACTURING) {
             Status = FindQuestionDefaultSetting (EFI_HII_DEFAULT_CLASS_MANUFACTURING, EfiVarStoreList[EfiVarStoreIndex], IfrQuestionHdr, &IfrManufactValue, Width, QuestionReferBitField);
-            if (!EFI_ERROR (Status)) {
+            if (!EFI_ERROR(Status)) {
               ManufactDefaultIsSet = TRUE;
             }
           }
@@ -1052,7 +1052,7 @@ UpdateDefaultSettingInFormPackage (
 Done:
   if (EfiVarStoreList != NULL) {
     for (Index = 0; Index < EfiVarStoreNumber; Index ++) {
-      FreePool (EfiVarStoreList [Index]);
+      FreePool(EfiVarStoreList [Index]);
     }
   }
   return;
@@ -1093,19 +1093,19 @@ InsertFormPackage (
   //
   // Get the length of the package, including package header itself
   //
-  CopyMem (&PackageHeader, PackageHdr, sizeof (EFI_HII_PACKAGE_HEADER));
+  CopyMem(&PackageHeader, PackageHdr, sizeof (EFI_HII_PACKAGE_HEADER));
 
   //
   // Create a Form package node
   //
-  FormPackage = (HII_IFR_PACKAGE_INSTANCE *) AllocateZeroPool (sizeof (HII_IFR_PACKAGE_INSTANCE));
+  FormPackage = (HII_IFR_PACKAGE_INSTANCE *) AllocateZeroPool(sizeof (HII_IFR_PACKAGE_INSTANCE));
   if (FormPackage == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
 
-  FormPackage->IfrData = (UINT8 *) AllocateZeroPool (PackageHeader.Length - sizeof (EFI_HII_PACKAGE_HEADER));
+  FormPackage->IfrData = (UINT8 *) AllocateZeroPool(PackageHeader.Length - sizeof (EFI_HII_PACKAGE_HEADER));
   if (FormPackage->IfrData == NULL) {
-    FreePool (FormPackage);
+    FreePool(FormPackage);
     return EFI_OUT_OF_RESOURCES;
   }
 
@@ -1113,12 +1113,12 @@ InsertFormPackage (
   //
   // Copy Package Header
   //
-  CopyMem (&FormPackage->FormPkgHdr, &PackageHeader, sizeof (EFI_HII_PACKAGE_HEADER));
+  CopyMem(&FormPackage->FormPkgHdr, &PackageHeader, sizeof (EFI_HII_PACKAGE_HEADER));
 
   //
   // Copy Ifr contents
   //
-  CopyMem (
+  CopyMem(
     FormPackage->IfrData,
     (UINT8 *) PackageHdr + sizeof (EFI_HII_PACKAGE_HEADER),
     PackageHeader.Length - sizeof (EFI_HII_PACKAGE_HEADER)
@@ -1200,13 +1200,13 @@ ExportFormPackages (
                  EFI_HII_PACKAGE_FORMS,
                  Handle
                  );
-      ASSERT_EFI_ERROR (Status);
+      ASSERT_EFI_ERROR(Status);
       //
       // Copy the Form package content.
       //
-      CopyMem (Buffer, (VOID *) (&FormPackage->FormPkgHdr), sizeof (EFI_HII_PACKAGE_HEADER));
+      CopyMem(Buffer, (VOID *) (&FormPackage->FormPkgHdr), sizeof (EFI_HII_PACKAGE_HEADER));
       Buffer = (UINT8 *) Buffer + sizeof (EFI_HII_PACKAGE_HEADER);
-      CopyMem (
+      CopyMem(
         Buffer,
         (VOID *) FormPackage->IfrData,
         FormPackage->FormPkgHdr.Length - sizeof (EFI_HII_PACKAGE_HEADER)
@@ -1263,14 +1263,14 @@ RemoveFormPackages (
                EFI_HII_PACKAGE_FORMS,
                Handle
                );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
 
     RemoveEntryList (&Package->IfrEntry);
     PackageList->PackageListHdr.PackageLength -= Package->FormPkgHdr.Length;
-    FreePool (Package->IfrData);
-    FreePool (Package);
+    FreePool(Package->IfrData);
+    FreePool(Package);
     //
     // If Hii runtime support feature is enabled,
     // will export Hii info for runtime use after ReadyToBoot event triggered.
@@ -1332,15 +1332,15 @@ InsertStringPackage (
     return EFI_INVALID_PARAMETER;
   }
 
-  CopyMem (&PackageHeader, PackageHdr, sizeof (EFI_HII_PACKAGE_HEADER));
-  CopyMem (&HeaderSize, (UINT8 *) PackageHdr + sizeof (EFI_HII_PACKAGE_HEADER), sizeof (UINT32));
+  CopyMem(&PackageHeader, PackageHdr, sizeof (EFI_HII_PACKAGE_HEADER));
+  CopyMem(&HeaderSize, (UINT8 *) PackageHdr + sizeof (EFI_HII_PACKAGE_HEADER), sizeof (UINT32));
 
   //
   // It is illegal to have two string packages with same language within one packagelist
   // since the stringid will be duplicate if so. Check it to avoid this potential issue.
   //
   LanguageSize = HeaderSize - sizeof (EFI_HII_STRING_PACKAGE_HDR) + sizeof (CHAR8);
-  Language = (CHAR8 *) AllocateZeroPool (LanguageSize);
+  Language = (CHAR8 *) AllocateZeroPool(LanguageSize);
   if (Language == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
@@ -1348,28 +1348,28 @@ InsertStringPackage (
   for (Link = PackageList->StringPkgHdr.ForwardLink; Link != &PackageList->StringPkgHdr; Link = Link->ForwardLink) {
     StringPackage = CR (Link, HII_STRING_PACKAGE_INSTANCE, StringEntry, HII_STRING_PACKAGE_SIGNATURE);
     if (HiiCompareLanguage (Language, StringPackage->StringPkgHdr->Language)) {
-      FreePool (Language);
+      FreePool(Language);
       return EFI_UNSUPPORTED;
     }
   }
-  FreePool (Language);
+  FreePool(Language);
 
   //
   // Create a String package node
   //
-  StringPackage = (HII_STRING_PACKAGE_INSTANCE *) AllocateZeroPool (sizeof (HII_STRING_PACKAGE_INSTANCE));
+  StringPackage = (HII_STRING_PACKAGE_INSTANCE *) AllocateZeroPool(sizeof (HII_STRING_PACKAGE_INSTANCE));
   if (StringPackage == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Error;
   }
 
-  StringPackage->StringPkgHdr = (EFI_HII_STRING_PACKAGE_HDR *) AllocateZeroPool (HeaderSize);
+  StringPackage->StringPkgHdr = (EFI_HII_STRING_PACKAGE_HDR *) AllocateZeroPool(HeaderSize);
   if (StringPackage->StringPkgHdr == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Error;
   }
 
-  StringPackage->StringBlock = (UINT8 *) AllocateZeroPool (PackageHeader.Length - HeaderSize);
+  StringPackage->StringBlock = (UINT8 *) AllocateZeroPool(PackageHeader.Length - HeaderSize);
   if (StringPackage->StringBlock == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Error;
@@ -1382,12 +1382,12 @@ InsertStringPackage (
   //
   // Copy the String package header.
   //
-  CopyMem (StringPackage->StringPkgHdr, PackageHdr, HeaderSize);
+  CopyMem(StringPackage->StringPkgHdr, PackageHdr, HeaderSize);
 
   //
   // Copy the String blocks
   //
-  CopyMem (
+  CopyMem(
     StringPackage->StringBlock,
     (UINT8 *) PackageHdr + HeaderSize,
     PackageHeader.Length - HeaderSize
@@ -1397,7 +1397,7 @@ InsertStringPackage (
   // Collect all font block info
   //
   Status = FindStringBlock (Private, StringPackage, (EFI_STRING_ID) (-1), NULL, NULL, NULL, &StringPackage->MaxStringId, NULL);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -1417,12 +1417,12 @@ Error:
 
   if (StringPackage != NULL) {
     if (StringPackage->StringBlock != NULL) {
-      FreePool (StringPackage->StringBlock);
+      FreePool(StringPackage->StringBlock);
     }
     if (StringPackage->StringPkgHdr != NULL) {
-      FreePool (StringPackage->StringPkgHdr);
+      FreePool(StringPackage->StringPkgHdr);
     }
-    FreePool (StringPackage);
+    FreePool(StringPackage);
   }
   return Status;
 
@@ -1475,27 +1475,27 @@ AdjustStringPackage (
       SkipCount      = (UINT16) (MaxStringId - StringPackage->MaxStringId);
       Skip2BlockSize = (UINT32) sizeof (EFI_HII_SIBT_SKIP2_BLOCK);
 
-      StringBlock = (UINT8 *) AllocateZeroPool (OldBlockSize + Skip2BlockSize);
+      StringBlock = (UINT8 *) AllocateZeroPool(OldBlockSize + Skip2BlockSize);
       if (StringBlock == NULL) {
         return EFI_OUT_OF_RESOURCES;
       }
       //
       // Copy original string blocks, except the EFI_HII_SIBT_END.
       //
-      CopyMem (StringBlock, StringPackage->StringBlock, OldBlockSize - sizeof (EFI_HII_SIBT_END_BLOCK));
+      CopyMem(StringBlock, StringPackage->StringBlock, OldBlockSize - sizeof (EFI_HII_SIBT_END_BLOCK));
       //
       // Create SKIP2 EFI_HII_SIBT_SKIP2_BLOCK blocks
       //
       BlockPtr  = StringBlock + OldBlockSize - sizeof (EFI_HII_SIBT_END_BLOCK);
       *BlockPtr = EFI_HII_SIBT_SKIP2;
-      CopyMem (BlockPtr + 1, &SkipCount, sizeof (UINT16));
+      CopyMem(BlockPtr + 1, &SkipCount, sizeof (UINT16));
       BlockPtr  += sizeof (EFI_HII_SIBT_SKIP2_BLOCK);
 
       //
       // Append a EFI_HII_SIBT_END block to the end.
       //
       *BlockPtr = EFI_HII_SIBT_END;
-      FreePool (StringPackage->StringBlock);
+      FreePool(StringPackage->StringBlock);
       StringPackage->StringBlock = StringBlock;
       StringPackage->StringPkgHdr->Header.Length += Skip2BlockSize;
       PackageList->PackageListHdr.PackageLength += Skip2BlockSize;
@@ -1564,17 +1564,17 @@ ExportStringPackages (
                  EFI_HII_PACKAGE_STRINGS,
                  Handle
                  );
-      ASSERT_EFI_ERROR (Status);
+      ASSERT_EFI_ERROR(Status);
       //
       // Copy String package header
       //
-      CopyMem (Buffer, StringPackage->StringPkgHdr, StringPackage->StringPkgHdr->HdrSize);
+      CopyMem(Buffer, StringPackage->StringPkgHdr, StringPackage->StringPkgHdr->HdrSize);
       Buffer = (UINT8 *) Buffer + StringPackage->StringPkgHdr->HdrSize;
 
       //
       // Copy String blocks information
       //
-      CopyMem (
+      CopyMem(
         Buffer,
         StringPackage->StringBlock,
         StringPackage->StringPkgHdr->Header.Length - StringPackage->StringPkgHdr->HdrSize
@@ -1630,14 +1630,14 @@ RemoveStringPackages (
                EFI_HII_PACKAGE_STRINGS,
                Handle
                );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
 
     RemoveEntryList (&Package->StringEntry);
     PackageList->PackageListHdr.PackageLength -= Package->StringPkgHdr->Header.Length;
-    FreePool (Package->StringBlock);
-    FreePool (Package->StringPkgHdr);
+    FreePool(Package->StringBlock);
+    FreePool(Package->StringPkgHdr);
     //
     // Delete font information
     //
@@ -1649,10 +1649,10 @@ RemoveStringPackages (
                    HII_FONT_INFO_SIGNATURE
                    );
       RemoveEntryList (&FontInfo->Entry);
-      FreePool (FontInfo);
+      FreePool(FontInfo);
     }
 
-    FreePool (Package);
+    FreePool(Package);
   }
 
   return EFI_SUCCESS;
@@ -1701,8 +1701,8 @@ InsertFontPackage (
     return EFI_INVALID_PARAMETER;
   }
 
-  CopyMem (&PackageHeader, PackageHdr, sizeof (EFI_HII_PACKAGE_HEADER));
-  CopyMem (&HeaderSize, (UINT8 *) PackageHdr + sizeof (EFI_HII_PACKAGE_HEADER), sizeof (UINT32));
+  CopyMem(&PackageHeader, PackageHdr, sizeof (EFI_HII_PACKAGE_HEADER));
+  CopyMem(&HeaderSize, (UINT8 *) PackageHdr + sizeof (EFI_HII_PACKAGE_HEADER), sizeof (UINT32));
 
   FontInfo    = NULL;
   FontPackage = NULL;
@@ -1713,15 +1713,15 @@ InsertFontPackage (
   // database. EFI_FONT_INFO (FontName, FontSize, FontStyle) describes font's
   // attributes and identify a font uniquely.
   //
-  FontPkgHdr = (EFI_HII_FONT_PACKAGE_HDR *) AllocateZeroPool (HeaderSize);
+  FontPkgHdr = (EFI_HII_FONT_PACKAGE_HDR *) AllocateZeroPool(HeaderSize);
   if (FontPkgHdr == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Error;
   }
-  CopyMem (FontPkgHdr, PackageHdr, HeaderSize);
+  CopyMem(FontPkgHdr, PackageHdr, HeaderSize);
 
   FontInfoSize = sizeof (EFI_FONT_INFO) + HeaderSize - sizeof (EFI_HII_FONT_PACKAGE_HDR);
-  FontInfo = (EFI_FONT_INFO *) AllocateZeroPool (FontInfoSize);
+  FontInfo = (EFI_FONT_INFO *) AllocateZeroPool(FontInfoSize);
   if (FontInfo == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Error;
@@ -1738,7 +1738,7 @@ InsertFontPackage (
   //
   // Create a Font package node
   //
-  FontPackage = (HII_FONT_PACKAGE_INSTANCE *) AllocateZeroPool (sizeof (HII_FONT_PACKAGE_INSTANCE));
+  FontPackage = (HII_FONT_PACKAGE_INSTANCE *) AllocateZeroPool(sizeof (HII_FONT_PACKAGE_INSTANCE));
   if (FontPackage == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Error;
@@ -1747,18 +1747,18 @@ InsertFontPackage (
   FontPackage->FontPkgHdr = FontPkgHdr;
   InitializeListHead (&FontPackage->GlyphInfoList);
 
-  FontPackage->GlyphBlock = (UINT8 *) AllocateZeroPool (PackageHeader.Length - HeaderSize);
+  FontPackage->GlyphBlock = (UINT8 *) AllocateZeroPool(PackageHeader.Length - HeaderSize);
   if (FontPackage->GlyphBlock == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Error;
   }
-  CopyMem (FontPackage->GlyphBlock, (UINT8 *) PackageHdr + HeaderSize, PackageHeader.Length - HeaderSize);
+  CopyMem(FontPackage->GlyphBlock, (UINT8 *) PackageHdr + HeaderSize, PackageHeader.Length - HeaderSize);
 
   //
   // Collect all default character cell information and backup in GlyphInfoList.
   //
   Status = FindGlyphBlock (FontPackage, (CHAR16) (-1), NULL, NULL, NULL);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto Error;
   }
 
@@ -1766,7 +1766,7 @@ InsertFontPackage (
   // This font package describes an unique EFI_FONT_INFO. Backup it in global
   // font info list.
   //
-  GlobalFont = (HII_GLOBAL_FONT_INFO *) AllocateZeroPool (sizeof (HII_GLOBAL_FONT_INFO));
+  GlobalFont = (HII_GLOBAL_FONT_INFO *) AllocateZeroPool(sizeof (HII_GLOBAL_FONT_INFO));
   if (GlobalFont == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Error;
@@ -1792,19 +1792,19 @@ InsertFontPackage (
 Error:
 
   if (FontPkgHdr != NULL) {
-    FreePool (FontPkgHdr);
+    FreePool(FontPkgHdr);
   }
   if (FontInfo != NULL) {
-    FreePool (FontInfo);
+    FreePool(FontInfo);
   }
   if (FontPackage != NULL) {
     if (FontPackage->GlyphBlock != NULL) {
-      FreePool (FontPackage->GlyphBlock);
+      FreePool(FontPackage->GlyphBlock);
     }
-    FreePool (FontPackage);
+    FreePool(FontPackage);
   }
   if (GlobalFont != NULL) {
-    FreePool (GlobalFont);
+    FreePool(GlobalFont);
   }
 
   return Status;
@@ -1871,17 +1871,17 @@ ExportFontPackages (
                  EFI_HII_PACKAGE_FONTS,
                  Handle
                  );
-      ASSERT_EFI_ERROR (Status);
+      ASSERT_EFI_ERROR(Status);
       //
       // Copy Font package header
       //
-      CopyMem (Buffer, Package->FontPkgHdr, Package->FontPkgHdr->HdrSize);
+      CopyMem(Buffer, Package->FontPkgHdr, Package->FontPkgHdr->HdrSize);
       Buffer = (UINT8 *) Buffer + Package->FontPkgHdr->HdrSize;
 
       //
       // Copy Glyph blocks information
       //
-      CopyMem (
+      CopyMem(
         Buffer,
         Package->GlyphBlock,
         Package->FontPkgHdr->Header.Length - Package->FontPkgHdr->HdrSize
@@ -1939,7 +1939,7 @@ RemoveFontPackages (
                EFI_HII_PACKAGE_FONTS,
                Handle
                );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
 
@@ -1947,9 +1947,9 @@ RemoveFontPackages (
     PackageList->PackageListHdr.PackageLength -= Package->FontPkgHdr->Header.Length;
 
     if (Package->GlyphBlock != NULL) {
-      FreePool (Package->GlyphBlock);
+      FreePool(Package->GlyphBlock);
     }
-    FreePool (Package->FontPkgHdr);
+    FreePool(Package->FontPkgHdr);
     //
     // Delete default character cell information
     //
@@ -1961,7 +1961,7 @@ RemoveFontPackages (
                     HII_GLYPH_INFO_SIGNATURE
                     );
       RemoveEntryList (&GlyphInfo->Entry);
-      FreePool (GlyphInfo);
+      FreePool(GlyphInfo);
     }
 
     //
@@ -1971,13 +1971,13 @@ RemoveFontPackages (
       GlobalFont = CR (Link, HII_GLOBAL_FONT_INFO, Entry, HII_GLOBAL_FONT_INFO_SIGNATURE);
       if (GlobalFont->FontPackage == Package) {
         RemoveEntryList (&GlobalFont->Entry);
-        FreePool (GlobalFont->FontInfo);
-        FreePool (GlobalFont);
+        FreePool(GlobalFont->FontInfo);
+        FreePool(GlobalFont);
         break;
       }
     }
 
-    FreePool (Package);
+    FreePool(Package);
   }
 
   return EFI_SUCCESS;
@@ -2033,7 +2033,7 @@ InsertImagePackage (
   //
   // Create a Image package node
   //
-  ImagePackage = (HII_IMAGE_PACKAGE_INSTANCE *) AllocateZeroPool (sizeof (HII_IMAGE_PACKAGE_INSTANCE));
+  ImagePackage = (HII_IMAGE_PACKAGE_INSTANCE *) AllocateZeroPool(sizeof (HII_IMAGE_PACKAGE_INSTANCE));
   if (ImagePackage == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
@@ -2041,7 +2041,7 @@ InsertImagePackage (
   //
   // Copy the Image package header.
   //
-  CopyMem (&ImagePackage->ImagePkgHdr, PackageHdr, sizeof (EFI_HII_IMAGE_PACKAGE_HDR));
+  CopyMem(&ImagePackage->ImagePkgHdr, PackageHdr, sizeof (EFI_HII_IMAGE_PACKAGE_HDR));
 
   PaletteInfoOffset = ImagePackage->ImagePkgHdr.PaletteInfoOffset;
   ImageInfoOffset   = ImagePackage->ImagePkgHdr.ImageInfoOffset;
@@ -2057,18 +2057,18 @@ InsertImagePackage (
     PaletteInfo = (EFI_HII_IMAGE_PALETTE_INFO *) ((UINT8 *) PaletteHdr + PaletteSize);
 
     for (Index = 0; Index < PaletteHdr->PaletteCount; Index++) {
-      CopyMem (&CurrentSize, PaletteInfo, sizeof (UINT16));
+      CopyMem(&CurrentSize, PaletteInfo, sizeof (UINT16));
       CurrentSize += sizeof (UINT16);
       PaletteSize += (UINT32) CurrentSize;
       PaletteInfo = (EFI_HII_IMAGE_PALETTE_INFO *) ((UINT8 *) PaletteInfo + CurrentSize);
     }
 
-    ImagePackage->PaletteBlock = (UINT8 *) AllocateZeroPool (PaletteSize);
+    ImagePackage->PaletteBlock = (UINT8 *) AllocateZeroPool(PaletteSize);
     if (ImagePackage->PaletteBlock == NULL) {
-      FreePool (ImagePackage);
+      FreePool(ImagePackage);
       return EFI_OUT_OF_RESOURCES;
     }
-    CopyMem (
+    CopyMem(
       ImagePackage->PaletteBlock,
       (UINT8 *) PackageHdr + PaletteInfoOffset,
       PaletteSize
@@ -2083,13 +2083,13 @@ InsertImagePackage (
   if (ImageInfoOffset != 0) {
     ImageSize = ImagePackage->ImagePkgHdr.Header.Length -
                 sizeof (EFI_HII_IMAGE_PACKAGE_HDR) - PaletteSize;
-    ImagePackage->ImageBlock = AllocateZeroPool (ImageSize);
+    ImagePackage->ImageBlock = AllocateZeroPool(ImageSize);
     if (ImagePackage->ImageBlock == NULL) {
-      FreePool (ImagePackage->PaletteBlock);
-      FreePool (ImagePackage);
+      FreePool(ImagePackage->PaletteBlock);
+      FreePool(ImagePackage);
       return EFI_OUT_OF_RESOURCES;
     }
-    CopyMem (
+    CopyMem(
       ImagePackage->ImageBlock,
       (UINT8 *) PackageHdr + ImageInfoOffset,
       ImageSize
@@ -2169,28 +2169,28 @@ ExportImagePackages (
                EFI_HII_PACKAGE_IMAGES,
                Handle
                );
-    ASSERT_EFI_ERROR (Status);
+    ASSERT_EFI_ERROR(Status);
     ASSERT (Package->ImagePkgHdr.Header.Length ==
             sizeof (EFI_HII_IMAGE_PACKAGE_HDR) + Package->ImageBlockSize + Package->PaletteInfoSize);
     //
     // Copy Image package header,
     // then justify the offset for image info and palette info in the header.
     //
-    CopyMem (Buffer, &Package->ImagePkgHdr, sizeof (EFI_HII_IMAGE_PACKAGE_HDR));
+    CopyMem(Buffer, &Package->ImagePkgHdr, sizeof (EFI_HII_IMAGE_PACKAGE_HDR));
     Buffer = (UINT8 *) Buffer + sizeof (EFI_HII_IMAGE_PACKAGE_HDR);
 
     //
     // Copy Image blocks information
     //
     if (Package->ImageBlockSize != 0) {
-      CopyMem (Buffer, Package->ImageBlock, Package->ImageBlockSize);
+      CopyMem(Buffer, Package->ImageBlock, Package->ImageBlockSize);
       Buffer = (UINT8 *) Buffer + Package->ImageBlockSize;
     }
     //
     // Copy Palette information
     //
     if (Package->PaletteInfoSize != 0) {
-      CopyMem (Buffer, Package->PaletteBlock, Package->PaletteInfoSize);
+      CopyMem(Buffer, Package->PaletteBlock, Package->PaletteInfoSize);
       Buffer = (UINT8 *) Buffer + Package->PaletteInfoSize;
     }
   }
@@ -2240,17 +2240,17 @@ RemoveImagePackages (
              EFI_HII_PACKAGE_IMAGES,
              Handle
              );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
   PackageList->PackageListHdr.PackageLength -= Package->ImagePkgHdr.Header.Length;
 
-  FreePool (Package->ImageBlock);
+  FreePool(Package->ImageBlock);
   if (Package->PaletteBlock != NULL) {
-    FreePool (Package->PaletteBlock);
+    FreePool(Package->PaletteBlock);
   }
-  FreePool (Package);
+  FreePool(Package);
 
   PackageList->ImagePkg = NULL;
 
@@ -2294,7 +2294,7 @@ InsertSimpleFontPackage (
   //
   // Create a Simple Font package node
   //
-  SimpleFontPackage = AllocateZeroPool (sizeof (HII_SIMPLE_FONT_PACKAGE_INSTANCE));
+  SimpleFontPackage = AllocateZeroPool(sizeof (HII_SIMPLE_FONT_PACKAGE_INSTANCE));
   if (SimpleFontPackage == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Error;
@@ -2304,15 +2304,15 @@ InsertSimpleFontPackage (
   //
   // Copy the Simple Font package.
   //
-  CopyMem (&Header, PackageHdr, sizeof (EFI_HII_PACKAGE_HEADER));
+  CopyMem(&Header, PackageHdr, sizeof (EFI_HII_PACKAGE_HEADER));
 
-  SimpleFontPackage->SimpleFontPkgHdr = AllocateZeroPool (Header.Length);
+  SimpleFontPackage->SimpleFontPkgHdr = AllocateZeroPool(Header.Length);
   if (SimpleFontPackage->SimpleFontPkgHdr == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Error;
   }
 
-  CopyMem (SimpleFontPackage->SimpleFontPkgHdr, PackageHdr, Header.Length);
+  CopyMem(SimpleFontPackage->SimpleFontPkgHdr, PackageHdr, Header.Length);
 
   //
   // Insert to Simple Font package array
@@ -2330,9 +2330,9 @@ Error:
 
   if (SimpleFontPackage != NULL) {
     if (SimpleFontPackage->SimpleFontPkgHdr != NULL) {
-      FreePool (SimpleFontPackage->SimpleFontPkgHdr);
+      FreePool(SimpleFontPackage->SimpleFontPkgHdr);
     }
-    FreePool (SimpleFontPackage);
+    FreePool(SimpleFontPackage);
   }
   return Status;
 }
@@ -2396,12 +2396,12 @@ ExportSimpleFontPackages (
                  EFI_HII_PACKAGE_SIMPLE_FONTS,
                  Handle
                  );
-      ASSERT_EFI_ERROR (Status);
+      ASSERT_EFI_ERROR(Status);
 
       //
       // Copy SimpleFont package
       //
-      CopyMem (Buffer, Package->SimpleFontPkgHdr, Package->SimpleFontPkgHdr->Header.Length);
+      CopyMem(Buffer, Package->SimpleFontPkgHdr, Package->SimpleFontPkgHdr->Header.Length);
       Buffer = (UINT8 *) Buffer + Package->SimpleFontPkgHdr->Header.Length;
     }
   }
@@ -2452,14 +2452,14 @@ RemoveSimpleFontPackages (
                EFI_HII_PACKAGE_SIMPLE_FONTS,
                Handle
                );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
 
     RemoveEntryList (&Package->SimpleFontEntry);
     PackageList->PackageListHdr.PackageLength -= Package->SimpleFontPkgHdr->Header.Length;
-    FreePool (Package->SimpleFontPkgHdr);
-    FreePool (Package);
+    FreePool(Package->SimpleFontPkgHdr);
+    FreePool(Package);
   }
 
   return EFI_SUCCESS;
@@ -2503,15 +2503,15 @@ InsertDevicePathPackage (
   }
 
   PackageLength = (UINT32) GetDevicePathSize (DevicePath) + sizeof (EFI_HII_PACKAGE_HEADER);
-  PackageList->DevicePathPkg = (UINT8 *) AllocateZeroPool (PackageLength);
+  PackageList->DevicePathPkg = (UINT8 *) AllocateZeroPool(PackageLength);
   if (PackageList->DevicePathPkg == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
 
   Header.Length = PackageLength;
   Header.Type   = EFI_HII_PACKAGE_DEVICE_PATH;
-  CopyMem (PackageList->DevicePathPkg, &Header, sizeof (EFI_HII_PACKAGE_HEADER));
-  CopyMem (
+  CopyMem(PackageList->DevicePathPkg, &Header, sizeof (EFI_HII_PACKAGE_HEADER));
+  CopyMem(
     PackageList->DevicePathPkg + sizeof (EFI_HII_PACKAGE_HEADER),
     DevicePath,
     PackageLength - sizeof (EFI_HII_PACKAGE_HEADER)
@@ -2571,7 +2571,7 @@ ExportDevicePathPackage (
     return EFI_SUCCESS;
   }
 
-  CopyMem (&Header, Package, sizeof (EFI_HII_PACKAGE_HEADER));
+  CopyMem(&Header, Package, sizeof (EFI_HII_PACKAGE_HEADER));
 
   if (Header.Length + *ResultSize + UsedSize <= BufferSize) {
     //
@@ -2584,12 +2584,12 @@ ExportDevicePathPackage (
                EFI_HII_PACKAGE_DEVICE_PATH,
                Handle
                );
-    ASSERT_EFI_ERROR (Status);
+    ASSERT_EFI_ERROR(Status);
 
     //
     // Copy Device path package
     //
-    CopyMem (Buffer, Package, Header.Length);
+    CopyMem(Buffer, Package, Header.Length);
   }
 
   *ResultSize += Header.Length;
@@ -2637,14 +2637,14 @@ RemoveDevicePathPackage (
              EFI_HII_PACKAGE_DEVICE_PATH,
              Handle
              );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
-  CopyMem (&Header, Package, sizeof (EFI_HII_PACKAGE_HEADER));
+  CopyMem(&Header, Package, sizeof (EFI_HII_PACKAGE_HEADER));
   PackageList->PackageListHdr.PackageLength -= Header.Length;
 
-  FreePool (Package);
+  FreePool(Package);
 
   PackageList->DevicePathPkg = NULL;
 
@@ -2695,7 +2695,7 @@ AddDevicePathPackage (
                NotifyType,
                DatabaseRecord->PackageList
                );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -2742,25 +2742,25 @@ InsertKeyboardLayoutPackage (
     return EFI_INVALID_PARAMETER;
   }
 
-  CopyMem (&PackageHeader, PackageHdr, sizeof (EFI_HII_PACKAGE_HEADER));
+  CopyMem(&PackageHeader, PackageHdr, sizeof (EFI_HII_PACKAGE_HEADER));
 
   //
   // Create a Keyboard Layout package node
   //
-  KeyboardLayoutPackage = AllocateZeroPool (sizeof (HII_KEYBOARD_LAYOUT_PACKAGE_INSTANCE));
+  KeyboardLayoutPackage = AllocateZeroPool(sizeof (HII_KEYBOARD_LAYOUT_PACKAGE_INSTANCE));
   if (KeyboardLayoutPackage == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Error;
   }
   KeyboardLayoutPackage->Signature = HII_KB_LAYOUT_PACKAGE_SIGNATURE;
 
-  KeyboardLayoutPackage->KeyboardPkg = (UINT8 *) AllocateZeroPool (PackageHeader.Length);
+  KeyboardLayoutPackage->KeyboardPkg = (UINT8 *) AllocateZeroPool(PackageHeader.Length);
   if (KeyboardLayoutPackage->KeyboardPkg == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Error;
   }
 
-  CopyMem (KeyboardLayoutPackage->KeyboardPkg, PackageHdr, PackageHeader.Length);
+  CopyMem(KeyboardLayoutPackage->KeyboardPkg, PackageHdr, PackageHeader.Length);
   InsertTailList (&PackageList->KeyboardLayoutHdr, &KeyboardLayoutPackage->KeyboardEntry);
 
   *Package = KeyboardLayoutPackage;
@@ -2776,9 +2776,9 @@ Error:
 
   if (KeyboardLayoutPackage != NULL) {
     if (KeyboardLayoutPackage->KeyboardPkg != NULL) {
-      FreePool (KeyboardLayoutPackage->KeyboardPkg);
+      FreePool(KeyboardLayoutPackage->KeyboardPkg);
     }
-    FreePool (KeyboardLayoutPackage);
+    FreePool(KeyboardLayoutPackage);
   }
 
   return Status;
@@ -2833,7 +2833,7 @@ ExportKeyboardLayoutPackages (
 
   for (Link = PackageList->KeyboardLayoutHdr.ForwardLink; Link != &PackageList->KeyboardLayoutHdr; Link = Link->ForwardLink) {
     Package = CR (Link, HII_KEYBOARD_LAYOUT_PACKAGE_INSTANCE, KeyboardEntry, HII_KB_LAYOUT_PACKAGE_SIGNATURE);
-    CopyMem (&PackageHeader, Package->KeyboardPkg, sizeof (EFI_HII_PACKAGE_HEADER));
+    CopyMem(&PackageHeader, Package->KeyboardPkg, sizeof (EFI_HII_PACKAGE_HEADER));
     PackageLength += PackageHeader.Length;
     if (PackageLength + *ResultSize + UsedSize <= BufferSize) {
       //
@@ -2846,12 +2846,12 @@ ExportKeyboardLayoutPackages (
                  EFI_HII_PACKAGE_KEYBOARD_LAYOUT,
                  Handle
                  );
-      ASSERT_EFI_ERROR (Status);
+      ASSERT_EFI_ERROR(Status);
 
       //
       // Copy Keyboard Layout package
       //
-      CopyMem (Buffer, Package->KeyboardPkg, PackageHeader.Length);
+      CopyMem(Buffer, Package->KeyboardPkg, PackageHeader.Length);
       Buffer = (UINT8 *) Buffer + PackageHeader.Length;
     }
   }
@@ -2904,15 +2904,15 @@ RemoveKeyboardLayoutPackages (
                EFI_HII_PACKAGE_KEYBOARD_LAYOUT,
                Handle
                );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
 
     RemoveEntryList (&Package->KeyboardEntry);
-    CopyMem (&PackageHeader, Package->KeyboardPkg, sizeof (EFI_HII_PACKAGE_HEADER));
+    CopyMem(&PackageHeader, Package->KeyboardPkg, sizeof (EFI_HII_PACKAGE_HEADER));
     PackageList->PackageListHdr.PackageLength -= PackageHeader.Length;
-    FreePool (Package->KeyboardPkg);
-    FreePool (Package);
+    FreePool(Package->KeyboardPkg);
+    FreePool(Package);
   }
 
   return EFI_SUCCESS;
@@ -2976,7 +2976,7 @@ AddPackages (
   // Process the package list header
   //
   OldPackageListLen = DatabaseRecord->PackageList->PackageListHdr.PackageLength;
-  CopyMem (
+  CopyMem(
     &DatabaseRecord->PackageList->PackageListHdr,
     (VOID *) PackageList,
     sizeof (EFI_HII_PACKAGE_LIST_HEADER)
@@ -2986,7 +2986,7 @@ AddPackages (
   }
 
   PackageHdrPtr = (EFI_HII_PACKAGE_HEADER *) ((UINT8 *) PackageList + sizeof (EFI_HII_PACKAGE_LIST_HEADER));
-  CopyMem (&PackageHeader, PackageHdrPtr, sizeof (EFI_HII_PACKAGE_HEADER));
+  CopyMem(&PackageHeader, PackageHdrPtr, sizeof (EFI_HII_PACKAGE_HEADER));
 
   Status = EFI_SUCCESS;
 
@@ -2999,7 +2999,7 @@ AddPackages (
                  DatabaseRecord->PackageList,
                  &GuidPackage
                  );
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         return Status;
       }
       Status = InvokeRegisteredFunction (
@@ -3017,7 +3017,7 @@ AddPackages (
                  DatabaseRecord->PackageList,
                  &FormPackage
                  );
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         return Status;
       }
       Status = InvokeRegisteredFunction (
@@ -3045,7 +3045,7 @@ AddPackages (
                  DatabaseRecord->PackageList,
                  &KeyboardLayoutPackage
                  );
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         return Status;
       }
       Status = InvokeRegisteredFunction (
@@ -3064,7 +3064,7 @@ AddPackages (
                  DatabaseRecord->PackageList,
                  &StringPackage
                  );
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         return Status;
       }
       ASSERT (StringPackage != NULL);
@@ -3085,7 +3085,7 @@ AddPackages (
                  DatabaseRecord->PackageList,
                  &FontPackage
                  );
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         return Status;
       }
       Status = InvokeRegisteredFunction (
@@ -3103,7 +3103,7 @@ AddPackages (
                  DatabaseRecord->PackageList,
                  &ImagePackage
                  );
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         return Status;
       }
       Status = InvokeRegisteredFunction (
@@ -3121,7 +3121,7 @@ AddPackages (
                  DatabaseRecord->PackageList,
                  &SimpleFontPackage
                  );
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         return Status;
       }
       Status = InvokeRegisteredFunction (
@@ -3144,20 +3144,20 @@ AddPackages (
       break;
     }
 
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
     //
     // goto header of next package
     //
     PackageHdrPtr = (EFI_HII_PACKAGE_HEADER *) ((UINT8 *) PackageHdrPtr + PackageHeader.Length);
-    CopyMem (&PackageHeader, PackageHdrPtr, sizeof (EFI_HII_PACKAGE_HEADER));
+    CopyMem(&PackageHeader, PackageHdrPtr, sizeof (EFI_HII_PACKAGE_HEADER));
   }
 
   //
   // Adjust String Package to make sure all string packages have the same max string ID.
   //
-  if (!EFI_ERROR (Status) && StringPkgIsAdd) {
+  if (!EFI_ERROR(Status) && StringPkgIsAdd) {
     Status = AdjustStringPackage (DatabaseRecord->PackageList);
   }
 
@@ -3212,7 +3212,7 @@ ExportPackageList (
   //
   ResultSize = sizeof (EFI_HII_PACKAGE_LIST_HEADER);
   if (ResultSize + *UsedSize <= BufferSize) {
-    CopyMem ((VOID *) Buffer, PackageList, ResultSize);
+    CopyMem((VOID *) Buffer, PackageList, ResultSize);
   }
   //
   // Copy the packages and invoke EXPORT_PACK notify functions if exists.
@@ -3226,7 +3226,7 @@ ExportPackageList (
              (VOID *) ((UINT8 *) Buffer + ResultSize),
              &ResultSize
              );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
   Status = ExportFormPackages (
@@ -3238,7 +3238,7 @@ ExportPackageList (
              (VOID *) ((UINT8 *) Buffer + ResultSize),
              &ResultSize
              );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
   Status = ExportKeyboardLayoutPackages (
@@ -3250,7 +3250,7 @@ ExportPackageList (
              (VOID *) ((UINT8 *) Buffer + ResultSize),
              &ResultSize
              );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
   Status = ExportStringPackages (
@@ -3262,7 +3262,7 @@ ExportPackageList (
              (VOID *) ((UINT8 *) Buffer + ResultSize),
              &ResultSize
              );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
   Status = ExportFontPackages (
@@ -3274,7 +3274,7 @@ ExportPackageList (
              (VOID *) ((UINT8 *) Buffer + ResultSize),
              &ResultSize
              );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
   Status = ExportImagePackages (
@@ -3286,7 +3286,7 @@ ExportPackageList (
              (VOID *) ((UINT8 *) Buffer + ResultSize),
              &ResultSize
              );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
   Status = ExportSimpleFontPackages (
@@ -3298,7 +3298,7 @@ ExportPackageList (
              (VOID *) ((UINT8 *) Buffer + ResultSize),
              &ResultSize
              );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
   Status = ExportDevicePathPackage (
@@ -3310,7 +3310,7 @@ ExportPackageList (
              (VOID *) ((UINT8 *) Buffer + ResultSize),
              &ResultSize
              );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
   //
@@ -3319,7 +3319,7 @@ ExportPackageList (
   EndofPackageList.Length = sizeof (EFI_HII_PACKAGE_HEADER);
   EndofPackageList.Type   = EFI_HII_PACKAGE_END;
   if (ResultSize + *UsedSize + sizeof (EFI_HII_PACKAGE_HEADER) <= BufferSize) {
-    CopyMem (
+    CopyMem(
       (VOID *) ((UINT8 *) Buffer + ResultSize),
       (VOID *) &EndofPackageList,
       sizeof (EFI_HII_PACKAGE_HEADER)
@@ -3360,7 +3360,7 @@ HiiGetConfigRespInfo(
   //
   Status = HiiConfigRoutingExportConfig(&Private->ConfigRouting,&ConfigAltResp);
 
-  if (!EFI_ERROR (Status)){
+  if (!EFI_ERROR(Status)){
     ConfigSize = StrSize(ConfigAltResp);
     if (ConfigSize > gConfigRespSize){
       //
@@ -3437,7 +3437,7 @@ HiiGetDatabaseInfo(
     ZeroMem(gRTDatabaseInfoBuffer,gDatabaseInfoSize);
   }
   Status = HiiExportPackageLists(This, NULL, &DatabaseInfoSize, gRTDatabaseInfoBuffer);
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
   gBS->InstallConfigurationTable (&gEfiHiiDatabaseProtocolGuid, gRTDatabaseInfoBuffer);
 
   return EFI_SUCCESS;
@@ -3487,7 +3487,7 @@ HiiNewPackageList (
   }
 
   Private = HII_DATABASE_DATABASE_PRIVATE_DATA_FROM_THIS (This);
-  CopyMem (&PackageListGuid, (VOID *) PackageList, sizeof (EFI_GUID));
+  CopyMem(&PackageListGuid, (VOID *) PackageList, sizeof (EFI_GUID));
 
   //
   // Check the Package list GUID to guarantee this GUID is unique in database.
@@ -3508,7 +3508,7 @@ HiiNewPackageList (
   // Build a PackageList node
   //
   Status = GenerateHiiDatabaseRecord (Private, &DatabaseRecord);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     EfiReleaseLock (&mHiiDatabaseLock);
     return Status;
   }
@@ -3518,7 +3518,7 @@ HiiNewPackageList (
   // according to incoming package list.
   //
   Status = AddPackages (Private, EFI_HII_DATABASE_NOTIFY_NEW_PACK, PackageList, DatabaseRecord);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     EfiReleaseLock (&mHiiDatabaseLock);
     return Status;
   }
@@ -3533,9 +3533,9 @@ HiiNewPackageList (
                   &gEfiDevicePathProtocolGuid,
                   (VOID **) &DevicePath
                   );
-  if (!EFI_ERROR (Status)) {
+  if (!EFI_ERROR(Status)) {
     Status = AddDevicePathPackage (Private, EFI_HII_DATABASE_NOTIFY_NEW_PACK, DevicePath, DatabaseRecord);
-    ASSERT_EFI_ERROR (Status);
+    ASSERT_EFI_ERROR(Status);
   }
 
   *Handle = DatabaseRecord->Handle;
@@ -3625,42 +3625,42 @@ HiiRemovePackageList (
       // then remove them.
       //
       Status = RemoveGuidPackages (Private, Handle, PackageList);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         EfiReleaseLock (&mHiiDatabaseLock);
         return Status;
       }
       Status = RemoveFormPackages (Private, Handle, PackageList);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         EfiReleaseLock (&mHiiDatabaseLock);
         return Status;
       }
       Status = RemoveKeyboardLayoutPackages (Private, Handle, PackageList);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         EfiReleaseLock (&mHiiDatabaseLock);
         return Status;
       }
       Status = RemoveStringPackages (Private, Handle, PackageList);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         EfiReleaseLock (&mHiiDatabaseLock);
         return Status;
       }
       Status = RemoveFontPackages (Private, Handle, PackageList);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         EfiReleaseLock (&mHiiDatabaseLock);
         return Status;
       }
       Status = RemoveImagePackages (Private, Handle, PackageList);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         EfiReleaseLock (&mHiiDatabaseLock);
         return Status;
       }
       Status = RemoveSimpleFontPackages (Private, Handle, PackageList);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         EfiReleaseLock (&mHiiDatabaseLock);
         return Status;
       }
       Status = RemoveDevicePathPackage (Private, Handle, PackageList);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         EfiReleaseLock (&mHiiDatabaseLock);
         return Status;
       }
@@ -3676,9 +3676,9 @@ HiiRemovePackageList (
       ASSERT (Private->HiiHandleCount >= 0);
 
       HiiHandle->Signature = 0;
-      FreePool (HiiHandle);
-      FreePool (Node->PackageList);
-      FreePool (Node);
+      FreePool(HiiHandle);
+      FreePool(Node->PackageList);
+      FreePool(Node);
 
       //
       // Check whether need to get the Database info.
@@ -3774,7 +3774,7 @@ HiiUpdatePackageList (
       // Remove the package if its type matches one of the package types which is
       // contained in the new package list.
       //
-      CopyMem (&PackageHeader, PackageHdrPtr, sizeof (EFI_HII_PACKAGE_HEADER));
+      CopyMem(&PackageHeader, PackageHdrPtr, sizeof (EFI_HII_PACKAGE_HEADER));
       while (PackageHeader.Type != EFI_HII_PACKAGE_END) {
         switch (PackageHeader.Type) {
         case EFI_HII_PACKAGE_TYPE_GUID:
@@ -3803,13 +3803,13 @@ HiiUpdatePackageList (
           break;
         }
 
-        if (EFI_ERROR (Status)) {
+        if (EFI_ERROR(Status)) {
           EfiReleaseLock (&mHiiDatabaseLock);
           return Status;
         }
 
         PackageHdrPtr = (EFI_HII_PACKAGE_HEADER *) ((UINT8 *) PackageHdrPtr + PackageHeader.Length);
-        CopyMem (&PackageHeader, PackageHdrPtr, sizeof (EFI_HII_PACKAGE_HEADER));
+        CopyMem(&PackageHeader, PackageHdrPtr, sizeof (EFI_HII_PACKAGE_HEADER));
       }
 
       //
@@ -4082,7 +4082,7 @@ HiiExportPackageLists (
                  *BufferSize,
                  (EFI_HII_PACKAGE_LIST_HEADER *)((UINT8 *) Buffer + UsedSize)
                  );
-      ASSERT_EFI_ERROR (Status);
+      ASSERT_EFI_ERROR(Status);
     } else if (Handle != NULL && Node->Handle == Handle) {
       Status = ExportPackageList (
                  Private,
@@ -4092,7 +4092,7 @@ HiiExportPackageLists (
                  *BufferSize,
                  Buffer
                  );
-      ASSERT_EFI_ERROR (Status);
+      ASSERT_EFI_ERROR(Status);
       if (*BufferSize < UsedSize) {
         *BufferSize = UsedSize;
         return EFI_BUFFER_TOO_SMALL;
@@ -4177,7 +4177,7 @@ HiiRegisterPackageNotify (
   //
   // Allocate a notification node
   //
-  Notify = (HII_DATABASE_NOTIFY *) AllocateZeroPool (sizeof (HII_DATABASE_NOTIFY));
+  Notify = (HII_DATABASE_NOTIFY *) AllocateZeroPool(sizeof (HII_DATABASE_NOTIFY));
   if (Notify == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
@@ -4191,7 +4191,7 @@ HiiRegisterPackageNotify (
                   NULL,
                   NULL
                   );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   //
   // Fill in the information to the notification node
@@ -4251,7 +4251,7 @@ HiiUnregisterPackageNotify (
                   NULL,
                   EFI_OPEN_PROTOCOL_TEST_PROTOCOL
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return EFI_NOT_FOUND;
   }
 
@@ -4270,8 +4270,8 @@ HiiUnregisterPackageNotify (
                       NULL,
                       NULL
                       );
-      ASSERT_EFI_ERROR (Status);
-      FreePool (Notify);
+      ASSERT_EFI_ERROR(Status);
+      FreePool(Notify);
 
       return EFI_SUCCESS;
     }
@@ -4356,7 +4356,7 @@ HiiFindKeyboardLayouts (
                   HII_KB_LAYOUT_PACKAGE_SIGNATURE
                   );
       Layout = (UINT8 *) Package->KeyboardPkg + sizeof (EFI_HII_PACKAGE_HEADER) + sizeof (UINT16);
-      CopyMem (
+      CopyMem(
         &LayoutCount,
         (UINT8 *) Package->KeyboardPkg + sizeof (EFI_HII_PACKAGE_HEADER),
         sizeof (UINT16)
@@ -4364,8 +4364,8 @@ HiiFindKeyboardLayouts (
       for (Index = 0; Index < LayoutCount; Index++) {
         ResultSize += sizeof (EFI_GUID);
         if (ResultSize <= *KeyGuidBufferLength) {
-          CopyMem (KeyGuidBuffer + (ResultSize / sizeof (EFI_GUID) - 1), Layout + sizeof (UINT16), sizeof (EFI_GUID));
-          CopyMem (&LayoutLength, Layout, sizeof (UINT16));
+          CopyMem(KeyGuidBuffer + (ResultSize / sizeof (EFI_GUID) - 1), Layout + sizeof (UINT16), sizeof (EFI_GUID));
+          CopyMem(&LayoutLength, Layout, sizeof (UINT16));
           Layout = Layout + LayoutLength;
         }
       }
@@ -4447,12 +4447,12 @@ HiiGetKeyboardLayout (
     if (Private->CurrentLayout == NULL) {
       return EFI_NOT_FOUND;
     }
-    CopyMem (&LayoutLength, Private->CurrentLayout, sizeof (UINT16));
+    CopyMem(&LayoutLength, Private->CurrentLayout, sizeof (UINT16));
     if (*KeyboardLayoutLength < LayoutLength) {
       *KeyboardLayoutLength = LayoutLength;
       return EFI_BUFFER_TOO_SMALL;
     }
-    CopyMem (KeyboardLayout, Private->CurrentLayout, LayoutLength);
+    CopyMem(KeyboardLayout, Private->CurrentLayout, LayoutLength);
     return EFI_SUCCESS;
   }
 
@@ -4472,12 +4472,12 @@ HiiGetKeyboardLayout (
 
       Layout = (UINT8 *) Package->KeyboardPkg +
                sizeof (EFI_HII_PACKAGE_HEADER) + sizeof (UINT16);
-      CopyMem (&LayoutCount, Layout - sizeof (UINT16), sizeof (UINT16));
+      CopyMem(&LayoutCount, Layout - sizeof (UINT16), sizeof (UINT16));
       for (Index = 0; Index < LayoutCount; Index++) {
-        CopyMem (&LayoutLength, Layout, sizeof (UINT16));
+        CopyMem(&LayoutLength, Layout, sizeof (UINT16));
         if (CompareMem (Layout + sizeof (UINT16), KeyGuid, sizeof (EFI_GUID)) == 0) {
           if (LayoutLength <= *KeyboardLayoutLength) {
-            CopyMem (KeyboardLayout, Layout, LayoutLength);
+            CopyMem(KeyboardLayout, Layout, LayoutLength);
             return EFI_SUCCESS;
           } else {
             *KeyboardLayoutLength = LayoutLength;
@@ -4546,15 +4546,15 @@ HiiSetKeyboardLayout (
     return Status;
   }
 
-  KeyboardLayout = (EFI_HII_KEYBOARD_LAYOUT *) AllocateZeroPool (KeyboardLayoutLength);
+  KeyboardLayout = (EFI_HII_KEYBOARD_LAYOUT *) AllocateZeroPool(KeyboardLayoutLength);
   ASSERT (KeyboardLayout != NULL);
   Status = HiiGetKeyboardLayout (This, KeyGuid, &KeyboardLayoutLength, KeyboardLayout);
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   //
   // Backup current keyboard layout.
   //
-  CopyMem (&Private->CurrentLayoutGuid, KeyGuid, sizeof (EFI_GUID));
+  CopyMem(&Private->CurrentLayoutGuid, KeyGuid, sizeof (EFI_GUID));
   if (Private->CurrentLayout != NULL) {
     FreePool(Private->CurrentLayout);
   }
@@ -4565,7 +4565,7 @@ HiiSetKeyboardLayout (
   // current keyboard layout is changed.
   //
   Status = gBS->SignalEvent (gHiiKeyboardLayoutChanged);
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   return EFI_SUCCESS;
 }

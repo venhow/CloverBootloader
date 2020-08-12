@@ -215,7 +215,7 @@ PageAlloc (
 
   Status = SmmInternalAllocatePages (AllocateAnyPages, EfiRuntimeServicesData,
                                      Pages, &Memory, FALSE);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     Memory = 0;
   }
 
@@ -262,7 +262,7 @@ FindGuardedMemoryMap (
       MapMemory = (UINT64)(UINTN)PageAlloc (EFI_SIZE_TO_PAGES (Size));
       ASSERT (MapMemory != 0);
 
-      SetMem ((VOID *)(UINTN)MapMemory, Size, 0);
+      SetMem((VOID *)(UINTN)MapMemory, Size, 0);
 
       *(UINT64 *)(UINTN)MapMemory = mGuardedMemoryMap;
       mGuardedMemoryMap = MapMemory;
@@ -287,7 +287,7 @@ FindGuardedMemoryMap (
       MapMemory = (UINT64)(UINTN)PageAlloc (EFI_SIZE_TO_PAGES (Size));
       ASSERT (MapMemory != 0);
 
-      SetMem ((VOID *)(UINTN)MapMemory, Size, 0);
+      SetMem((VOID *)(UINTN)MapMemory, Size, 0);
       *GuardMap = MapMemory;
     }
 
@@ -519,7 +519,7 @@ SetGuardPage (
                                     EFI_PAGE_SIZE,
                                     EFI_MEMORY_RP
                                     );
-    ASSERT_EFI_ERROR (Status);
+    ASSERT_EFI_ERROR(Status);
     mOnGuarding = FALSE;
   }
 }
@@ -549,7 +549,7 @@ UnsetGuardPage (
                                     EFI_PAGE_SIZE,
                                     EFI_MEMORY_RP
                                     );
-    ASSERT_EFI_ERROR (Status);
+    ASSERT_EFI_ERROR(Status);
     mOnGuarding = FALSE;
   }
 }
@@ -1104,12 +1104,12 @@ SetAllGuardPages (
     return;
   }
 
-  CopyMem (Entries, mLevelMask, sizeof (Entries));
-  CopyMem (Shifts, mLevelShift, sizeof (Shifts));
+  CopyMem(Entries, mLevelMask, sizeof (Entries));
+  CopyMem(Shifts, mLevelShift, sizeof (Shifts));
 
-  SetMem (Tables, sizeof(Tables), 0);
-  SetMem (Addresses, sizeof(Addresses), 0);
-  SetMem (Indices, sizeof(Indices), 0);
+  SetMem(Tables, sizeof(Tables), 0);
+  SetMem(Addresses, sizeof(Addresses), 0);
+  SetMem(Indices, sizeof(Indices), 0);
 
   Level         = GUARDED_HEAP_MAP_TABLE_DEPTH - mMapLevel;
   Tables[Level] = mGuardedMemoryMap;
@@ -1274,12 +1274,12 @@ DumpGuardedMemoryBitmap (
   DEBUG ((HEAP_GUARD_DEBUG_LEVEL, "                  %a\r\n", Ruler1));
   DEBUG ((HEAP_GUARD_DEBUG_LEVEL, "                  %a\r\n", Ruler2));
 
-  CopyMem (Entries, mLevelMask, sizeof (Entries));
-  CopyMem (Shifts, mLevelShift, sizeof (Shifts));
+  CopyMem(Entries, mLevelMask, sizeof (Entries));
+  CopyMem(Shifts, mLevelShift, sizeof (Shifts));
 
-  SetMem (Indices, sizeof(Indices), 0);
-  SetMem (Tables, sizeof(Tables), 0);
-  SetMem (Addresses, sizeof(Addresses), 0);
+  SetMem(Indices, sizeof(Indices), 0);
+  SetMem(Tables, sizeof(Tables), 0);
+  SetMem(Addresses, sizeof(Addresses), 0);
 
   Level         = GUARDED_HEAP_MAP_TABLE_DEPTH - mMapLevel;
   Tables[Level] = mGuardedMemoryMap;
@@ -1377,7 +1377,7 @@ VerifyMemoryGuard (
                                   EFI_PAGE_SIZE,
                                   &Attribute
                                   );
-  if (EFI_ERROR (Status) || (Attribute & EFI_MEMORY_RP) == 0) {
+  if (EFI_ERROR(Status) || (Attribute & EFI_MEMORY_RP) == 0) {
     DEBUG ((DEBUG_ERROR, "Head Guard is not set at: %016lx (%016lX)!!!\r\n",
             Address, Attribute));
     DumpGuardedMemoryBitmap ();
@@ -1392,7 +1392,7 @@ VerifyMemoryGuard (
                                   EFI_PAGE_SIZE,
                                   &Attribute
                                   );
-  if (EFI_ERROR (Status) || (Attribute & EFI_MEMORY_RP) == 0) {
+  if (EFI_ERROR(Status) || (Attribute & EFI_MEMORY_RP) == 0) {
     DEBUG ((DEBUG_ERROR, "Tail Guard is not set at: %016lx (%016lX)!!!\r\n",
             Address, Attribute));
     DumpGuardedMemoryBitmap ();

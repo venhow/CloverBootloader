@@ -130,7 +130,7 @@ PeimInitializeUsb (
   PEI_USB_HOST_CONTROLLER_PPI  *UsbHcPpi;
   PEI_USB2_HOST_CONTROLLER_PPI *Usb2HcPpi;
 
-  if (!EFI_ERROR (PeiServicesRegisterForShadow (FileHandle))) {
+  if (!EFI_ERROR(PeiServicesRegisterForShadow (FileHandle))) {
     return EFI_SUCCESS;
   }
 
@@ -149,7 +149,7 @@ PeimInitializeUsb (
                NULL,
                (VOID **) &UsbHcPpi
                );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       //
       // No more host controller, break out
       //
@@ -170,7 +170,7 @@ PeimInitializeUsb (
                  NULL,
                  (VOID **) &Usb2HcPpi
                  );
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         //
         // No more host controller, break out
         //
@@ -232,7 +232,7 @@ PeiHubEnumeration (
               (UINT32 *) &PortStatus
               );
 
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       continue;
     }
 
@@ -253,7 +253,7 @@ PeiHubEnumeration (
                    MemPages,
                    &AllocateAddress
                    );
-        if (EFI_ERROR (Status)) {
+        if (EFI_ERROR(Status)) {
           return EFI_OUT_OF_RESOURCES;
         }
 
@@ -264,12 +264,12 @@ PeiHubEnumeration (
         NewPeiUsbDevice->DeviceAddress    = 0;
         NewPeiUsbDevice->MaxPacketSize0   = 8;
         NewPeiUsbDevice->DataToggle       = 0;
-        CopyMem (
+        CopyMem(
           &(NewPeiUsbDevice->UsbIoPpi),
           &mUsbIoPpi,
           sizeof (PEI_USB_IO_PPI)
           );
-        CopyMem (
+        CopyMem(
           &(NewPeiUsbDevice->UsbIoPpiList),
           &mUsbIoPpiList,
           sizeof (EFI_PEI_PPI_DESCRIPTOR)
@@ -336,7 +336,7 @@ PeiHubEnumeration (
                   CurrentAddress
                   );
 
-        if (EFI_ERROR (Status)) {
+        if (EFI_ERROR(Status)) {
           continue;
         }
         DEBUG ((EFI_D_INFO, "PeiHubEnumeration: PeiConfigureUsbDevice Success\n"));
@@ -347,7 +347,7 @@ PeiHubEnumeration (
           NewPeiUsbDevice->IsHub  = 0x1;
 
           Status = PeiDoHubConfig (PeiServices, NewPeiUsbDevice);
-          if (EFI_ERROR (Status)) {
+          if (EFI_ERROR(Status)) {
             return Status;
           }
 
@@ -364,10 +364,10 @@ PeiHubEnumeration (
                      MemPages,
                      &AllocateAddress
                      );
-          if (EFI_ERROR (Status)) {
+          if (EFI_ERROR(Status)) {
             return EFI_OUT_OF_RESOURCES;
           }
-          CopyMem ((VOID *)(UINTN)AllocateAddress, NewPeiUsbDevice, sizeof (PEI_USB_DEVICE));
+          CopyMem((VOID *)(UINTN)AllocateAddress, NewPeiUsbDevice, sizeof (PEI_USB_DEVICE));
           NewPeiUsbDevice = (PEI_USB_DEVICE *) ((UINTN) AllocateAddress);
           NewPeiUsbDevice->AllocateAddress  = (UINTN) AllocateAddress;
           NewPeiUsbDevice->UsbIoPpiList.Ppi = &NewPeiUsbDevice->UsbIoPpi;
@@ -382,7 +382,7 @@ PeiHubEnumeration (
             NewPeiUsbDevice->IsHub  = 0x1;
 
             Status = PeiDoHubConfig (PeiServices, NewPeiUsbDevice);
-            if (EFI_ERROR (Status)) {
+            if (EFI_ERROR(Status)) {
               return Status;
             }
 
@@ -480,7 +480,7 @@ PeiUsbEnumeration (
                    MemPages,
                    &AllocateAddress
                    );
-        if (EFI_ERROR (Status)) {
+        if (EFI_ERROR(Status)) {
           return EFI_OUT_OF_RESOURCES;
         }
 
@@ -491,12 +491,12 @@ PeiUsbEnumeration (
         PeiUsbDevice->DeviceAddress     = 0;
         PeiUsbDevice->MaxPacketSize0    = 8;
         PeiUsbDevice->DataToggle        = 0;
-        CopyMem (
+        CopyMem(
           &(PeiUsbDevice->UsbIoPpi),
           &mUsbIoPpi,
           sizeof (PEI_USB_IO_PPI)
           );
-        CopyMem (
+        CopyMem(
           &(PeiUsbDevice->UsbIoPpiList),
           &mUsbIoPpiList,
           sizeof (EFI_PEI_PPI_DESCRIPTOR)
@@ -577,7 +577,7 @@ PeiUsbEnumeration (
                   &CurrentAddress
                   );
 
-        if (EFI_ERROR (Status)) {
+        if (EFI_ERROR(Status)) {
           continue;
         }
         DEBUG ((EFI_D_INFO, "PeiUsbEnumeration: PeiConfigureUsbDevice Success\n"));
@@ -588,7 +588,7 @@ PeiUsbEnumeration (
           PeiUsbDevice->IsHub = 0x1;
 
           Status = PeiDoHubConfig (PeiServices, PeiUsbDevice);
-          if (EFI_ERROR (Status)) {
+          if (EFI_ERROR(Status)) {
             return Status;
           }
 
@@ -605,10 +605,10 @@ PeiUsbEnumeration (
                      MemPages,
                      &AllocateAddress
                      );
-          if (EFI_ERROR (Status)) {
+          if (EFI_ERROR(Status)) {
             return EFI_OUT_OF_RESOURCES;
           }
-          CopyMem ((VOID *)(UINTN)AllocateAddress, PeiUsbDevice, sizeof (PEI_USB_DEVICE));
+          CopyMem((VOID *)(UINTN)AllocateAddress, PeiUsbDevice, sizeof (PEI_USB_DEVICE));
           PeiUsbDevice = (PEI_USB_DEVICE *) ((UINTN) AllocateAddress);
           PeiUsbDevice->AllocateAddress  = (UINTN) AllocateAddress;
           PeiUsbDevice->UsbIoPpiList.Ppi = &PeiUsbDevice->UsbIoPpi;
@@ -623,7 +623,7 @@ PeiUsbEnumeration (
             PeiUsbDevice->IsHub = 0x1;
 
             Status = PeiDoHubConfig (PeiServices, PeiUsbDevice);
-            if (EFI_ERROR (Status)) {
+            if (EFI_ERROR(Status)) {
               return Status;
             }
 
@@ -684,7 +684,7 @@ PeiConfigureUsbDevice (
                &DeviceDescriptor
                );
 
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       DEBUG ((EFI_D_INFO, "PeiUsbGet Device Descriptor the %d time Success\n", Retry));
       break;
     }
@@ -709,7 +709,7 @@ PeiConfigureUsbDevice (
             *DeviceAddress
             );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG ((EFI_D_ERROR, "PeiUsbSetDeviceAddress Failed: %r\n", Status));
     return Status;
   }
@@ -729,7 +729,7 @@ PeiConfigureUsbDevice (
             &DeviceDescriptor
             );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG ((EFI_D_ERROR, "PeiUsbGetDescriptor First Failed\n"));
     return Status;
   }
@@ -741,7 +741,7 @@ PeiConfigureUsbDevice (
             PeiServices,
             PeiUsbDevice
             );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
   MicroSecondDelay (USB_GET_CONFIG_DESCRIPTOR_STALL);
@@ -751,7 +751,7 @@ PeiConfigureUsbDevice (
             UsbIoPpi
             );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -800,7 +800,7 @@ PeiUsbGetAllConfiguration (
             PeiUsbDevice->ConfigurationData
             );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG ((EFI_D_ERROR, "PeiUsbGet Config Descriptor First Failed\n"));
     return Status;
   }
@@ -835,7 +835,7 @@ PeiUsbGetAllConfiguration (
             PeiUsbDevice->ConfigurationData
             );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG ((EFI_D_ERROR, "PeiUsbGet Config Descriptor all Failed\n"));
     return Status;
   }
@@ -851,7 +851,7 @@ PeiUsbGetAllConfiguration (
             &SkipBytes
             );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -874,7 +874,7 @@ PeiUsbGetAllConfiguration (
               &SkipBytes
               );
 
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
 
@@ -906,7 +906,7 @@ PeiUsbGetAllConfiguration (
                 &SkipBytes
                 );
 
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         return Status;
       }
 
@@ -1045,7 +1045,7 @@ ResetRootPort (
                          EfiUsbPortReset
                          );
 
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       DEBUG ((EFI_D_ERROR, "SetRootHubPortFeature EfiUsbPortReset Failed\n"));
       return;
     }
@@ -1066,7 +1066,7 @@ ResetRootPort (
                          EfiUsbPortReset
                          );
 
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       DEBUG ((EFI_D_ERROR, "ClearRootHubPortFeature EfiUsbPortReset Failed\n"));
       return;
     }
@@ -1086,7 +1086,7 @@ ResetRootPort (
                             PortNum,
                             &PortStatus
                             );
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         return;
       }
 
@@ -1147,7 +1147,7 @@ ResetRootPort (
                          EfiUsbPortReset
                          );
 
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       DEBUG ((EFI_D_ERROR, "SetRootHubPortFeature EfiUsbPortReset Failed\n"));
       return;
     }
@@ -1168,7 +1168,7 @@ ResetRootPort (
                          EfiUsbPortReset
                          );
 
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       DEBUG ((EFI_D_ERROR, "ClearRootHubPortFeature EfiUsbPortReset Failed\n"));
       return;
     }
@@ -1188,7 +1188,7 @@ ResetRootPort (
                            PortNum,
                            &PortStatus
                            );
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         return;
       }
 

@@ -237,7 +237,7 @@ SmmInstallProtocolInterfaceNotify (
 
   if (*UserHandle != NULL) {
     Status = SmmHandleProtocol (*UserHandle, Protocol, (VOID **)&ExistingInterface);
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       return EFI_INVALID_PARAMETER;
     }
   }
@@ -253,7 +253,7 @@ SmmInstallProtocolInterfaceNotify (
   //
   // Allocate a new protocol interface structure
   //
-  Prot = AllocateZeroPool (sizeof(PROTOCOL_INTERFACE));
+  Prot = AllocateZeroPool(sizeof(PROTOCOL_INTERFACE));
   if (Prot == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Done;
@@ -264,7 +264,7 @@ SmmInstallProtocolInterfaceNotify (
   //
   Handle = (IHANDLE *)*UserHandle;
   if (Handle == NULL) {
-    Handle = AllocateZeroPool (sizeof(IHANDLE));
+    Handle = AllocateZeroPool(sizeof(IHANDLE));
     if (Handle == NULL) {
       Status = EFI_OUT_OF_RESOURCES;
       goto Done;
@@ -283,7 +283,7 @@ SmmInstallProtocolInterfaceNotify (
     InsertTailList (&gHandleList, &Handle->AllHandles);
   } else {
     Status = SmmValidateHandle (Handle);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       DEBUG((DEBUG_ERROR, "SmmInstallProtocolInterface: input handle at 0x%x is invalid\n", Handle));
       goto Done;
     }
@@ -323,7 +323,7 @@ SmmInstallProtocolInterfaceNotify (
   Status = EFI_SUCCESS;
 
 Done:
-  if (!EFI_ERROR (Status)) {
+  if (!EFI_ERROR(Status)) {
     //
     // Return the new handle back to the caller
     //
@@ -333,7 +333,7 @@ Done:
     // There was an error, clean up
     //
     if (Prot != NULL) {
-      FreePool (Prot);
+      FreePool(Prot);
     }
     DEBUG((DEBUG_ERROR, "SmmInstallProtocolInterface: %g %p failed with %r\n", Protocol, Interface, Status));
   }
@@ -376,7 +376,7 @@ SmmUninstallProtocolInterface (
   // Check that UserHandle is a valid handle
   //
   Status = SmmValidateHandle (UserHandle);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -405,7 +405,7 @@ SmmUninstallProtocolInterface (
     // Free the memory
     //
     Prot->Signature = 0;
-    FreePool (Prot);
+    FreePool(Prot);
     Status = EFI_SUCCESS;
   }
 
@@ -415,7 +415,7 @@ SmmUninstallProtocolInterface (
   if (IsListEmpty (&Handle->Protocols)) {
     Handle->Signature = 0;
     RemoveEntryList (&Handle->AllHandles);
-    FreePool (Handle);
+    FreePool(Handle);
   }
   return Status;
 }
@@ -442,7 +442,7 @@ SmmGetProtocolInterface (
   LIST_ENTRY          *Link;
 
   Status = SmmValidateHandle (UserHandle);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return NULL;
   }
 
@@ -507,7 +507,7 @@ SmmHandleProtocol (
   // Check for invalid UserHandle
   //
   Status = SmmValidateHandle (UserHandle);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 

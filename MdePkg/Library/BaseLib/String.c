@@ -99,7 +99,7 @@ StrCpy (
   @param  Source      A pointer to a Null-terminated Unicode string.
   @param  Length      The maximum number of Unicode characters to copy.
 
-  @return Destination.
+  @return Destination.  //Slice - no sense to return same pointer as argument
 
 **/
 CHAR16 *
@@ -117,13 +117,16 @@ StrnCpy (
   }
 
   //
-  // Destination cannot be NULL if Length is not zero
+  // Destination cannot be NULL if Length is not zero //Slice - Source as null pointer deref
   //
-  ASSERT (Destination != NULL);
+  if (!Destination || !Source) {
+    return Destination;
+  }
+  //ASSERT (Destination != NULL);
   ASSERT (((UINTN) Destination & BIT0) == 0);
 
   //
-  // Destination and source cannot overlap
+  // Destination and source cannot overlap - //Slice - and what if this happen?
   //
   ASSERT ((UINTN)(Destination - Source) > StrLen (Source));
   ASSERT ((UINTN)(Source - Destination) >= Length);
@@ -141,8 +144,12 @@ StrnCpy (
     *(Destination++) = *(Source++);
     Length--;
   }
-
-  ZeroMem (Destination, Length * sizeof (*Destination));
+  //Slice - if Length == strlen(Source) then null will not be copied
+  //but this is not CopyMem, this is StrnCpy which MUST create NULL-terminating string
+  *Destination = L'\0';
+  
+  //no sense to zero other bytes
+  //ZeroMem (Destination, Length * sizeof (*Destination));
   return ReturnValue;
 }
 #endif
@@ -1083,8 +1090,8 @@ AsciiStrCpy (
   //
   // Destination and source cannot overlap
   //
-  ASSERT ((UINTN)(Destination - Source) > AsciiStrLen (Source));
-  ASSERT ((UINTN)(Source - Destination) > AsciiStrLen (Source));
+  ASSERT ((UINTN)(Destination - Source) > AsciiStrLen(Source));
+  ASSERT ((UINTN)(Source - Destination) > AsciiStrLen(Source));
 
   ReturnValue = Destination;
   while (*Source != 0) {
@@ -1149,7 +1156,7 @@ AsciiStrnCpy (
   //
   // Destination and source cannot overlap
   //
-  ASSERT ((UINTN)(Destination - Source) > AsciiStrLen (Source));
+  ASSERT ((UINTN)(Destination - Source) > AsciiStrLen(Source));
   ASSERT ((UINTN)(Source - Destination) >= Length);
 
 //  if (PcdGet32 (PcdMaximumAsciiStringLength) != 0) {
@@ -1189,7 +1196,7 @@ AsciiStrnCpy (
 **/
 UINTN
 EFIAPI
-AsciiStrLen (
+AsciiStrLen(
   IN      CONST CHAR8               *String
   )
 {
@@ -1242,7 +1249,7 @@ AsciiStrSize (
     return 0;
   }
 
-  return (AsciiStrLen (String) + 1) * sizeof (*String);
+  return (AsciiStrLen(String) + 1) * sizeof (*String);
 }
 
 /**
@@ -1273,7 +1280,7 @@ AsciiStrSize (
 **/
 INTN
 EFIAPI
-AsciiStrCmp (
+AsciiStrCmp(
   IN      CONST CHAR8               *FirstString,
   IN      CONST CHAR8               *SecondString
   )
@@ -1528,7 +1535,7 @@ AsciiStrCat (
   IN CONST CHAR8  *Source
   )
 {
-  AsciiStrCpy (Destination + AsciiStrLen (Destination), Source);
+  AsciiStrCpy (Destination + AsciiStrLen(Destination), Source);
 
   //
   // Size of the resulting string should never be zero.
@@ -1586,7 +1593,7 @@ AsciiStrnCat (
 {
   UINTN   DestinationLen;
 
-  DestinationLen = AsciiStrLen (Destination);
+  DestinationLen = AsciiStrLen(Destination);
   AsciiStrnCpy (Destination + DestinationLen, Source, Length);
   Destination[DestinationLen + Length] = '\0';
 
@@ -1877,7 +1884,7 @@ AsciiStrHexToUint64 (
   string Destination, and returns Destination.  The function terminates the
   Unicode string Destination by appending a Null-terminator character at the end.
   The caller is responsible to make sure Destination points to a buffer with size
-  equal or greater than ((AsciiStrLen (Source) + 1) * sizeof (CHAR16)) in bytes.
+  equal or greater than ((AsciiStrLen(Source) + 1) * sizeof (CHAR16)) in bytes.
 
   If Destination is NULL, then ASSERT().
   If Destination is not aligned on a 16-bit boundary, then ASSERT().
@@ -1921,7 +1928,7 @@ AsciiStrToUnicodeStr (
   //
   // Source and Destination should not overlap
   //
-  ASSERT ((UINTN) ((CHAR8 *) Destination - Source) > AsciiStrLen (Source));
+  ASSERT ((UINTN) ((CHAR8 *) Destination - Source) > AsciiStrLen(Source));
   ASSERT ((UINTN) (Source - (CHAR8 *) Destination) >= (AsciiStrSize (Source) * sizeof (CHAR16)));
 
 
@@ -2151,7 +2158,7 @@ Base64Encode (
   @retval RETURN_INVALID_PARAMETER  Invalid CHAR8 element encountered in
                                     Source.
 **/
-#if 0
+#if 1
 RETURN_STATUS
 EFIAPI
 Base64Decode (
@@ -2367,7 +2374,7 @@ Base64Decode (
       Accumulator &= 0x3;
       break;
     default:
-      ASSERT (SixBitGroupsConsumed == 4);
+ //     ASSERT (SixBitGroupsConsumed == 4);
       //
       // 8 bits accumulated (2 pending + 6 new); prepare for spilling an octet.
       // The quantum is complete, 0 bits remain pending.
@@ -2383,7 +2390,7 @@ Base64Decode (
     // (*DestinationSize) unconditionally.
     //
     if (*DestinationSize < OriginalDestinationSize) {
-      ASSERT (Destination != NULL);
+//      ASSERT (Destination != NULL);
       Destination[*DestinationSize] = DestinationOctet;
     }
     (*DestinationSize)++;

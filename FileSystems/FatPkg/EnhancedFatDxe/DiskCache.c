@@ -83,7 +83,7 @@ Returns:
       //
       if (IoMode == READ_DISK) {
         if (CacheTag->Dirty) {
-          CopyMem (
+          CopyMem(
             Buffer + ((PageNo - StartPageNo) << PageAlignment),
             BaseAddress + (GroupNo << PageAlignment),
             PageSize
@@ -165,7 +165,7 @@ Returns:
     // Only fat table writing will execute more than once
     //
     Status = FatDiskIo (Volume, IoMode, EntryPos, RealSize, PageAddress, Task);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
 
@@ -221,7 +221,7 @@ Returns:
   //
   if (CacheTag->RealSize > 0 && CacheTag->Dirty) {
     Status = FatExchangeCachePage (Volume, CacheDataType, WRITE_DISK, CacheTag, NULL);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
   }
@@ -279,7 +279,7 @@ Returns:
   GroupNo   = PageNo & DiskCache->GroupMask;
   CacheTag  = &DiskCache->CacheTag[GroupNo];
   Status    = FatGetCachePage (Volume, CacheDataType, PageNo, CacheTag);
-  if (!EFI_ERROR (Status)) {
+  if (!EFI_ERROR(Status)) {
     Source      = DiskCache->CacheBase + (GroupNo << DiskCache->PageAlignment) + Offset;
     Destination = Buffer;
     if (IoMode != READ_DISK) {
@@ -289,7 +289,7 @@ Returns:
       Source            = Buffer;
     }
 
-    CopyMem (Destination, Source, Length);
+    CopyMem(Destination, Source, Length);
   }
 
   return Status;
@@ -369,7 +369,7 @@ Returns:
     }
 
     Status = FatAccessUnalignedCachePage (Volume, CacheDataType, IoMode, PageNo, UnderRun, Length, Buffer);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
 
@@ -392,7 +392,7 @@ Returns:
     EntryPos    = Volume->RootPos + LShiftU64 (PageNo, PageAlignment);
     AlignedSize = AlignedPageCount << PageAlignment;
     Status      = FatDiskIo (Volume, IoMode, EntryPos, AlignedSize, Buffer, Task);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
     //
@@ -460,7 +460,7 @@ Returns:
           // Write back all Dirty Data Cache Page to disk
           //
           Status = FatExchangeCachePage (Volume, CacheDataType, WRITE_DISK, CacheTag, Task);
-          if (EFI_ERROR (Status)) {
+          if (EFI_ERROR(Status)) {
             return Status;
           }
         }
@@ -528,7 +528,7 @@ Returns:
   //
   // Allocate the Fat Cache buffer
   //
-  CacheBuffer = AllocateZeroPool (FatCacheSize + DataCacheSize);
+  CacheBuffer = AllocateZeroPool(FatCacheSize + DataCacheSize);
   if (CacheBuffer == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }

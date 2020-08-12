@@ -94,7 +94,7 @@ InitializeSdMmcHcPeim (
   //
   // Shadow this PEIM to run from memory
   //
-  if (!EFI_ERROR (PeiServicesRegisterForShadow (FileHandle))) {
+  if (!EFI_ERROR(PeiServicesRegisterForShadow (FileHandle))) {
     return EFI_SUCCESS;
   }
 
@@ -106,7 +106,7 @@ InitializeSdMmcHcPeim (
     return EFI_SUCCESS;
   }
 
-  Private = (SD_MMC_HC_PEI_PRIVATE_DATA *) AllocateZeroPool (sizeof (SD_MMC_HC_PEI_PRIVATE_DATA));
+  Private = (SD_MMC_HC_PEI_PRIVATE_DATA *) AllocateZeroPool(sizeof (SD_MMC_HC_PEI_PRIVATE_DATA));
   if (Private == NULL) {
     DEBUG ((EFI_D_ERROR, "Failed to allocate memory for SD_MMC_HC_PEI_PRIVATE_DATA! \n"));
     return EFI_OUT_OF_RESOURCES;
@@ -201,6 +201,6 @@ InitializeSdMmcHcPeim (
   ///
   Status = PeiServicesInstallPpi (&Private->PpiList);
 
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
   return Status;
 }

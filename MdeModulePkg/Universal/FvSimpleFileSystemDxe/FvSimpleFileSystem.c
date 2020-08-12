@@ -153,7 +153,7 @@ FvFsGetFileSize (
     if (Status == EFI_WARN_BUFFER_TOO_SMALL) {
       return EFI_SUCCESS;
     }
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       //
       // Didn't find a raw section, just return the whole file's size.
       //
@@ -240,7 +240,7 @@ FvFsReadFile (
                            BufferSize,
                            &AuthenticationStatus
                            );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       //
       // Didn't find a raw section, just return the whole file.
       //
@@ -306,7 +306,7 @@ FvFsGetFileInfo (
   //
   // Initialize FileInfo
   //
-  CopyMem (FileInfo, &FvFileInfo->FileInfo, InfoSize);
+  CopyMem(FileInfo, &FvFileInfo->FileInfo, InfoSize);
 
   *BufferSize = InfoSize;
   return EFI_SUCCESS;
@@ -396,7 +396,7 @@ TrimFilePathToAbsolutePath (
     TempString  += 4;
     RemoveLastItemFromPath (Path);
     TempSize     = StrSize (TempString);
-    CopyMem (Path + StrLen (Path), TempString, TempSize);
+    CopyMem(Path + StrLen (Path), TempString, TempSize);
   }
 
   if (((TempString = StrStr (Path, L"\\..")) != NULL) && (*(TempString + 3) == CHAR_NULL)) {
@@ -509,14 +509,14 @@ FvSimpleFileSystemOpen (
   // Check for opening root
   //
   if (StrCmp (FileName, L".") == 0 || StrCmp (FileName, L"") == 0) {
-    NewFile = AllocateZeroPool (sizeof (FV_FILESYSTEM_FILE));
+    NewFile = AllocateZeroPool(sizeof (FV_FILESYSTEM_FILE));
     if (NewFile == NULL) {
       return EFI_OUT_OF_RESOURCES;
     }
     NewFile->Signature = FVFS_FILE_SIGNATURE;
     NewFile->Instance  = Instance;
     NewFile->FvFileInfo = File->FvFileInfo;
-    CopyMem (&NewFile->FileProtocol, &mFileSystemTemplate, sizeof (mFileSystemTemplate));
+    CopyMem(&NewFile->FileProtocol, &mFileSystemTemplate, sizeof (mFileSystemTemplate));
     InitializeListHead (&NewFile->Link);
     InsertHeadList (&Instance->FileHead, &NewFile->Link);
 
@@ -572,8 +572,8 @@ FvSimpleFileSystemOpen (
     }
   }
 
-  if (!EFI_ERROR (Status)) {
-    NewFile = AllocateZeroPool (sizeof (FV_FILESYSTEM_FILE));
+  if (!EFI_ERROR(Status)) {
+    NewFile = AllocateZeroPool(sizeof (FV_FILESYSTEM_FILE));
     if (NewFile == NULL) {
       return EFI_OUT_OF_RESOURCES;
     }
@@ -581,7 +581,7 @@ FvSimpleFileSystemOpen (
     NewFile->Signature = FVFS_FILE_SIGNATURE;
     NewFile->Instance  = Instance;
     NewFile->FvFileInfo = FvFileInfo;
-    CopyMem (&NewFile->FileProtocol, &mFileSystemTemplate, sizeof (mFileSystemTemplate));
+    CopyMem(&NewFile->FileProtocol, &mFileSystemTemplate, sizeof (mFileSystemTemplate));
     InitializeListHead (&NewFile->Link);
     InsertHeadList (&Instance->FileHead, &NewFile->Link);
 
@@ -615,7 +615,7 @@ FvSimpleFileSystemClose (
 
   if (File != Instance->Root) {
     RemoveEntryList (&File->Link);
-    FreePool (File);
+    FreePool(File);
   }
   return EFI_SUCCESS;
 }
@@ -664,7 +664,7 @@ FvSimpleFileSystemRead (
       // Directory read: populate Buffer with an EFI_FILE_INFO
       //
       Status = FvFsGetFileInfo (File->DirReadNext, BufferSize, Buffer);
-      if (!EFI_ERROR (Status)) {
+      if (!EFI_ERROR(Status)) {
         //
         // Successfully read a directory entry, now update the pointer to the
         // next file, which will be read on the next call to this function
@@ -691,14 +691,14 @@ FvSimpleFileSystemRead (
   } else {
     FileSize = (UINTN)File->FvFileInfo->FileInfo.FileSize;
 
-    FileBuffer = AllocateZeroPool (FileSize);
+    FileBuffer = AllocateZeroPool(FileSize);
     if (FileBuffer == NULL) {
       return EFI_DEVICE_ERROR;
     }
 
     Status = FvFsReadFile (File->Instance->FvProtocol, File->FvFileInfo, &FileSize, &FileBuffer);
-    if (EFI_ERROR (Status)) {
-      FreePool (FileBuffer);
+    if (EFI_ERROR(Status)) {
+      FreePool(FileBuffer);
       return EFI_DEVICE_ERROR;
     }
 
@@ -706,10 +706,10 @@ FvSimpleFileSystemRead (
       *BufferSize = (UINTN)(FileSize - File->Position);
     }
 
-    CopyMem (Buffer, (UINT8*)FileBuffer + File->Position, *BufferSize);
+    CopyMem(Buffer, (UINT8*)FileBuffer + File->Position, *BufferSize);
     File->Position += *BufferSize;
 
-    FreePool (FileBuffer);
+    FreePool(FileBuffer);
 
     return EFI_SUCCESS;
   }
@@ -877,7 +877,7 @@ FvSimpleFileSystemDelete (
   EFI_STATUS       Status;
 
   Status = FvSimpleFileSystemClose (This);
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   return EFI_WARN_DELETE_FAILURE;
 }
@@ -938,13 +938,13 @@ FvSimpleFileSystemGetInfo (
     //
     FsInfoOut = (EFI_FILE_SYSTEM_INFO *) Buffer;
 
-    CopyMem (FsInfoOut, &mFsInfoTemplate, sizeof (EFI_FILE_SYSTEM_INFO));
+    CopyMem(FsInfoOut, &mFsInfoTemplate, sizeof (EFI_FILE_SYSTEM_INFO));
     Status = StrnCpyS ( FsInfoOut->VolumeLabel,
                         (*BufferSize - OFFSET_OF (EFI_FILE_SYSTEM_INFO, VolumeLabel)) / sizeof (CHAR16),
                         Instance->VolumeLabel,
                         StrLen (Instance->VolumeLabel)
                         );
-    ASSERT_EFI_ERROR (Status);
+    ASSERT_EFI_ERROR(Status);
     FsInfoOut->Size = Size;
     return Status;
   } else if (CompareGuid (InformationType, &gEfiFileInfoGuid)) {
@@ -969,7 +969,7 @@ FvSimpleFileSystemGetInfo (
                               Instance->VolumeLabel,
                               StrLen (Instance->VolumeLabel)
                               );
-    ASSERT_EFI_ERROR (Status);
+    ASSERT_EFI_ERROR(Status);
     return Status;
   } else {
     return EFI_UNSUPPORTED;

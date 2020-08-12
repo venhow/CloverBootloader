@@ -41,7 +41,7 @@ typedef struct DTMemMapEntry_ {
 // Foundation Types.
 //
 
-#define DT_PATH_NAME_SEPERATOR      '/'    //< 0x2F
+#define DT_PATH_NAME_SEPARATOR      '/'    //< 0x2F
 
 #define DT_MAX_PROPERTY_NAME_LENGTH 31     //< Max length of Property Name (terminator not included)
 #define DT_MAX_ENTRY_NAME_LENGTH    31     //< Max length of a C-String Entry Name (terminator not included)
@@ -62,6 +62,9 @@ typedef OpaqueDTEntryIterator             *DTEntryIterator;
 
 typedef struct OpaqueDTPropertyIterator_  OpaqueDTPropertyIterator;
 typedef OpaqueDTPropertyIterator          *DTPropertyIterator;
+
+//Old compatibility
+typedef DTProperty DeviceTreeNodeProperty;
 
 //
 // Structures for a Flattened Device Tree.
@@ -205,7 +208,7 @@ DTRestartEntryIteration (
   Get the value of the specified property for the specified entry.
 **/
 EFI_STATUS
-DTGetProperty (
+DTGetProperty(
   IN CONST DTEntry      Entry,
   IN CHAR8              *PropertyName,
   IN VOID               **PropertyValue,

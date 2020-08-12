@@ -46,7 +46,7 @@ InitCommunicateBuffer (
   //
   // The whole buffer size: SMM_COMMUNICATE_HEADER_SIZE + SMM_FTW_COMMUNICATE_HEADER_SIZE + DataSize.
   //
-  SmmCommunicateHeader = AllocateZeroPool (DataSize + SMM_COMMUNICATE_HEADER_SIZE + SMM_FTW_COMMUNICATE_HEADER_SIZE);
+  SmmCommunicateHeader = AllocateZeroPool(DataSize + SMM_COMMUNICATE_HEADER_SIZE + SMM_FTW_COMMUNICATE_HEADER_SIZE);
   ASSERT (SmmCommunicateHeader != NULL);
 
   //
@@ -84,7 +84,7 @@ SendCommunicateBuffer (
 
   CommSize = DataSize + SMM_COMMUNICATE_HEADER_SIZE + SMM_FTW_COMMUNICATE_HEADER_SIZE;
   Status = mSmmCommunication->Communicate (mSmmCommunication, SmmCommunicateHeader, &CommSize);
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   SmmFtwFunctionHeader = (SMM_FTW_COMMUNICATE_FUNCTION_HEADER *) SmmCommunicateHeader->Data;
   return  SmmFtwFunctionHeader->ReturnStatus;
@@ -113,12 +113,12 @@ ConvertFvbHandle (
   EFI_FIRMWARE_VOLUME_BLOCK_PROTOCOL        *Fvb;
 
   Status = gBS->HandleProtocol (FvbHandle, &gEfiFirmwareVolumeBlockProtocolGuid, (VOID **) &Fvb);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
   Status = Fvb->GetPhysicalAddress (Fvb, FvbBaseAddress);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -166,7 +166,7 @@ FtwGetMaxBlockSize (
   // Get data from SMM
   //
   *BlockSize = SmmFtwBlockSizeHeader->BlockSize;
-  FreePool (SmmCommunicateHeader);
+  FreePool(SmmCommunicateHeader);
 
   return Status;
 }
@@ -224,7 +224,7 @@ FtwAllocate (
     mPrivateDataSize = PrivateDataSize;
   }
 
-  FreePool (SmmCommunicateHeader);
+  FreePool(SmmCommunicateHeader);
   return Status;
 }
 
@@ -290,27 +290,27 @@ FtwWrite (
   // and its attribute. Send these information to SMM handler, the SMM handler will find the proper FVB to write data.
   //
   Status = ConvertFvbHandle (FvBlockHandle, &SmmFtwWriteHeader->FvbBaseAddress, &SmmFtwWriteHeader->FvbAttributes);
-  if (EFI_ERROR (Status)) {
-    FreePool (SmmCommunicateHeader);
+  if (EFI_ERROR(Status)) {
+    FreePool(SmmCommunicateHeader);
     return EFI_ABORTED;
   }
 
   SmmFtwWriteHeader->Lba    = Lba;
   SmmFtwWriteHeader->Offset = Offset;
   SmmFtwWriteHeader->Length = Length;
-  CopyMem (SmmFtwWriteHeader->Data, Buffer, Length);
+  CopyMem(SmmFtwWriteHeader->Data, Buffer, Length);
   if (PrivateData == NULL) {
     SmmFtwWriteHeader->PrivateDataSize = 0;
   } else {
     SmmFtwWriteHeader->PrivateDataSize = mPrivateDataSize;
-    CopyMem (&SmmFtwWriteHeader->Data[Length], PrivateData, mPrivateDataSize);
+    CopyMem(&SmmFtwWriteHeader->Data[Length], PrivateData, mPrivateDataSize);
   }
 
   //
   // Send data to SMM.
   //
   Status = SendCommunicateBuffer (SmmCommunicateHeader, PayloadSize);
-  FreePool (SmmCommunicateHeader);
+  FreePool(SmmCommunicateHeader);
   return Status;
 }
 
@@ -350,8 +350,8 @@ FtwRestart (
   // and its attribute. Send these information to SMM handler, the SMM handler will find the proper FVB to write data.
   //
   Status = ConvertFvbHandle (FvBlockHandle, &SmmFtwRestartHeader->FvbBaseAddress, &SmmFtwRestartHeader->FvbAttributes);
-  if (EFI_ERROR (Status)) {
-    FreePool (SmmCommunicateHeader);
+  if (EFI_ERROR(Status)) {
+    FreePool(SmmCommunicateHeader);
     return EFI_ABORTED;
   }
 
@@ -359,7 +359,7 @@ FtwRestart (
   // Send data to SMM.
   //
   Status = SendCommunicateBuffer (SmmCommunicateHeader, PayloadSize);
-  FreePool (SmmCommunicateHeader);
+  FreePool(SmmCommunicateHeader);
   return Status;
 }
 
@@ -393,7 +393,7 @@ FtwAbort (
   //
   Status = SendCommunicateBuffer (SmmCommunicateHeader, 0);
 
-  FreePool (SmmCommunicateHeader);
+  FreePool(SmmCommunicateHeader);
   return Status;
 }
 
@@ -464,13 +464,13 @@ FtwGetLastWrite (
     *Complete = SmmFtwGetLastWriteHeader->Complete;
     CopyGuid (CallerId, &SmmFtwGetLastWriteHeader->CallerId);
     if (Status == EFI_SUCCESS) {
-      CopyMem (PrivateData, SmmFtwGetLastWriteHeader->Data, *PrivateDataSize);
+      CopyMem(PrivateData, SmmFtwGetLastWriteHeader->Data, *PrivateDataSize);
     }
   } else if (Status == EFI_NOT_FOUND) {
     *Complete = SmmFtwGetLastWriteHeader->Complete;
   }
 
-  FreePool (SmmCommunicateHeader);
+  FreePool(SmmCommunicateHeader);
   return Status;
 }
 
@@ -497,12 +497,12 @@ SmmFtwReady (
   // if Fault Tolerant Write protocol had been installed.
   //
   Status = gBS->LocateProtocol (&gEfiFaultTolerantWriteProtocolGuid, NULL, (VOID **)&FtwProtocol);
-  if (!EFI_ERROR (Status)) {
+  if (!EFI_ERROR(Status)) {
     return;
   }
 
   Status = gBS->LocateProtocol (&gEfiSmmCommunicationProtocolGuid, NULL, (VOID **) &mSmmCommunication);
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   //
   // Install protocol interface
@@ -513,10 +513,10 @@ SmmFtwReady (
                   EFI_NATIVE_INTERFACE,
                   &mFaultTolerantWriteDriver
                   );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   Status = gBS->CloseEvent (Event);
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 }
 
 

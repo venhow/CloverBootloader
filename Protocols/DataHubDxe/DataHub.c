@@ -83,7 +83,7 @@ DataHubLogData (
   //  atomic operation, so use the lock.
   //
   Status = EfiAcquireLockOrFail (&Private->DataLock);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     //
     // Reentrancy detected so exit!
     //
@@ -108,8 +108,8 @@ DataHubLogData (
   Record->Version     = EFI_DATA_RECORD_HEADER_VERSION;
   Record->HeaderSize  = (UINT16) sizeof (EFI_DATA_RECORD_HEADER);
   Record->RecordSize  = RecordSize;
-  CopyMem (&Record->DataRecordGuid, DataRecordGuid, sizeof (EFI_GUID));
-  CopyMem (&Record->ProducerName, ProducerName, sizeof (EFI_GUID));
+  CopyMem(&Record->DataRecordGuid, DataRecordGuid, sizeof (EFI_GUID));
+  CopyMem(&Record->ProducerName, ProducerName, sizeof (EFI_GUID));
   Record->DataRecordClass   = DataRecordClass;
 
   //
@@ -117,7 +117,7 @@ DataHubLogData (
   //
   Record->LogMonotonicCount = ++Private->GlobalMonotonicCount;
 
-  CopyMem (&Record->LogTime, &LogTime, sizeof (LogTime));
+  CopyMem(&Record->LogTime, &LogTime, sizeof (LogTime));
 
   //
   // Insert log into the internal linked list.
@@ -127,7 +127,7 @@ DataHubLogData (
   LogEntry->RecordSize  = sizeof (EFI_DATA_ENTRY) + RawDataSize;
   InsertTailList (&Private->DataListHead, &LogEntry->Link);
 
-  CopyMem (Raw, RawData, RawDataSize);
+  CopyMem(Raw, RawData, RawDataSize);
 
   EfiReleaseLock (&Private->DataLock);
 
@@ -431,7 +431,7 @@ DataHubRegisterFilterDriver (
 
   Private       = DATA_HUB_INSTANCE_FROM_THIS (This);
 
-  FilterDriver  = (DATA_HUB_FILTER_DRIVER *) AllocateZeroPool (sizeof (DATA_HUB_FILTER_DRIVER));
+  FilterDriver  = (DATA_HUB_FILTER_DRIVER *) AllocateZeroPool(sizeof (DATA_HUB_FILTER_DRIVER));
   if (FilterDriver == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
@@ -452,13 +452,13 @@ DataHubRegisterFilterDriver (
   }
 
   if (FilterDataRecordGuid != NULL) {
-    CopyMem (&FilterDriver->FilterDataRecordGuid, FilterDataRecordGuid, sizeof (EFI_GUID));
+    CopyMem(&FilterDriver->FilterDataRecordGuid, FilterDataRecordGuid, sizeof (EFI_GUID));
   }
   //
   // Search for duplicate entries
   //
   if (FindFilterDriverByEvent (&Private->FilterDriverListHead, FilterEvent) != NULL) {
-    FreePool (FilterDriver);
+    FreePool(FilterDriver);
     return EFI_ALREADY_STARTED;
   }
   //
@@ -564,7 +564,7 @@ DataHubInstall (
   // Make sure we get a bigger MTC number on every boot!
   //
   Status = gRT->GetNextHighMonotonicCount (&HighMontonicCount);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     //
     // if system service fails pick a sane value.
     //

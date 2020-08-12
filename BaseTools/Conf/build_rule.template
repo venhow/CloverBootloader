@@ -106,12 +106,8 @@
 #  build_rule_version=0.1
 #
 
-[C-Code-File]
+[Cxx-Code-File]
     <InputFile>
-        ?.c
-        ?.C
-        ?.cc
-        ?.CC
         ?.cpp
         ?.Cpp
         ?.CPP
@@ -123,7 +119,34 @@
         $(OUTPUT_DIR)(+)${s_dir}(+)${s_base}.obj
 
     <Command.MSFT, Command.INTEL>
-        "$(CC)" /Fo${dst} $(CC_FLAGS) $(INC) ${src}
+        @"$(CC)" /Fo${dst} $(CC_FLAGS) $(INC) ${src}
+		@"echo" [CPP] ${s_base}
+
+    <Command.GCC, Command.RVCT>
+        # For RVCTCYGWIN CC_FLAGS must be first to work around pathing issues
+        @"$(CC)" $(CXX_FLAGS) -c -o ${dst} $(INC) ${src}
+        @"echo" [CPP] ${s_base}
+
+    <Command.XCODE>
+        @"$(CC)" $(CC_FLAGS) -o ${dst} $(INC) ${src}
+        @"echo" [CPP] ${s_base}
+
+[C-Code-File]
+    <InputFile>
+        ?.c
+        ?.C
+        ?.cc
+        ?.CC
+
+    <ExtraDependency>
+        $(MAKE_FILE)
+
+    <OutputFile>
+        $(OUTPUT_DIR)(+)${s_dir}(+)${s_base}.obj
+
+    <Command.MSFT, Command.INTEL>
+        @"$(CC)" /Fo${dst} $(CC_FLAGS) $(INC) ${src}
+		@"echo" [CPP] ${s_base}
 
     <Command.GCC, Command.RVCT>
         # For RVCTCYGWIN CC_FLAGS must be first to work around pathing issues
@@ -297,7 +320,9 @@
         $(DEBUG_DIR)(+)$(MODULE_NAME).dll
 
     <Command.MSFT, Command.INTEL>
-        "$(DLINK)" /OUT:${dst} $(DLINK_FLAGS) $(DLINK_SPATH) @$(STATIC_LIBRARY_FILES_LIST)
+        @"$(DLINK)" /OUT:${dst} $(DLINK_FLAGS) $(DLINK2_FLAGS) $(DLINK_SPATH) @$(STATIC_LIBRARY_FILES_LIST)
+        @"$(DLINK)" /OUT:${dst} $(DLINK_FLAGS) $(DLINK_SPATH) @$(STATIC_LIBRARY_FILES_LIST)
+		@"echo" [DLINK1] $(MODULE_NAME)
 
     <Command.GCC>
         @"$(DLINK)" -o ${dst} $(DLINK_FLAGS) $(GCCLINK_PREFIX)--start-group  $(DLINK_SPATH) @$(STATIC_LIBRARY_FILES_LIST) $(GCCLINK_PREFIX)--end-group $(DLINK2_FLAGS)
@@ -342,7 +367,8 @@
         $(DEBUG_DIR)(+)$(MODULE_NAME)
 
     <Command.MSFT, Command.INTEL>
-        "$(DLINK)" $(DLINK_FLAGS) $(DLINK_SPATH) @$(STATIC_LIBRARY_FILES_LIST)
+        @"$(DLINK)" $(DLINK_FLAGS) $(DLINK_SPATH) @$(STATIC_LIBRARY_FILES_LIST)
+		@"echo" [DLINK2] $(MODULE_NAME)
 
     <Command.GCC>
         @"$(DLINK)" $(DLINK_FLAGS) $(GCCLINK_PREFIX)--start-group $(DLINK_SPATH) @$(STATIC_LIBRARY_FILES_LIST) $(GCCLINK_PREFIX)--end-group $(DLINK2_FLAGS)
@@ -368,21 +394,23 @@
         $(OUTPUT_DIR)(+)$(MODULE_NAME).efi
 
     <Command.MSFT, Command.INTEL, Command.RVCT>
-        "$(GENFW)" -e $(MODULE_TYPE) -o ${dst} ${src} $(GENFW_FLAGS)
-        $(CP) ${dst} $(DEBUG_DIR)
-        $(CP) ${dst} $(BIN_DIR)(+)$(MODULE_NAME_GUID).efi
+        @"$(GENFW)" -e $(MODULE_TYPE) -o ${dst} ${src} $(GENFW_FLAGS)
+        @$(CP) ${dst} $(DEBUG_DIR)
+        @$(CP) ${dst} $(BIN_DIR)(+)$(MODULE_NAME_GUID).efi
         -$(CP) $(DEBUG_DIR)(+)*.map $(OUTPUT_DIR)
         -$(CP) $(DEBUG_DIR)(+)*.pdb $(OUTPUT_DIR) 
+		@"echo" [GENFW] $(MODULE_NAME)
+
     <Command.GCC>
-        #$(OBJCOPY) --only-keep-debug ${src} $(DEBUG_DIR)(+)$(MODULE_NAME).debug
-        @$(OBJCOPY) --strip-debug ${src} $(DEBUG_DIR)(+)$(MODULE_NAME).debug
-        @$(OBJCOPY) --strip-unneeded -R .eh_frame ${src}
+        @$(OBJCOPY) --only-keep-debug ${src} $(DEBUG_DIR)(+)$(MODULE_NAME).debug
+        #@$(OBJCOPY) --strip-debug ${src} $(DEBUG_DIR)(+)$(MODULE_NAME).debug
+        #@$(OBJCOPY) --strip-unneeded -R .eh_frame ${src}
 
         #
         #The below 2 lines are only needed for UNIXGCC tool chain, which generates PE image directly
         #
         @-$(OBJCOPY) $(OBJCOPY_ADDDEBUGFLAG) ${src}
-        #-$(CP) $(DEBUG_DIR)(+)$(MODULE_NAME).debug $(BIN_DIR)(+)$(MODULE_NAME_GUID).debug
+        $(CP) $(DEBUG_DIR)(+)$(MODULE_NAME).debug $(BIN_DIR)(+)$(MODULE_NAME_GUID).debug
         @"echo" [OBJCOPY] $(MODULE_NAME)
 
         @"$(GENFW)" -e $(MODULE_TYPE) -o ${dst} ${src} $(GENFW_FLAGS)
@@ -393,7 +421,7 @@
         
     <Command.XCODE>
         # tool to convert Mach-O to PE/COFF
-        #@"$(STRIP)" ${src}
+        #"$(STRIP)" ${src}
         @"$(MTOC)" -subsystem $(MODULE_TYPE)  $(MTOC_FLAGS)  ${src}  $(DEBUG_DIR)(+)$(MODULE_NAME).pecoff
         @"echo" [MTOC] $(MODULE_NAME)
         # create symbol file for GDB debug
@@ -438,7 +466,7 @@
 
     <Command.GCC>
         @Trim --asl-file -o $(OUTPUT_DIR)(+)${s_dir}(+)${s_base}.i -i $(INC_LIST) ${src}
-        @"$(ASLPP)" $(ASLPP_FLAGS) $(INC) -I${s_path} $(OUTPUT_DIR)(+)${s_dir}(+)${s_base}.i > $(OUTPUT_DIR)(+)${s_dir}(+)${s_base}.iii
+        "$(ASLPP)" $(ASLPP_FLAGS) $(INC) -I${s_path} $(OUTPUT_DIR)(+)${s_dir}(+)${s_base}.i > $(OUTPUT_DIR)(+)${s_dir}(+)${s_base}.iii
         @"echo" [ASLPP] ${s_base}
         @Trim --source-code -l -o $(OUTPUT_DIR)(+)${s_dir}(+)${s_base}.iiii $(OUTPUT_DIR)(+)${s_dir}(+)${s_base}.iii
         @"$(ASL)" $(ASL_FLAGS) $(ASL_OUTFLAGS)${dst} $(OUTPUT_DIR)(+)${s_dir}(+)${s_base}.iiii
@@ -455,9 +483,9 @@
         $(MAKE_FILE)
 
     <Command.MSFT, Command.INTEL>
-        "$(ASLCC)" /Fo$(OUTPUT_DIR)(+)${s_dir}(+)${s_base}.obj $(ASLCC_FLAGS) $(INC) ${src}
-        "$(ASLDLINK)" /OUT:$(OUTPUT_DIR)(+)${s_dir}(+)${s_base}.dll $(ASLDLINK_FLAGS) $(OUTPUT_DIR)(+)${s_dir}(+)${s_base}.obj
-        "$(GENFW)" -o ${dst} -c $(OUTPUT_DIR)(+)${s_dir}(+)${s_base}.dll $(GENFW_FLAGS)
+        @"$(ASLCC)" /Fo$(OUTPUT_DIR)(+)${s_dir}(+)${s_base}.obj $(ASLCC_FLAGS) $(INC) ${src}
+        @"$(ASLDLINK)" /OUT:$(OUTPUT_DIR)(+)${s_dir}(+)${s_base}.dll $(ASLDLINK_FLAGS) $(OUTPUT_DIR)(+)${s_dir}(+)${s_base}.obj
+        @"$(GENFW)" -o ${dst} -c $(OUTPUT_DIR)(+)${s_dir}(+)${s_base}.dll $(GENFW_FLAGS)
 
     <Command.GCC>
         @"$(ASLCC)" -c -o $(OUTPUT_DIR)(+)${s_dir}(+)${s_base}.obj $(CC_FLAGS) $(ASLCC_FLAGS) $(INC) ${src}
@@ -477,9 +505,9 @@
         $(MAKE_FILE)
 
     <Command.MSFT, Command.INTEL>
-        "$(ASLCC)" /Fo$(OUTPUT_DIR)(+)${s_dir}(+)${s_base}.obj $(ASLCC_FLAGS) $(INC) ${src}
-        "$(ASLDLINK)" /OUT:$(OUTPUT_DIR)(+)${s_dir}(+)${s_base}.dll $(ASLDLINK_FLAGS) $(OUTPUT_DIR)(+)${s_dir}(+)${s_base}.obj
-        "$(GENFW)" -o ${dst} -c $(OUTPUT_DIR)(+)${s_dir}(+)${s_base}.dll $(GENFW_FLAGS)
+        @"$(ASLCC)" /Fo$(OUTPUT_DIR)(+)${s_dir}(+)${s_base}.obj $(ASLCC_FLAGS) $(INC) ${src}
+        @"$(ASLDLINK)" /OUT:$(OUTPUT_DIR)(+)${s_dir}(+)${s_base}.dll $(ASLDLINK_FLAGS) $(OUTPUT_DIR)(+)${s_dir}(+)${s_base}.obj
+        @"$(GENFW)" -o ${dst} -c $(OUTPUT_DIR)(+)${s_dir}(+)${s_base}.dll $(GENFW_FLAGS)
 
     <Command.GCC>
         @"$(ASLCC)" -c -o $(OUTPUT_DIR)(+)${s_dir}(+)${s_base}.obj $(CC_FLAGS) $(ASLCC_FLAGS) $(INC) ${src}
@@ -494,9 +522,9 @@
         @"echo" [ASLDLINK-ACPI] $(MODULE_NAME)
         @"$(ASLDLINK)" -o $(OUTPUT_DIR)(+)${s_dir}(+)${s_base}.dll $(ASLDLINK_FLAGS) $(OUTPUT_DIR)(+)${s_dir}(+)${s_base}.obj
         @"echo" [MTOC-ACPI] $(MODULE_NAME)
-        #@"$(STRIP)" ${src}
+        #"$(STRIP)" ${src}
         @"$(MTOC)" -subsystem $(MODULE_TYPE)  $(MTOC_FLAGS) $(OUTPUT_DIR)(+)${s_dir}(+)${s_base}.dll $(OUTPUT_DIR)(+)${s_dir}(+)${s_base}.efi
-        @"$(GENFW)" -o ${dst} -c $(OUTPUT_DIR)(+)${s_dir}(+)${s_base}.efi $(GENFW_FLAGS)
+        @"$(GENFW)" -o ${dst} -c $(OUTPUT_DIR)(+)${s_dir}(+)${s_base}.pecoff $(GENFW_FLAGS)
         @"echo" [GENFW-ACPI] $(MODULE_NAME)
       
       

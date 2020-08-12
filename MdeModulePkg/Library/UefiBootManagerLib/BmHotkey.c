@@ -85,7 +85,7 @@ BmIsKeyOptionValid (
   // Check CRC for Boot Option
   //
   gBS->CalculateCrc32 (BootOption, BootOptionSize, &Crc);
-  FreePool (BootOption);
+  FreePool(BootOption);
 
   return (BOOLEAN) (KeyOption->BootOptionCrc == Crc);
 }
@@ -176,12 +176,12 @@ BmCollectKeyOptions (
           break;
         }
       }
-      CopyMem (&Param->KeyOptions[Index + 1], &Param->KeyOptions[Index], (Param->KeyOptionCount - Index) * sizeof (EFI_BOOT_MANAGER_KEY_OPTION));
-      CopyMem (&Param->KeyOptions[Index], KeyOption, KeyOptionSize);
+      CopyMem(&Param->KeyOptions[Index + 1], &Param->KeyOptions[Index], (Param->KeyOptionCount - Index) * sizeof (EFI_BOOT_MANAGER_KEY_OPTION));
+      CopyMem(&Param->KeyOptions[Index], KeyOption, KeyOptionSize);
       Param->KeyOptions[Index].OptionNumber = OptionNumber;
       Param->KeyOptionCount++;
     }
-    FreePool (KeyOption);
+    FreePool(KeyOption);
   }
 }
 
@@ -261,7 +261,7 @@ BmInitializeKeyFields (
     if (Key == NULL) {
       break;
     }
-    CopyMem (
+    CopyMem(
       &KeyOption->Keys[KeyOption->KeyData.Options.InputKeyCount],
       Key,
       sizeof (EFI_INPUT_KEY)
@@ -388,7 +388,7 @@ BmHotkeyCallback (
         // Received the whole key stroke sequence
         //
         Status = gBS->SignalEvent (mBmHotkeyTriggered);
-        ASSERT_EFI_ERROR (Status);
+        ASSERT_EFI_ERROR(Status);
 
         if (!Hotkey->IsContinue) {
           //
@@ -400,7 +400,7 @@ BmHotkeyCallback (
             );
           Status = EfiBootManagerVariableToLoadOption (OptionName, &mBmHotkeyBootOption);
           DEBUG ((EFI_D_INFO, "[Bds]Hotkey for %s pressed - %r\n", OptionName, Status));
-          if (EFI_ERROR (Status)) {
+          if (EFI_ERROR(Status)) {
             mBmHotkeyBootOption.OptionNumber = LoadOptionNumberUnassigned;
           }
         } else {
@@ -450,8 +450,8 @@ BmGetActiveConsoleIn (
                     NULL,
                     EFI_OPEN_PROTOCOL_TEST_PROTOCOL
                     );
-    if (!EFI_ERROR (Status)) {
-      Handles = AllocateCopyPool (sizeof (EFI_HANDLE), &gST->ConsoleInHandle);
+    if (!EFI_ERROR(Status)) {
+      Handles = AllocateCopyPool(sizeof (EFI_HANDLE), &gST->ConsoleInHandle);
       if (Handles != NULL) {
         *Count = 1;
       }
@@ -493,7 +493,7 @@ BmUnregisterHotkeyNotify (
   Handles = BmGetActiveConsoleIn (&HandleCount);
   for (Index = 0; Index < HandleCount; Index++) {
     Status = gBS->HandleProtocol (Handles[Index], &gEfiSimpleTextInputExProtocolGuid, (VOID **) &TxtInEx);
-    ASSERT_EFI_ERROR (Status);
+    ASSERT_EFI_ERROR(Status);
     for (KeyIndex = 0; KeyIndex < Hotkey->CodeCount; KeyIndex++) {
       Status = TxtInEx->RegisterKeyNotify (
                           TxtInEx,
@@ -501,7 +501,7 @@ BmUnregisterHotkeyNotify (
                           BmHotkeyCallback,
                           &NotifyHandle
                           );
-      if (!EFI_ERROR (Status)) {
+      if (!EFI_ERROR(Status)) {
         Status = TxtInEx->UnregisterKeyNotify (TxtInEx, NotifyHandle);
         DEBUG ((EFI_D_INFO, "[Bds]UnregisterKeyNotify: %04x/%04x %r\n", Hotkey->KeyData[KeyIndex].Key.ScanCode, Hotkey->KeyData[KeyIndex].Key.UnicodeChar, Status));
       }
@@ -509,7 +509,7 @@ BmUnregisterHotkeyNotify (
   }
 
   if (Handles != NULL) {
-    FreePool (Handles);
+    FreePool(Handles);
   }
 
   return EFI_SUCCESS;
@@ -550,7 +550,7 @@ BmRegisterHotkeyNotify (
       Hotkey->KeyData[Index].KeyState.KeyToggleState,
       Status
       ));
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       //
       // some of the hotkey registry failed
       // do not unregister all in case we have both CTRL-ALT-P and CTRL-ALT-P-R
@@ -666,7 +666,7 @@ BmProcessKeyOption (
   Handles = BmGetActiveConsoleIn (&HandleCount);
 
   for (Index = 0; Index < KeyShiftStateCount; Index++) {
-    Hotkey = AllocateZeroPool (sizeof (BM_HOTKEY));
+    Hotkey = AllocateZeroPool(sizeof (BM_HOTKEY));
     ASSERT (Hotkey != NULL);
 
     Hotkey->Signature  = BM_HOTKEY_SIGNATURE;
@@ -675,21 +675,21 @@ BmProcessKeyOption (
     Hotkey->CodeCount  = (UINT8) KeyOption->KeyData.Options.InputKeyCount;
 
     for (KeyIndex = 0; KeyIndex < Hotkey->CodeCount; KeyIndex++) {
-      CopyMem (&Hotkey->KeyData[KeyIndex].Key, &KeyOption->Keys[KeyIndex], sizeof (EFI_INPUT_KEY));
+      CopyMem(&Hotkey->KeyData[KeyIndex].Key, &KeyOption->Keys[KeyIndex], sizeof (EFI_INPUT_KEY));
       Hotkey->KeyData[KeyIndex].KeyState.KeyShiftState = KeyShiftStates[Index];
     }
     InsertTailList (&mBmHotkeyList, &Hotkey->Link);
 
     for (HandleIndex = 0; HandleIndex < HandleCount; HandleIndex++) {
       Status = gBS->HandleProtocol (Handles[HandleIndex], &gEfiSimpleTextInputExProtocolGuid, (VOID **) &TxtInEx);
-      ASSERT_EFI_ERROR (Status);
+      ASSERT_EFI_ERROR(Status);
       if (EFI_ERROR(Status)) continue;
       BmRegisterHotkeyNotify (TxtInEx, Hotkey);
     }
   }
 
   if (Handles != NULL) {
-    FreePool (Handles);
+    FreePool(Handles);
   }
   EfiReleaseLock (&mBmHotkeyLock);
 
@@ -725,7 +725,7 @@ BmTxtInExCallback (
                     &BufferSize,
                     &Handle
                     );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       //
       // If no more notification events exist
       //
@@ -737,7 +737,7 @@ BmTxtInExCallback (
                     &gEfiSimpleTextInputExProtocolGuid,
                     (VOID **) &TxtInEx
                     );
-    ASSERT_EFI_ERROR (Status);
+    ASSERT_EFI_ERROR(Status);
 
     //
     // Register the hot key notification for the existing items in the list
@@ -766,7 +766,7 @@ BmFreeKeyOptions (
   )
 {
   if (KeyOptions != NULL) {
-    FreePool (KeyOptions);
+    FreePool(KeyOptions);
     return EFI_SUCCESS;
   } else {
     return EFI_NOT_FOUND;
@@ -804,8 +804,8 @@ EfiBootManagerRegisterContinueKeyOption (
   Status = BmInitializeKeyFields (Modifier, Args, &KeyOption);
   VA_END (Args);
 
-  if (!EFI_ERROR (Status)) {
-    mBmContinueKeyOption = AllocateCopyPool (sizeof (EFI_BOOT_MANAGER_KEY_OPTION), &KeyOption);
+  if (!EFI_ERROR(Status)) {
+    mBmContinueKeyOption = AllocateCopyPool(sizeof (EFI_BOOT_MANAGER_KEY_OPTION), &KeyOption);
     ASSERT (mBmContinueKeyOption != NULL);
     if (mBmHotkeyServiceStarted) {
       BmProcessKeyOption (mBmContinueKeyOption);
@@ -839,7 +839,7 @@ BmStopHotkeyService (
     Hotkey = BM_HOTKEY_FROM_LINK (Link);
     BmUnregisterHotkeyNotify (Hotkey);
     Link   = RemoveEntryList (Link);
-    FreePool (Hotkey);
+    FreePool(Hotkey);
   }
   EfiReleaseLock (&mBmHotkeyLock);
 }
@@ -870,7 +870,7 @@ EfiBootManagerStartHotkeyService (
     if ((*BootOptionSupport & EFI_BOOT_OPTION_SUPPORT_KEY)  != 0) {
       mBmHotkeySupportCount = ((*BootOptionSupport & EFI_BOOT_OPTION_SUPPORT_COUNT) >> LowBitSet32 (EFI_BOOT_OPTION_SUPPORT_COUNT));
     }
-    FreePool (BootOptionSupport);
+    FreePool(BootOptionSupport);
   }
 
   if (mBmHotkeySupportCount == 0) {
@@ -885,7 +885,7 @@ EfiBootManagerStartHotkeyService (
                   NULL,
                   &mBmHotkeyTriggered
                   );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   if (HotkeyTriggered != NULL) {
     *HotkeyTriggered = mBmHotkeyTriggered;
@@ -922,7 +922,7 @@ EfiBootManagerStartHotkeyService (
              NULL,
              &Event
              );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   mBmHotkeyServiceStarted = TRUE;
   return Status;
@@ -974,13 +974,13 @@ EfiBootManagerAddKeyOptionVariable (
   ZeroMem (&KeyOption, sizeof (EFI_BOOT_MANAGER_KEY_OPTION));
   KeyOption.BootOption = BootOptionNumber;
   Status = gBS->CalculateCrc32 (BootOption, BootOptionSize, &KeyOption.BootOptionCrc);
-  ASSERT_EFI_ERROR (Status);
-  FreePool (BootOption);
+  ASSERT_EFI_ERROR(Status);
+  FreePool(BootOption);
 
   VA_START (Args, Modifier);
   Status = BmInitializeKeyFields (Modifier, Args, &KeyOption);
   VA_END (Args);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -1020,12 +1020,12 @@ EfiBootManagerAddKeyOptionVariable (
                   BmSizeOfKeyOption (&KeyOption),
                   &KeyOption
                   );
-  if (!EFI_ERROR (Status)) {
+  if (!EFI_ERROR(Status)) {
     //
     // Return the Key Option in case needed by caller
     //
     if (AddedOption != NULL) {
-      CopyMem (AddedOption, &KeyOption, sizeof (EFI_BOOT_MANAGER_KEY_OPTION));
+      CopyMem(AddedOption, &KeyOption, sizeof (EFI_BOOT_MANAGER_KEY_OPTION));
     }
 
     //
@@ -1076,7 +1076,7 @@ EfiBootManagerDeleteKeyOptionVariable (
   Status = BmInitializeKeyFields (Modifier, Args, &KeyOption);
   VA_END (Args);
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -1110,7 +1110,7 @@ EfiBootManagerDeleteKeyOptionVariable (
 
     if (Match) {
       Link = RemoveEntryList (Link);
-      FreePool (Hotkey);
+      FreePool(Hotkey);
     } else {
       Link = GetNextNode (&mBmHotkeyList, Link);
     }
@@ -1139,7 +1139,7 @@ EfiBootManagerDeleteKeyOptionVariable (
       // Return the deleted key option in case needed by caller
       //
       if (DeletedOption != NULL) {
-        CopyMem (DeletedOption, &KeyOptions[Index], sizeof (EFI_BOOT_MANAGER_KEY_OPTION));
+        CopyMem(DeletedOption, &KeyOptions[Index], sizeof (EFI_BOOT_MANAGER_KEY_OPTION));
       }
       break;
     }

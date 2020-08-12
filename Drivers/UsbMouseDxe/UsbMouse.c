@@ -74,7 +74,7 @@ USBMouseDriverBindingEntryPoint (
              &gUsbMouseComponentName,
              &gUsbMouseComponentName2
              );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   return EFI_SUCCESS;
 }
@@ -110,7 +110,7 @@ USBMouseDriverBindingSupported (
                   Controller,
                   EFI_OPEN_PROTOCOL_BY_DRIVER
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -186,14 +186,14 @@ USBMouseDriverBindingStart (
                   Controller,
                   EFI_OPEN_PROTOCOL_BY_DRIVER
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DBG("no UsbIo to start mouse\n");
     goto ErrorExit1;
   }
   
   DBG("UsbMouse started\n");
 
-  UsbMouseDevice = AllocateZeroPool (sizeof (USB_MOUSE_DEV));
+  UsbMouseDevice = AllocateZeroPool(sizeof (USB_MOUSE_DEV));
   ASSERT (UsbMouseDevice != NULL);
 
   UsbMouseDevice->UsbIo     = UsbIo;
@@ -211,7 +211,7 @@ USBMouseDriverBindingStart (
                   EFI_OPEN_PROTOCOL_GET_PROTOCOL
                   );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DBG("no DevicePath to start mouse\n");
     goto ErrorExit;
   }
@@ -282,7 +282,7 @@ USBMouseDriverBindingStart (
     );
 
   Status = InitializeUsbMouseDevice (UsbMouseDevice);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     //
     // Fail to initialize USB mouse device.
     //
@@ -309,7 +309,7 @@ USBMouseDriverBindingStart (
                   UsbMouseDevice,
                   &((UsbMouseDevice->SimplePointerProtocol).WaitForInput)
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto ErrorExit;
   }
 
@@ -320,7 +320,7 @@ USBMouseDriverBindingStart (
                   &UsbMouseDevice->SimplePointerProtocol
                   );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto ErrorExit;
   }
 
@@ -363,7 +363,7 @@ USBMouseDriverBindingStart (
                     UsbMouseDevice
                     );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     //
     // If submit error, uninstall that interface
     //
@@ -399,7 +399,7 @@ USBMouseDriverBindingStart (
 // Error handler
 //
 ErrorExit:
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     gBS->CloseProtocol (
           Controller,
           &gEfiUsbIoProtocolGuid,
@@ -412,7 +412,7 @@ ErrorExit:
         gBS->CloseEvent ((UsbMouseDevice->SimplePointerProtocol).WaitForInput);
       }
 
-      FreePool (UsbMouseDevice);
+      FreePool(UsbMouseDevice);
       UsbMouseDevice = NULL;
     }
   }
@@ -459,7 +459,7 @@ USBMouseDriverBindingStop (
                   EFI_OPEN_PROTOCOL_GET_PROTOCOL
                   );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return EFI_UNSUPPORTED;
   }
 
@@ -494,7 +494,7 @@ USBMouseDriverBindingStop (
                   &gEfiSimplePointerProtocolGuid,
                   &UsbMouseDevice->SimplePointerProtocol
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -519,7 +519,7 @@ USBMouseDriverBindingStop (
     FreeUnicodeStringTable (UsbMouseDevice->ControllerNameTable);
   }
 
-  FreePool (UsbMouseDevice);
+  FreePool(UsbMouseDevice);
 
   return EFI_SUCCESS;
 
@@ -551,7 +551,7 @@ IsUsbMouse (
                     &InterfaceDescriptor
                     );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DBG("UsbGetInterfaceDescriptor status=%r\n", Status);
     return FALSE;
   }
@@ -611,7 +611,7 @@ InitializeUsbMouseDevice (
                     UsbIo,
                     &ConfigDesc
                     );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DBG("UsbGetConfigDescriptor status=%r\n", Status);
     return Status;
   }
@@ -620,7 +620,7 @@ InitializeUsbMouseDevice (
   // By issuing Get_Descriptor(Configuration) request with total length, we get the Configuration descriptor,
   // all Interface descriptors, all Endpoint descriptors, and the HID descriptor for each interface.
   //
-  Buf = AllocateZeroPool (ConfigDesc.TotalLength);
+  Buf = AllocateZeroPool(ConfigDesc.TotalLength);
   if (Buf == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
@@ -633,8 +633,8 @@ InitializeUsbMouseDevice (
              Buf,
              &TransferResult
              );
-  if (EFI_ERROR (Status)) {
-    FreePool (Buf);
+  if (EFI_ERROR(Status)) {
+    FreePool(Buf);
     DBG("error getting mouse descriptor\n");
     return Status;
   }
@@ -669,7 +669,7 @@ InitializeUsbMouseDevice (
   }
 
   if (MouseHidDesc == NULL) {
-    FreePool (Buf);
+    FreePool(Buf);
     return EFI_UNSUPPORTED;
   }
 
@@ -677,11 +677,11 @@ InitializeUsbMouseDevice (
   // Get report descriptor
   //
   if (MouseHidDesc->HidClassDesc[0].DescriptorType != USB_DESC_TYPE_REPORT) {
-    FreePool (Buf);
+    FreePool(Buf);
     return EFI_UNSUPPORTED;
   }
 
-  ReportDesc = AllocateZeroPool (MouseHidDesc->HidClassDesc[0].DescriptorLength);
+  ReportDesc = AllocateZeroPool(MouseHidDesc->HidClassDesc[0].DescriptorLength);
   ASSERT (ReportDesc != NULL);
 
   Status = UsbGetReportDescriptor (
@@ -691,9 +691,9 @@ InitializeUsbMouseDevice (
              ReportDesc
              );
 
-  if (EFI_ERROR (Status)) {
-    FreePool (Buf);
-    FreePool (ReportDesc);
+  if (EFI_ERROR(Status)) {
+    FreePool(Buf);
+    FreePool(ReportDesc);
     return Status;
   }
   DBG("report descriptor of length %d\n", MouseHidDesc->HidClassDesc[0].DescriptorLength);
@@ -706,9 +706,9 @@ InitializeUsbMouseDevice (
              MouseHidDesc->HidClassDesc[0].DescriptorLength
              );
 
-  if (EFI_ERROR (Status)) {
-    FreePool (Buf);
-    FreePool (ReportDesc);
+  if (EFI_ERROR(Status)) {
+    FreePool(Buf);
+    FreePool(ReportDesc);
     return Status;
   }
   DBG("number of buttons=%d\n", UsbMouseDev->NumberOfButtons);
@@ -742,15 +742,15 @@ InitializeUsbMouseDevice (
                BOOT_PROTOCOL
                );
 
-    if (EFI_ERROR (Status)) {
-      FreePool (Buf);
-      FreePool (ReportDesc);
+    if (EFI_ERROR(Status)) {
+      FreePool(Buf);
+      FreePool(ReportDesc);
       return Status;
     }
   }
 
-  FreePool (Buf);
-  FreePool (ReportDesc);
+  FreePool(Buf);
+  FreePool(ReportDesc);
 
   //
   // Create event for delayed recovery, which deals with device error.
@@ -926,7 +926,7 @@ GetMouseState (
   //
   // Retrieve mouse state from USB_MOUSE_DEV, which was filled by OnMouseInterruptComplete()
   //
-  CopyMem (
+  CopyMem(
     MouseState,
     &MouseDev->State,
     sizeof (EFI_SIMPLE_POINTER_STATE)

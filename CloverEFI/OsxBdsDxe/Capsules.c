@@ -91,11 +91,11 @@ BdsProcessCapsules (
   //
   // Init temp Capsule Data table.
   //
-  CapsulePtr       = (VOID **) AllocateZeroPool (sizeof (VOID *) * CapsuleTotalNumber);
+  CapsulePtr       = (VOID **) AllocateZeroPool(sizeof (VOID *) * CapsuleTotalNumber);
 //  ASSERT (CapsulePtr != NULL);
-  CapsulePtrCache  = (VOID **) AllocateZeroPool (sizeof (VOID *) * CapsuleTotalNumber);
+  CapsulePtrCache  = (VOID **) AllocateZeroPool(sizeof (VOID *) * CapsuleTotalNumber);
 //  ASSERT (CapsulePtrCache != NULL);
-  CapsuleGuidCache = (EFI_GUID *) AllocateZeroPool (sizeof (EFI_GUID) * CapsuleTotalNumber);
+  CapsuleGuidCache = (EFI_GUID *) AllocateZeroPool(sizeof (EFI_GUID) * CapsuleTotalNumber);
 //  ASSERT (CapsuleGuidCache != NULL);
   
   //
@@ -173,7 +173,7 @@ BdsProcessCapsules (
       CapsuleTable->CapsuleArrayNumber =  CapsuleNumber;
       CopyMem(&CapsuleTable->CapsulePtr[0], CapsulePtrCache, CapsuleNumber * sizeof(VOID*));
       Status = gBS->InstallConfigurationTable (&CapsuleGuidCache[CacheIndex], (VOID*)CapsuleTable);
-//      ASSERT_EFI_ERROR (Status);
+//      ASSERT_EFI_ERROR(Status);
     }
     CacheIndex++;
   }
@@ -219,9 +219,9 @@ BdsProcessCapsules (
   //
   // Free the allocated temp memory space.
   //
-  FreePool (CapsuleGuidCache);
-  FreePool (CapsulePtrCache);
-  FreePool (CapsulePtr);
+  FreePool(CapsuleGuidCache);
+  FreePool(CapsulePtrCache);
+  FreePool(CapsulePtr);
 
   return Status;
 }

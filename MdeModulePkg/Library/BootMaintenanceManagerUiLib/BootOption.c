@@ -42,9 +42,9 @@ BmmSetupResetReminder (
   //check any reset required change is applied? if yes, reset system
   //
   if (!EFI_ERROR(Status) && FormBrowserEx2->IsResetRequired()) {
-    StringBuffer1 = AllocateZeroPool (MAX_CHAR * sizeof (CHAR16));
+    StringBuffer1 = AllocateZeroPool(MAX_CHAR * sizeof (CHAR16));
     ASSERT (StringBuffer1 != NULL);
-    StringBuffer2 = AllocateZeroPool (MAX_CHAR * sizeof (CHAR16));
+    StringBuffer2 = AllocateZeroPool(MAX_CHAR * sizeof (CHAR16));
     ASSERT (StringBuffer2 != NULL);
     StrCpyS (StringBuffer1, MAX_CHAR, L"Configuration changed. Reset to apply it Now.");
     StrCpyS (StringBuffer2, MAX_CHAR, L"Press ENTER to reset");
@@ -55,8 +55,8 @@ BmmSetupResetReminder (
       CreatePopUp (EFI_LIGHTGRAY | EFI_BACKGROUND_BLUE, &Key, StringBuffer1, StringBuffer2, NULL);
     } while (Key.UnicodeChar != CHAR_CARRIAGE_RETURN);
 
-    FreePool (StringBuffer1);
-    FreePool (StringBuffer2);
+    FreePool(StringBuffer1);
+    FreePool(StringBuffer2);
 
     gRT->ResetSystem (EfiResetCold, EFI_SUCCESS, 0, NULL);
   }
@@ -115,14 +115,14 @@ BOpt_CreateMenuEntry (
   //
   // Create new menu entry
   //
-  MenuEntry = AllocateZeroPool (sizeof (BM_MENU_ENTRY));
+  MenuEntry = AllocateZeroPool(sizeof (BM_MENU_ENTRY));
   if (MenuEntry == NULL) {
     return NULL;
   }
 
-  MenuEntry->VariableContext = AllocateZeroPool (ContextSize);
+  MenuEntry->VariableContext = AllocateZeroPool(ContextSize);
   if (MenuEntry->VariableContext == NULL) {
-    FreePool (MenuEntry);
+    FreePool(MenuEntry);
     return NULL;
   }
 
@@ -154,18 +154,18 @@ BOpt_DestroyMenuEntry (
   switch (MenuEntry->ContextSelection) {
   case BM_LOAD_CONTEXT_SELECT:
     LoadContext = (BM_LOAD_CONTEXT *) MenuEntry->VariableContext;
-    FreePool (LoadContext->FilePathList);
+    FreePool(LoadContext->FilePathList);
     if (LoadContext->OptionalData != NULL) {
-      FreePool (LoadContext->OptionalData);
+      FreePool(LoadContext->OptionalData);
     }
-    FreePool (LoadContext);
+    FreePool(LoadContext);
     break;
 
   case BM_FILE_CONTEXT_SELECT:
     FileContext = (BM_FILE_CONTEXT *) MenuEntry->VariableContext;
 
     if (!FileContext->IsRoot) {
-      FreePool (FileContext->DevicePath);
+      FreePool(FileContext->DevicePath);
     } else {
       if (FileContext->FHandle != NULL) {
         FileContext->FHandle->Close (FileContext->FHandle);
@@ -173,41 +173,41 @@ BOpt_DestroyMenuEntry (
     }
 
     if (FileContext->FileName != NULL) {
-      FreePool (FileContext->FileName);
+      FreePool(FileContext->FileName);
     }
     if (FileContext->Info != NULL) {
-      FreePool (FileContext->Info);
+      FreePool(FileContext->Info);
     }
-    FreePool (FileContext);
+    FreePool(FileContext);
     break;
 
   case BM_CONSOLE_CONTEXT_SELECT:
     ConsoleContext = (BM_CONSOLE_CONTEXT *) MenuEntry->VariableContext;
-    FreePool (ConsoleContext->DevicePath);
-    FreePool (ConsoleContext);
+    FreePool(ConsoleContext->DevicePath);
+    FreePool(ConsoleContext);
     break;
 
   case BM_TERMINAL_CONTEXT_SELECT:
     TerminalContext = (BM_TERMINAL_CONTEXT *) MenuEntry->VariableContext;
-    FreePool (TerminalContext->DevicePath);
-    FreePool (TerminalContext);
+    FreePool(TerminalContext->DevicePath);
+    FreePool(TerminalContext);
     break;
 
   case BM_HANDLE_CONTEXT_SELECT:
     HandleContext = (BM_HANDLE_CONTEXT *) MenuEntry->VariableContext;
-    FreePool (HandleContext);
+    FreePool(HandleContext);
     break;
 
   default:
     break;
   }
 
-  FreePool (MenuEntry->DisplayString);
+  FreePool(MenuEntry->DisplayString);
   if (MenuEntry->HelpString != NULL) {
-    FreePool (MenuEntry->HelpString);
+    FreePool(MenuEntry->HelpString);
   }
 
-  FreePool (MenuEntry);
+  FreePool(MenuEntry);
 }
 
 /**
@@ -328,7 +328,7 @@ BOpt_GetBootOptions (
   GetEfiGlobalVariable2 (L"BootNext", (VOID **) &BootNext, &BootNextSize);
   if (BootNext != NULL) {
     if (BootNextSize != sizeof (UINT16)) {
-      FreePool (BootNext);
+      FreePool(BootNext);
       BootNext = NULL;
     }
   }
@@ -412,7 +412,7 @@ BOpt_GetBootOptions (
 
     StringSize = StrSize((UINT16*)LoadOptionPtr);
 
-    NewLoadContext->Description = AllocateZeroPool (StrSize((UINT16*)LoadOptionPtr));
+    NewLoadContext->Description = AllocateZeroPool(StrSize((UINT16*)LoadOptionPtr));
     ASSERT (NewLoadContext->Description != NULL);
     StrCpyS (NewLoadContext->Description, StrSize((UINT16*)LoadOptionPtr) / sizeof (UINT16), (UINT16*)LoadOptionPtr);
 
@@ -422,9 +422,9 @@ BOpt_GetBootOptions (
 
     LoadOptionPtr += StringSize;
 
-    NewLoadContext->FilePathList = AllocateZeroPool (NewLoadContext->FilePathListLength);
+    NewLoadContext->FilePathList = AllocateZeroPool(NewLoadContext->FilePathListLength);
     ASSERT (NewLoadContext->FilePathList != NULL);
-    CopyMem (
+    CopyMem(
       NewLoadContext->FilePathList,
       (EFI_DEVICE_PATH_PROTOCOL *) LoadOptionPtr,
       NewLoadContext->FilePathListLength
@@ -442,9 +442,9 @@ BOpt_GetBootOptions (
         StringSize -
         NewLoadContext->FilePathListLength;
 
-      NewLoadContext->OptionalData = AllocateZeroPool (OptionalDataSize);
+      NewLoadContext->OptionalData = AllocateZeroPool(OptionalDataSize);
       ASSERT (NewLoadContext->OptionalData != NULL);
-      CopyMem (
+      CopyMem(
         NewLoadContext->OptionalData,
         LoadOptionPtr,
         OptionalDataSize
@@ -453,15 +453,15 @@ BOpt_GetBootOptions (
 
     InsertTailList (&BootOptionMenu.Head, &NewMenuEntry->Link);
     MenuCount++;
-    FreePool (LoadOptionFromVar);
+    FreePool(LoadOptionFromVar);
   }
   EfiBootManagerFreeLoadOptions (BootOption, BootOptionCount);
 
   if (BootNext != NULL) {
-    FreePool (BootNext);
+    FreePool(BootNext);
   }
   if (BootOrderList != NULL) {
-    FreePool (BootOrderList);
+    FreePool(BootOrderList);
   }
 
   BootOptionMenu.MenuNumber = MenuCount;
@@ -512,7 +512,7 @@ BOpt_FindDrivers (
                   &NoDevicePathHandles,
                   &DevicePathHandle
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -540,7 +540,7 @@ BOpt_FindDrivers (
 
     NewMenuEntry = BOpt_CreateMenuEntry (BM_HANDLE_CONTEXT_SELECT);
     if (NULL == NewMenuEntry) {
-      FreePool (DevicePathHandle);
+      FreePool(DevicePathHandle);
       return EFI_OUT_OF_RESOURCES;
     }
 
@@ -558,7 +558,7 @@ BOpt_FindDrivers (
   }
 
   if (DevicePathHandle != NULL) {
-    FreePool (DevicePathHandle);
+    FreePool(DevicePathHandle);
   }
 
   DriverMenu.MenuNumber = OptionNumber;
@@ -740,9 +740,9 @@ BOpt_GetDriverOptions (
     LoadOptionPtr += sizeof (UINT16);
 
     StringSize                  = StrSize ((UINT16 *) LoadOptionPtr);
-    NewLoadContext->Description = AllocateZeroPool (StringSize);
+    NewLoadContext->Description = AllocateZeroPool(StringSize);
     ASSERT (NewLoadContext->Description != NULL);
-    CopyMem (
+    CopyMem(
       NewLoadContext->Description,
       (UINT16 *) LoadOptionPtr,
       StringSize
@@ -752,9 +752,9 @@ BOpt_GetDriverOptions (
 
     LoadOptionPtr += StringSize;
 
-    NewLoadContext->FilePathList = AllocateZeroPool (NewLoadContext->FilePathListLength);
+    NewLoadContext->FilePathList = AllocateZeroPool(NewLoadContext->FilePathListLength);
     ASSERT (NewLoadContext->FilePathList != NULL);
-    CopyMem (
+    CopyMem(
       NewLoadContext->FilePathList,
       (EFI_DEVICE_PATH_PROTOCOL *) LoadOptionPtr,
       NewLoadContext->FilePathListLength
@@ -772,9 +772,9 @@ BOpt_GetDriverOptions (
         StringSize -
         NewLoadContext->FilePathListLength;
 
-      NewLoadContext->OptionalData = AllocateZeroPool (OptionalDataSize);
+      NewLoadContext->OptionalData = AllocateZeroPool(OptionalDataSize);
       ASSERT (NewLoadContext->OptionalData != NULL);
-      CopyMem (
+      CopyMem(
         NewLoadContext->OptionalData,
         LoadOptionPtr,
         OptionalDataSize
@@ -783,12 +783,12 @@ BOpt_GetDriverOptions (
     }
 
     InsertTailList (&DriverOptionMenu.Head, &NewMenuEntry->Link);
-    FreePool (LoadOptionFromVar);
+    FreePool(LoadOptionFromVar);
 
   }
 
   if (DriverOrderList != NULL) {
-    FreePool (DriverOrderList);
+    FreePool(DriverOrderList);
   }
 
   DriverOptionMenu.MenuNumber = Index;

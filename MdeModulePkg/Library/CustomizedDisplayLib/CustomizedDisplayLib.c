@@ -63,7 +63,7 @@ DisplayPageFrame (
   }
 
   Status = ScreenDiemensionInfoValidate (FormData);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -536,7 +536,7 @@ CreateDialog (
 
   if (Key != NULL) {
     Status = WaitForKeyStroke (&KeyValue);
-//    ASSERT_EFI_ERROR (Status);
+//    ASSERT_EFI_ERROR(Status);
     if (!EFI_ERROR(Status)) {
       CopyMem(Key, &KeyValue, sizeof(EFI_INPUT_KEY));
     }
@@ -721,7 +721,7 @@ ClearLines (
   //
   // For now, allocate an arbitrarily long buffer
   //
-  Buffer = AllocateZeroPool (0x10000);
+  Buffer = AllocateZeroPool(0x10000);
   ASSERT (Buffer != NULL);
   if (!Buffer) {
     return;
@@ -746,7 +746,7 @@ ClearLines (
 
   gST->ConOut->SetCursorPosition (gST->ConOut, LeftColumn, TopRow);
 
-  FreePool (Buffer);
+  FreePool(Buffer);
 }
 
 //

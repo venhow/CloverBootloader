@@ -47,7 +47,7 @@ AmlCreateNode (
   ASSERT (AmlNodeList != NULL);
 
   AmlNodeList->Signature = EFI_AML_NODE_LIST_SIGNATURE;
-  CopyMem (AmlNodeList->Name, NameSeg, AML_NAME_SEG_SIZE);
+  CopyMem(AmlNodeList->Name, NameSeg, AML_NAME_SEG_SIZE);
   AmlNodeList->Buffer    = NULL;
   AmlNodeList->Size      = 0;
   InitializeListHead (&AmlNodeList->Link);
@@ -319,7 +319,7 @@ AmlConstructNodeListForChild (
   // Now, we get the last node.
   //
   Status = AmlGetOffsetAfterLastOption (AmlHandle, &CurrentBuffer);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return EFI_INVALID_PARAMETER;
   }
 
@@ -331,7 +331,7 @@ AmlConstructNodeListForChild (
     // Find the child node.
     //
     Status = SdtOpenEx (CurrentBuffer, (UINTN)Buffer + BufferSize - (UINTN)CurrentBuffer, (EFI_ACPI_HANDLE *)&AmlChildHandle);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       //
       // No child found, break now.
       //
@@ -346,7 +346,7 @@ AmlConstructNodeListForChild (
                AmlRootNodeList,
                AmlParentNodeList
                );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       break;
     }
 
@@ -453,7 +453,7 @@ AmlDestructNodeList (
   //
   // Done.
   //
-  FreePool (AmlParentNodeList);
+  FreePool(AmlParentNodeList);
   return ;
 }
 
@@ -538,7 +538,7 @@ AmlFindPath (
              AmlRootNodeList, // Root
              AmlRootNodeList  // Parent
              );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return EFI_INVALID_PARAMETER;
   }
 

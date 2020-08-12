@@ -14,6 +14,7 @@
 #include <Library/DebugLib.h>
 #include <Library/PrintLib.h>
 #include <Library/DevicePathLib.h>
+#include <Library/DeviceTreeLib.h>
 
 #include <Protocol/LoadedImage.h>
 #include <Protocol/BlockIo.h>
@@ -1049,7 +1050,7 @@ PrintRTVariables(
       // no more vars
       break;
     }
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       // no more vars or error
       PRINT("ERROR: GetNextVariableName: %r\n", Status);
       return;

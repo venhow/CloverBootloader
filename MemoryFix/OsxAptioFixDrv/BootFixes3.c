@@ -12,13 +12,14 @@
 #include <Library/DebugLib.h>
 #include <Library/UefiBootServicesTableLib.h>
 #include <Library/UefiRuntimeServicesTableLib.h>
+#include <Library/DeviceTreeLib.h>
 
 #include "BootFixes3.h"
 #include "AsmFuncs.h"
 #include "BootArgs.h"
 #include "VMem.h"
 #include "Lib.h"
-#include "FlatDevTree/device_tree.h"
+//#include "FlatDevTree/device_tree.h"
 #include "Mach-O/Mach-O.h"
 #include "Hibernate.h"
 #include "NVRAMDebug.h"
@@ -562,7 +563,7 @@ ProtectRtDataFromRelocation(
           ++RelocInfo;
           ++gRelocInfoData.NumEntries;
         } else {
-          DBG (" WARNING: Cannot save mem type for entry: %lx (type 0x%x)\n", Desc->PhysicalStart, (UINTN)Desc->Type);
+          DBG(" WARNING: Cannot save mem type for entry: %lx (type 0x%x)\n", Desc->PhysicalStart, (UINTN)Desc->Type);
         }
 
         DBG(" RT mem %lx (0x%x) -> MemMapIO\n", Desc->PhysicalStart, Desc->NumberOfPages);
@@ -732,7 +733,7 @@ RuntimeServicesFix(BootArgs *BA)
 	Status = ExecSetVirtualAddressesToMemMap(MemoryMapSize, DescriptorSize, DescriptorVersion, MemoryMap);
 	
 	//DBG("SetVirtualAddressMap() = Status: %r\n", Status);
-	if (EFI_ERROR (Status)) {
+	if (EFI_ERROR(Status)) {
 		CpuDeadLoop();
 	}
 	
@@ -765,44 +766,45 @@ RuntimeServicesFix(BootArgs *BA)
 VOID
 DevTreeFix(BootArgs *BA)
 {
-	DTEntry				DevTree;
-	DTEntry				MemMap;
-	struct OpaqueDTPropertyIterator OPropIter;
-	DTPropertyIterator	PropIter = &OPropIter;
-	CHAR8				*PropName;
-	DTMemMapEntry		*PropValue;
+	DTEntry             DevTree;
+	DTEntry             MemMap;
+	CHAR8               *PropName;
+	DTMemMapEntry       *PropValue;
 	BooterKextFileInfo	*KextInfo;
+  
+  OpaqueDTPropertyIterator OPropIter;
+  DTPropertyIterator	PropIter = &OPropIter;
 
 
 	DevTree = (DTEntry)(UINTN)(*BA->deviceTreeP);
 	
 	DBG("Fixing DevTree at %p\n", DevTree);
 	DBGnvr("Fixing DevTree at %p\n", DevTree);
-	DTInit(DevTree);
-	if (DTLookupEntry(NULL, "/chosen/memory-map", &MemMap) == kSuccess) {
+	DTInit(DevTree, BA->deviceTreeLength);
+	if (!EFI_ERROR(DTLookupEntry(NULL, "/chosen/memory-map", &MemMap))) {
 		DBG("Found /chosen/memory-map\n");
-		if (DTCreatePropertyIteratorNoAlloc(MemMap, PropIter) == kSuccess) {
+		if (!EFI_ERROR(DTCreatePropertyIterator(MemMap, PropIter))) {
 			DBG("DTCreatePropertyIterator OK\n");
-			while (DTIterateProperties(PropIter, &PropName) == kSuccess) {
-				DBG("= %a, val len=%d: ", PropName, PropIter->currentProperty->length);
+			while (!EFI_ERROR(DTIterateProperties(PropIter, &PropName))) {
+				DBG("= %a, val len=%d: ", PropName, PropIter->CurrentProperty->Length);
 				// all /chosen/memory-map props have DTMemMapEntry (address, length)
 				// values. we need to correct the address
 				
 				// basic check that value is 2 * UINT32
-				if (PropIter->currentProperty->length != 2 * sizeof(UINT32)) {
+				if (PropIter->CurrentProperty->Length != 2 * sizeof(UINT32)) {
 					// not DTMemMapEntry, usually "name" property
 					DBG("NOT DTMemMapEntry\n");
 					continue;
 				}
 				
 				// get value (Address and Length)
-				PropValue = (DTMemMapEntry*)(((UINT8*)PropIter->currentProperty) + sizeof(DeviceTreeNodeProperty));
+				PropValue = (DTMemMapEntry*)(((UINT8*)PropIter->CurrentProperty) + sizeof(DeviceTreeNodeProperty));
 				DBG("MM Addr = %x, Len = %x ", PropValue->Address, PropValue->Length);
 				
 				// second check - Address is in our reloc block
 				// (note: *BA->kaddr is not fixed yet and points to reloc block)
-				if ((PropValue->Address < *BA->kaddr)
-					|| (PropValue->Address >= *BA->kaddr + *BA->ksize))
+				if ((PropValue->Address < *BA->kaddr) ||
+					  (PropValue->Address >= *BA->kaddr + *BA->ksize))
 				{
 					DBG("DTMemMapEntry->Address is not in reloc block, skipping\n");
 					continue;
@@ -828,7 +830,7 @@ DevTreeFix(BootArgs *BA)
 	
 }
 
-/** boot.efi zerod original RT areas after they were relocated to new place.
+/** boot.efi zeroed original RT areas after they were relocated to new place.
  *  This breaks sleep on some UEFIs and we'll return the content back.
  *  We'll find previous RT areas by reusing gVirtualMemoryMap.
  *

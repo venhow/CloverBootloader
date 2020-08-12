@@ -259,8 +259,8 @@ InternalRestoreLockBoxFromSmram (
              NULL,
              (VOID **)&SmmAccess
              );
-  if (!EFI_ERROR (Status)) {
-    for (Index = 0; !EFI_ERROR (Status); Index++) {
+  if (!EFI_ERROR(Status)) {
+    for (Index = 0; !EFI_ERROR(Status); Index++) {
       Status = SmmAccess->Open ((EFI_PEI_SERVICES **)GetPeiServicesTablePointer (), SmmAccess, Index);
     }
   }
@@ -325,7 +325,7 @@ InternalRestoreLockBoxFromSmram (
   //
   // Restore data
   //
-  CopyMem (RestoreBuffer, (VOID *)(UINTN)LockBox->SmramBuffer, (UINTN)LockBox->Length);
+  CopyMem(RestoreBuffer, (VOID *)(UINTN)LockBox->SmramBuffer, (UINTN)LockBox->Length);
 
   //
   // Done
@@ -360,8 +360,8 @@ InternalRestoreAllLockBoxInPlaceFromSmram (
              NULL,
              (VOID **)&SmmAccess
              );
-  if (!EFI_ERROR (Status)) {
-    for (Index = 0; !EFI_ERROR (Status); Index++) {
+  if (!EFI_ERROR(Status)) {
+    for (Index = 0; !EFI_ERROR(Status); Index++) {
       Status = SmmAccess->Open ((EFI_PEI_SERVICES **)GetPeiServicesTablePointer (), SmmAccess, Index);
     }
   }
@@ -391,7 +391,7 @@ InternalRestoreAllLockBoxInPlaceFromSmram (
       //
       // Restore data
       //
-      CopyMem ((VOID *)(UINTN)LockBox->Buffer, (VOID *)(UINTN)LockBox->SmramBuffer, (UINTN)LockBox->Length);
+      CopyMem((VOID *)(UINTN)LockBox->Buffer, (VOID *)(UINTN)LockBox->SmramBuffer, (UINTN)LockBox->Length);
     }
   }
   //
@@ -558,7 +558,7 @@ RestoreLockBox (
              NULL,
              (VOID **)&SmmCommunicationPpi
              );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG ((DEBUG_INFO, "SmmLockBoxPeiLib LocatePpi - (%r)\n", Status));
     Status = InternalRestoreLockBoxFromSmram (Guid, Buffer, Length);
     DEBUG ((DEBUG_INFO, "SmmLockBoxPeiLib RestoreLockBox - Exit (%r)\n", Status));
@@ -569,10 +569,10 @@ RestoreLockBox (
   // Prepare parameter
   //
   CommHeader = (EFI_SMM_COMMUNICATE_HEADER *)&CommBuffer[0];
-  CopyMem (&CommHeader->HeaderGuid, &gEfiSmmLockBoxCommunicationGuid, sizeof(gEfiSmmLockBoxCommunicationGuid));
+  CopyMem(&CommHeader->HeaderGuid, &gEfiSmmLockBoxCommunicationGuid, sizeof(gEfiSmmLockBoxCommunicationGuid));
   if ((sizeof(UINTN) == sizeof(UINT32)) && (FeaturePcdGet (PcdDxeIplSwitchToLongMode)) ) {
     MessageLength = sizeof(*LockBoxParameterRestore);
-    CopyMem (&CommBuffer[OFFSET_OF (EFI_SMM_COMMUNICATE_HEADER, MessageLength)], &MessageLength, sizeof(MessageLength));
+    CopyMem(&CommBuffer[OFFSET_OF (EFI_SMM_COMMUNICATE_HEADER, MessageLength)], &MessageLength, sizeof(MessageLength));
   } else {
     CommHeader->MessageLength = sizeof(*LockBoxParameterRestore);
   }
@@ -588,7 +588,7 @@ RestoreLockBox (
   LockBoxParameterRestore->Header.DataLength = sizeof(*LockBoxParameterRestore);
   LockBoxParameterRestore->Header.ReturnStatus = (UINT64)-1;
   if (Guid != 0) {
-    CopyMem (&LockBoxParameterRestore->Guid, Guid, sizeof(*Guid));
+    CopyMem(&LockBoxParameterRestore->Guid, Guid, sizeof(*Guid));
   } else {
     ZeroMem (&LockBoxParameterRestore->Guid, sizeof(*Guid));
   }
@@ -679,7 +679,7 @@ RestoreAllLockBoxInPlace (
              NULL,
              (VOID **)&SmmCommunicationPpi
              );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG ((DEBUG_INFO, "SmmLockBoxPeiLib LocatePpi - (%r)\n", Status));
     Status = InternalRestoreAllLockBoxInPlaceFromSmram ();
     DEBUG ((DEBUG_INFO, "SmmLockBoxPeiLib RestoreAllLockBoxInPlace - Exit (%r)\n", Status));
@@ -690,10 +690,10 @@ RestoreAllLockBoxInPlace (
   // Prepare parameter
   //
   CommHeader = (EFI_SMM_COMMUNICATE_HEADER *)&CommBuffer[0];
-  CopyMem (&CommHeader->HeaderGuid, &gEfiSmmLockBoxCommunicationGuid, sizeof(gEfiSmmLockBoxCommunicationGuid));
+  CopyMem(&CommHeader->HeaderGuid, &gEfiSmmLockBoxCommunicationGuid, sizeof(gEfiSmmLockBoxCommunicationGuid));
   if ((sizeof(UINTN) == sizeof(UINT32)) && (FeaturePcdGet (PcdDxeIplSwitchToLongMode)) ) {
     MessageLength = sizeof(*LockBoxParameterRestoreAllInPlace);
-    CopyMem (&CommBuffer[OFFSET_OF (EFI_SMM_COMMUNICATE_HEADER, MessageLength)], &MessageLength, sizeof(MessageLength));
+    CopyMem(&CommBuffer[OFFSET_OF (EFI_SMM_COMMUNICATE_HEADER, MessageLength)], &MessageLength, sizeof(MessageLength));
   } else {
     CommHeader->MessageLength = sizeof(*LockBoxParameterRestoreAllInPlace);
   }
@@ -724,7 +724,7 @@ RestoreAllLockBoxInPlace (
     Status = InternalRestoreAllLockBoxInPlaceFromSmram ();
     LockBoxParameterRestoreAllInPlace->Header.ReturnStatus = (UINT64)Status;
   }
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   Status = (EFI_STATUS)LockBoxParameterRestoreAllInPlace->Header.ReturnStatus;
   if (Status != EFI_SUCCESS) {

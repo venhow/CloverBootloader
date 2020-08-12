@@ -438,9 +438,9 @@ StrDuplicate (
   UINTN       Size;
 
   Size = (StrLen(Src) + 1) * sizeof(CHAR16);
-  Dest = AllocateZeroPool (Size);
+  Dest = AllocateZeroPool(Size);
   if (Dest != NULL) {
-    CopyMem (Dest, Src, Size);
+    CopyMem(Dest, Src, Size);
   }
   return Dest;
 }

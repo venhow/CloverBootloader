@@ -491,12 +491,22 @@ OvrOSVendor (
 
 VOID
 EFIAPI
-OvrOSEmpty (
-           IN CHAR8 *Name)
+OvrOSGetVtd (
+           OUT UINTN  *BootVTdEnabled)
 {
   //  EFI_STATUS				Status;
-  gOrgOSInfo.OSName(Name);
-  PRINT("->OSInfo.OSEmpty=%a\n", Name);
+  gOrgOSInfo.GetBootVTdEnabled(BootVTdEnabled);
+  PRINT("->OSInfo.GetVtd=0x%x\n", *BootVTdEnabled);
+}
+
+VOID
+EFIAPI
+OvrOSSetVtd (
+            IN UINTN  *BootVTdEnabled)
+{
+  //  EFI_STATUS        Status;
+  gOrgOSInfo.SetBootVTdEnabled(BootVTdEnabled);
+  PRINT("->OSInfo.SetVtd=0x%x\n", *BootVTdEnabled);
 }
 
 
@@ -520,7 +530,9 @@ OvrOSInfo(VOID)
   // Override with our implementation
   gOSInfo->OSVendor = OvrOSVendor;
   gOSInfo->OSName = OvrOSName;
-  gOSInfo->OSEmpty = OvrOSEmpty;
+//  gOSInfo->OSEmpty = OvrOSEmpty;
+  gOSInfo->SetBootVTdEnabled = OvrOSSetVtd;
+  gOSInfo->GetBootVTdEnabled = OvrOSGetVtd;
   
   PRINT("EfiOSInfo overriden!\n");
   return EFI_SUCCESS;
@@ -738,9 +750,10 @@ OvrSetKeyStrokeBufferKeys (
 {
   EFI_STATUS               Status;
   Status = gOrgAppleKeyMapDb.SetKeyStrokeBufferKeys(This, Index, Modifiers, NumberOfKeys, Keys);
+#if SET_KEY_STROKE
   PRINT("->SetKeyStrokeBufferKeys => Index=%d, Modifiers=%x, NoKeys=%d, Keys={%x, %x}, Status=%r\n",
         Index, Modifiers, NumberOfKeys, Keys?*Keys:0, (Keys && NumberOfKeys>1)?Keys[1]:0, Status);
-  
+#endif
   return Status;
 }
 

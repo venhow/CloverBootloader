@@ -319,7 +319,7 @@ VarCheckLibInitializeAtEndOfDxe (
     //
     mVarCheckLibEndOfDxeCallbackCount = 0;
     mVarCheckLibEndOfDxeCallbackMaxCount = 0;
-    FreePool ((VOID *) mVarCheckLibEndOfDxeCallback);
+    FreePool((VOID *) mVarCheckLibEndOfDxeCallback);
     mVarCheckLibEndOfDxeCallback = NULL;
   }
 
@@ -332,7 +332,7 @@ VarCheckLibInitializeAtEndOfDxe (
       //
       mVarCheckLibAddressPointerCount = 0;
       mVarCheckLibAddressPointerMaxCount = 0;
-      FreePool ((VOID *) mVarCheckLibAddressPointer);
+      FreePool((VOID *) mVarCheckLibAddressPointer);
       mVarCheckLibAddressPointer = NULL;
     }
     return NULL;
@@ -510,7 +510,7 @@ VarCheckLibVariablePropertySet (
   //
   Property = VariablePropertyGetFunction (Name, Guid, FALSE);
   if (Property != NULL) {
-    CopyMem (Property, VariableProperty, sizeof (*VariableProperty));
+    CopyMem(Property, VariableProperty, sizeof (*VariableProperty));
   } else {
     Entry = AllocateRuntimeZeroPool (sizeof (*Entry) + StrSize (Name));
     if (Entry == NULL) {
@@ -519,7 +519,7 @@ VarCheckLibVariablePropertySet (
     VariableName = (CHAR16 *) ((UINTN) Entry + sizeof (*Entry));
     StrCpyS (VariableName, StrSize (Name)/sizeof (CHAR16), Name);
     CopyGuid (&Entry->Guid, Guid);
-    CopyMem (&Entry->VariableProperty, VariableProperty, sizeof (*VariableProperty));
+    CopyMem(&Entry->VariableProperty, VariableProperty, sizeof (*VariableProperty));
 
     Status = VarCheckAddTableEntry(
                (UINTN **) &mVarCheckVariableTable,
@@ -528,8 +528,8 @@ VarCheckLibVariablePropertySet (
                (UINTN) Entry
                );
 
-    if (EFI_ERROR (Status)) {
-      FreePool (Entry);
+    if (EFI_ERROR(Status)) {
+      FreePool(Entry);
     }
   }
 
@@ -573,7 +573,7 @@ VarCheckLibVariablePropertyGet (
   // if the revision is not VAR_CHECK_VARIABLE_PROPERTY_REVISION.
   //
   if ((Property != NULL) && (Property->Revision == VAR_CHECK_VARIABLE_PROPERTY_REVISION)) {
-    CopyMem (VariableProperty, Property, sizeof (*VariableProperty));
+    CopyMem(VariableProperty, Property, sizeof (*VariableProperty));
     return EFI_SUCCESS;
   }
 
@@ -655,7 +655,7 @@ VarCheckLibSetVariableCheck (
                DataSize,
                Data
                );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       DEBUG ((EFI_D_INFO, "Variable Check handler fail %r - %g:%s\n", Status, VendorGuid, VariableName));
       return Status;
     }

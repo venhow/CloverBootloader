@@ -124,7 +124,7 @@ PcatRootBridgeIoPciRW (
 
   UsePciExpressAccess = FALSE;
 
-  CopyMem (&PciAddress, &UserAddress, sizeof(UINT64));
+  CopyMem(&PciAddress, &UserAddress, sizeof(UINT64));
 
   if (PciAddress.ExtendedRegister > 0xFF) {
     //
@@ -476,7 +476,7 @@ CheckForRom (
                           &RomBuffer
                           );
 
-          if (!EFI_ERROR (Status)) {
+          if (!EFI_ERROR(Status)) {
 
             //
             // Copy the contents of the Option ROM to the memory buffer
@@ -618,7 +618,7 @@ ScanPciRootBridgeForRoms(
   }
 
   Status = IoDev->Configuration(IoDev, (VOID **)&Descriptors);
-  if (EFI_ERROR (Status) || Descriptors == NULL) {
+  if (EFI_ERROR(Status) || Descriptors == NULL) {
     return EFI_NOT_FOUND;
   }
 
@@ -691,7 +691,7 @@ ScanPciRootBridgeForRoms(
                   (VOID **)&Context.CommandRegisterBuffer
                   );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 

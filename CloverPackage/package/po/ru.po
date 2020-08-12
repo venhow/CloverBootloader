@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Clover 2.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-21 17:34+0200\n"
+"POT-Creation-Date: 2020-07-17 15:12+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: vector sigma\n"
 "Language-Team: ru <ru@li.org>\n"
@@ -28,10 +28,8 @@ msgstr "Clover EFI"
 
 #. type: Content of: <html><body><div><p>
 #: Resources/templates/Welcome.html:31
-#, fuzzy
-#| msgid "%CLOVERVERSION% r%CLOVERREVISION%"
-msgid "%CLOVERVERSION% r%CLOVERREVISION% (%CLOVERSHA1%)"
-msgstr "%CLOVERVERSION% r%CLOVERREVISION%"
+msgid "r%CLOVERREVISION% (%CLOVERSHA1%)"
+msgstr "r%CLOVERREVISION% (%CLOVERSHA1%)"
 
 #. type: Content of: <html><body><p>
 #: Resources/templates/Welcome.html:34
@@ -73,10 +71,12 @@ msgstr "Поддержка FAT32, HFS+, APFS, ExFAT."
 msgid "Copyright © %CPRYEAR%"
 msgstr "Copyright © %CPRYEAR%"
 
-#. type: Content of: <html><body><p><span>
+#. type: "12.title"
 #: Resources/templates/Description.html:18
-msgid "Clover v2"
-msgstr "Clover v2.5k"
+#: ../CloverPrefpane/CloverPrefpane.strings:1
+#, no-wrap
+msgid "Clover"
+msgstr "Clover"
 
 #. type: Content of: <html><body><p>
 #: Resources/templates/Description.html:19
@@ -93,8 +93,8 @@ msgstr "В основе лежит EDK2 с учетом последних об�
 
 #. type: Content of: <html><body><p><a>
 #: Resources/templates/Description.html:23
-msgid "http://sourceforge.net/projects/cloverefiboot/"
-msgstr "http://sourceforge.net/projects/cloverefiboot/"
+msgid "https://github.com/CloverHackyColor/CloverBootloader"
+msgstr "https://github.com/CloverHackyColor/CloverBootloader"
 
 #. type: Content of: <html><body><p><b>
 #: Resources/templates/Description.html:25
@@ -233,8 +233,8 @@ msgstr ""
 
 #. type: Content of: <html><body><div><p>
 #: Resources/templates/Conclusion.html:20
-msgid "%CLOVERVERSION% r%CLOVERREVISION%"
-msgstr "%CLOVERVERSION% r%CLOVERREVISION%"
+msgid "r%CLOVERREVISION%"
+msgstr "r%CLOVERREVISION%"
 
 #. type: Content of: <html><body><div><p>
 #: Resources/templates/Conclusion.html:22
@@ -591,14 +591,14 @@ msgstr "Драйвер для бу-бум при старте компьютер
 
 #. type: "FirmwareVolume.UEFI_description"
 #: Resources/templates/Localizable.strings:103
-#: Resources/templates/Localizable.strings:154
+#: Resources/templates/Localizable.strings:155
 #, no-wrap
 msgid "Create FirmwareVolume with cursor images"
 msgstr "Поддержка протокола FirmwareVolume для FileVault 2."
 
 #. type: "FSInject.UEFI_description"
 #: Resources/templates/Localizable.strings:104
-#: Resources/templates/Localizable.strings:155
+#: Resources/templates/Localizable.strings:156
 #, no-wrap
 msgid "Provide injection of kexts from Clover folder."
 msgstr "Поддержка загрузки расширений ядра из папок, расположенных внутри папки EFI."
@@ -629,7 +629,7 @@ msgstr "Поддержка файловой системы UDF."
 
 #. type: "SMCHelper.UEFI_description"
 #: Resources/templates/Localizable.strings:109
-#: Resources/templates/Localizable.strings:165
+#: Resources/templates/Localizable.strings:166
 #, no-wrap
 msgid "Restore SMC keys left in nvram by FakeSMC"
 msgstr "Восстанавливает значения SMC ключей, выставленных FakeSMC в NVRAM при перезагрузке системы."
@@ -712,14 +712,21 @@ msgstr "Поддержка протокола AppleEvent для FileVault 2."
 msgid "Create optional AppleGraphicsConfig protocol"
 msgstr "Поддержка протокола AppleGraphicsConfig."
 
-#. type: "AudioDxe.UEFI_description"
+#. type: "OcQuirks.UEFI_description"
 #: Resources/templates/Localizable.strings:144
+#, fuzzy, no-wrap
+#| msgid "A drop in replacement EFI driver for Clover that replaces AptioMemoryFix and all OsxAptioFix variants. Installs OpenRuntime.efi as dependency"
+msgid "A drop in replacement EFI driver for Clover that replaces AptioMemoryFix and all OsxAptioFix variants. Installs OpenRuntime.efi as dependency."
+msgstr "Драйвер, заменяющий AptioMemoryFix с выбором набора фиксов. Также необходим OpenRuntime.efi для работы в паре."
+
+#. type: "AudioDxe.UEFI_description"
+#: Resources/templates/Localizable.strings:145
 #, no-wrap
 msgid "HDA driver to play Startup Sound at boot time"
 msgstr "Звуковой драйвер для исполнения гимна при запуске Кловера"
 
 #. type: "CsmVideoDxe.UEFI_description"
-#: Resources/templates/Localizable.strings:145
+#: Resources/templates/Localizable.strings:146
 #, no-wrap
 msgid ""
 "64bit video driver for Clover GUI allowing to choose more resolutions.\n"
@@ -731,7 +738,7 @@ msgstr ""
 "Драйвер основан на модуле CSM в BIOS и требует, чтобы CSM был включен. На некоторых конфигурациях Clover может не запуститься с этим драйвером или система не будет пробуждаться после сна, поэтому используйте с осторожностью."
 
 #. type: "DataHubDxe.UEFI_description"
-#: Resources/templates/Localizable.strings:149
+#: Resources/templates/Localizable.strings:150
 #, no-wrap
 msgid ""
 "This is DataHub protocol support mandatory for MacOSX.\n"
@@ -739,7 +746,7 @@ msgid ""
 msgstr "Поддержка протокола DataHub, который строго необходим для запуска macOS. Обычно он присутствует (если нет, на экран будет выведено сообщение)."
 
 #. type: "EmuVariableUefi.UEFI_description"
-#: Resources/templates/Localizable.strings:151
+#: Resources/templates/Localizable.strings:152
 #, no-wrap
 msgid "Workaround for store UEFI variables without UEFI."
 msgstr ""
@@ -747,37 +754,37 @@ msgstr ""
 "Современные системы обычно имеют встроенный NVRAM. Используйте драйвер если вы уверены, что встроенный NVRAM отсутствует или не работает. Либо встроенный, либо эмулируемый NVRAM строго необходимы для системы."
 
 #. type: "EnglishDxe.UEFI_description"
-#: Resources/templates/Localizable.strings:152
+#: Resources/templates/Localizable.strings:153
 #, no-wrap
 msgid "Support for UnicodeCollation protocol used by EFI Shell if it missed in UEFI."
 msgstr "Поддержка протокола UnicodeCollation, необходимого для EFI Shell, если он отсутствует в UEFI BIOS."
 
 #. type: "Fat.UEFI_description"
-#: Resources/templates/Localizable.strings:153
+#: Resources/templates/Localizable.strings:154
 #, no-wrap
 msgid "FAT filesystem driver."
 msgstr "Поддержка файловой системы FAT32."
 
 #. type: "HashServiceFix.UEFI_description"
-#: Resources/templates/Localizable.strings:156
+#: Resources/templates/Localizable.strings:157
 #, no-wrap
 msgid "Fix Hash support if absent in native UEFI BIOS"
 msgstr "Функционал хеширования для тех UEFI-систем, где он отсутствует."
 
 #. type: "HFSPlus.UEFI_description"
-#: Resources/templates/Localizable.strings:157
+#: Resources/templates/Localizable.strings:158
 #, no-wrap
 msgid "Alternate HFS+ filesystem driver."
 msgstr "Поддержка файловой системы HFS+ (альтернативный драйвер)."
 
 #. type: "NvmExpressDxe.UEFI_description"
-#: Resources/templates/Localizable.strings:158
+#: Resources/templates/Localizable.strings:159
 #, no-wrap
 msgid "Driver for support NVM Express devices."
 msgstr "Поддержка протоколов NVM Express для твердотельных накопителей."
 
 #. type: "OsxAptioFix3Drv.UEFI_description"
-#: Resources/templates/Localizable.strings:159
+#: Resources/templates/Localizable.strings:160
 #, no-wrap
 msgid "Alternate driver (v3) to fix Memory problems on UEFI firmware."
 msgstr ""
@@ -785,7 +792,7 @@ msgstr ""
 "Исправляет работу с NVRAM."
 
 #. type: "OsxAptioFixDrv.UEFI_description"
-#: Resources/templates/Localizable.strings:160
+#: Resources/templates/Localizable.strings:161
 #, no-wrap
 msgid "Old 64bit driver to fix Memory problems on UEFI firmware such as AMI Aptio"
 msgstr ""
@@ -793,13 +800,13 @@ msgstr ""
 "Не использовать совместно с другими AptioFix. Не поддерживает работу встроенного NVRAM."
 
 #. type: "OsxFatBinaryDrv.UEFI_description"
-#: Resources/templates/Localizable.strings:161
+#: Resources/templates/Localizable.strings:162
 #, no-wrap
 msgid "Driver for support FAT Binary executables for OS X 10.9 and older."
 msgstr "Поддержка формата FAT Binary для систем 10.9 и более ранних."
 
 #. type: "OsxLowMemFixDrv.UEFI_description"
-#: Resources/templates/Localizable.strings:162
+#: Resources/templates/Localizable.strings:163
 #, no-wrap
 msgid "Simplified variant of OsxAptioFixDrv, 64bit (do not use both together)"
 msgstr ""
@@ -807,73 +814,73 @@ msgstr ""
 "Не использовать совместно с другими AptioFix."
 
 #. type: "PartitionDxe.UEFI_description"
-#: Resources/templates/Localizable.strings:163
+#: Resources/templates/Localizable.strings:164
 #, no-wrap
 msgid "64bit driver to support non-usual partition maps such as: hybrid GPT/MBR or Apple Partition Map."
 msgstr "Поддержка необычных схем разделов: гибрид GPT/MBR, Apple Partition Map и др."
 
 #. type: "Ps2MouseDxe.UEFI_description"
-#: Resources/templates/Localizable.strings:164
+#: Resources/templates/Localizable.strings:165
 #, no-wrap
 msgid "PS/2 mouse driver, 64bit"
 msgstr "Драйвер 64bit для мыши PS/2."
 
 #. type: "UsbKbDxe.UEFI_description"
-#: Resources/templates/Localizable.strings:166
+#: Resources/templates/Localizable.strings:167
 #, no-wrap
 msgid "Keyboard driver for boot UI support"
-msgstr "Драйвер клавиатуры USB поддержкой протокла шифрования, нужен для FileVault2, если у вас USB клавиатура."
+msgstr "Драйвер клавиатуры USB поддержкой протокола шифрования, нужен для FileVault2, если у вас USB клавиатура."
 
 #. type: "UsbMouseDxe.UEFI_description"
-#: Resources/templates/Localizable.strings:167
+#: Resources/templates/Localizable.strings:168
 #, no-wrap
 msgid "USB mouse driver, 64bit"
 msgstr "Драйвер для мыши USB."
 
 #. type: "VBoxExt2.UEFI_description"
-#: Resources/templates/Localizable.strings:168
+#: Resources/templates/Localizable.strings:169
 #, no-wrap
 msgid "ext2/3 filesystem driver from virtualbox, 64bit"
 msgstr "Поддержка файловых систем EXT2 и EXT3 (Linux)."
 
 #. type: "VBoxExt4.UEFI_description"
-#: Resources/templates/Localizable.strings:169
+#: Resources/templates/Localizable.strings:170
 #, no-wrap
 msgid "ext4 filesystem driver from virtualbox, 64bit"
 msgstr "Поддержка файловой системы EXT4 (Linux)."
 
 #. type: "VBoxHfs.UEFI_description"
-#: Resources/templates/Localizable.strings:170
+#: Resources/templates/Localizable.strings:171
 #, no-wrap
 msgid "HFS+ filesystem driver."
 msgstr "Поддержка файловой системы HFS+."
 
 #. type: "VBoxIso9600.UEFI_description"
-#: Resources/templates/Localizable.strings:171
+#: Resources/templates/Localizable.strings:172
 #, no-wrap
 msgid "ISO 9600 filesystem driver."
 msgstr "Поддержка файловой системы ISO 9600 (CD-ROM)."
 
 #. type: "Themes_title"
-#: Resources/templates/Localizable.strings:176
+#: Resources/templates/Localizable.strings:177
 #, no-wrap
 msgid "Themes"
 msgstr "Темы интерфейса"
 
 #. type: "Themes_description"
-#: Resources/templates/Localizable.strings:177
+#: Resources/templates/Localizable.strings:178
 #, no-wrap
 msgid "Select to install themes."
 msgstr "Выберите темы для установки."
 
 #. type: "BGM_title"
-#: Resources/templates/Localizable.strings:179
+#: Resources/templates/Localizable.strings:180
 #, no-wrap
 msgid "Black_Green_Moody"
 msgstr "Тоскливо-зеленая"
 
 #. type: "BGM_description"
-#: Resources/templates/Localizable.strings:180
+#: Resources/templates/Localizable.strings:181
 #, no-wrap
 msgid ""
 "BGM (Black Green and Moody) theme from Blackosx,\n"
@@ -883,13 +890,13 @@ msgstr ""
 "Установка будет выполнена в /EFI/CLOVER/themes/BGM."
 
 #. type: "embedded_title"
-#: Resources/templates/Localizable.strings:183
+#: Resources/templates/Localizable.strings:184
 #, no-wrap
 msgid "embedded"
 msgstr "Встроенная"
 
 #. type: "embedded_description"
-#: Resources/templates/Localizable.strings:184
+#: Resources/templates/Localizable.strings:185
 #, no-wrap
 msgid ""
 "embedded theme from Clovy,\n"
@@ -899,13 +906,13 @@ msgstr ""
 "Меняет цвет от времени дня."
 
 #. type: "metal_title"
-#: Resources/templates/Localizable.strings:187
+#: Resources/templates/Localizable.strings:188
 #, no-wrap
 msgid "metal"
 msgstr "metal"
 
 #. type: "metal_description"
-#: Resources/templates/Localizable.strings:188
+#: Resources/templates/Localizable.strings:189
 #, no-wrap
 msgid ""
 "The original metal theme from Slice,\n"
@@ -915,13 +922,13 @@ msgstr ""
 "Установка будет выполнена в /EFI/CLOVER/themes/metal"
 
 #. type: "cesium_title"
-#: Resources/templates/Localizable.strings:191
+#: Resources/templates/Localizable.strings:192
 #, no-wrap
 msgid "cesium"
 msgstr "cesium"
 
 #. type: "cesium_description"
-#: Resources/templates/Localizable.strings:192
+#: Resources/templates/Localizable.strings:193
 #, no-wrap
 msgid ""
 "Vector SVG theme from Slice,\n"
@@ -931,13 +938,13 @@ msgstr ""
 "Установка будет выполнена в /EFI/CLOVER/themes/cesium"
 
 #. type: "clovy_title"
-#: Resources/templates/Localizable.strings:195
+#: Resources/templates/Localizable.strings:196
 #, no-wrap
 msgid "Clovy"
 msgstr "Clovy SVG"
 
 #. type: "clovy_description"
-#: Resources/templates/Localizable.strings:196
+#: Resources/templates/Localizable.strings:197
 #, no-wrap
 msgid ""
 "Vector SVG theme from Clovy,\n"
@@ -947,13 +954,13 @@ msgstr ""
 "Установка будет выполнена в /EFI/CLOVER/themes/Clovy"
 
 #. type: "random_title"
-#: Resources/templates/Localizable.strings:199
+#: Resources/templates/Localizable.strings:200
 #, no-wrap
 msgid "random"
 msgstr "Случайная"
 
 #. type: "random_description"
-#: Resources/templates/Localizable.strings:200
+#: Resources/templates/Localizable.strings:201
 #, no-wrap
 msgid ""
 "random theme,\n"
@@ -963,13 +970,13 @@ msgstr ""
 "Установка будет выполнена в /EFI/CLOVER/themes/random."
 
 #. type: "steampunkblack_title"
-#: Resources/templates/Localizable.strings:203
+#: Resources/templates/Localizable.strings:204
 #, no-wrap
 msgid "steampunkblack"
 msgstr "SteamPunk Black"
 
 #. type: "steampunkblack_description"
-#: Resources/templates/Localizable.strings:204
+#: Resources/templates/Localizable.strings:205
 #, no-wrap
 msgid ""
 "steampunkblack theme from medik,\n"
@@ -979,30 +986,34 @@ msgstr ""
 "Установка будет выполнена в /EFI/CLOVER/themes/steampunkblack"
 
 #. type: "CloverThemeManager_title"
-#: Resources/templates/Localizable.strings:207
+#: Resources/templates/Localizable.strings:208
 #, no-wrap
 msgid "CloverThemeManager.app"
 msgstr "CloverThemeManager"
 
 #. type: "CloverThemeManager_description"
-#: Resources/templates/Localizable.strings:208
-#, no-wrap
+#: Resources/templates/Localizable.strings:209
+#, fuzzy, no-wrap
+#| msgid ""
+#| "CloverThemeManager.app by blackosx,\n"
+#| "keeps your Themes up to date, remove or install them by choosing from a wide selection.\n"
+#| "Install to /Applications"
 msgid ""
 "CloverThemeManager.app by blackosx,\n"
-"keeps your Themes up to date, remove or install them by choosing from a wide selection.\n"
-"Install to /Applications"
+"//keeps your Themes up to date, remove or install them by choosing from a wide selection.\n"
+"//Install to /Applications"
 msgstr ""
 "Приложение CloverThemeManager от blackosx для управления Темами оформления.\n"
 "Установка будет выполнена в папку Программы."
 
 #. type: "rc.scripts.on.target_title"
-#: Resources/templates/Localizable.strings:214
+#: Resources/templates/Localizable.strings:215
 #, no-wrap
 msgid "Install RC scripts on target volume"
 msgstr "Системные RC-скрипты целевого раздела"
 
 #. type: "rc.scripts.on.target_description"
-#: Resources/templates/Localizable.strings:215
+#: Resources/templates/Localizable.strings:216
 #, no-wrap
 msgid ""
 "Install all RC scripts on target volume.\n"
@@ -1010,43 +1021,43 @@ msgid ""
 msgstr "Устанавливает системные скрипты на целевой раздел. Этот раздел должен быть загрузочным для macOS."
 
 #. type: "rc.scripts.on.all.volumes_title"
-#: Resources/templates/Localizable.strings:217
+#: Resources/templates/Localizable.strings:218
 #, no-wrap
 msgid "Install all RC scripts on all other bootable OSX volumes"
 msgstr "Системные RC-скрипты других разделов"
 
 #. type: "rc.scripts.on.all.volumes_description"
-#: Resources/templates/Localizable.strings:218
+#: Resources/templates/Localizable.strings:219
 #, no-wrap
 msgid "Install all RC scripts on all internal bootable OSX volumes other than the target volume."
 msgstr "Устанавливает RC-скрипты на все внутренние загрузочные разделы macOS, кроме целевого."
 
 #. type: "OptionalRCScripts"
-#: Resources/templates/Localizable.strings:219
+#: Resources/templates/Localizable.strings:220
 #, no-wrap
 msgid "Optional RC Scripts"
 msgstr "Дополнительные RC-скрипты"
 
 #. type: "disable_sleep_proxy_client_title"
-#: Resources/templates/Localizable.strings:220
+#: Resources/templates/Localizable.strings:221
 #, no-wrap
 msgid "Disable sleep proxy client"
 msgstr "Отключение Sleep Proxy Client"
 
 #. type: "disable_sleep_proxy_client_description"
-#: Resources/templates/Localizable.strings:221
+#: Resources/templates/Localizable.strings:222
 #, no-wrap
 msgid "Disable the mDNSResponder sleep proxy client service. This will prevent the system waking from sleep every hours"
 msgstr "Отключает сервис Sleep Proxy Client для предотвращаения периодического пробуждения системы во время сна."
 
 #. type: "CloverPrefpane_title"
-#: Resources/templates/Localizable.strings:226
+#: Resources/templates/Localizable.strings:227
 #, no-wrap
 msgid "Install Clover Preference Pane"
 msgstr "Панель Настроек Clover"
 
 #. type: "CloverPrefpane_description"
-#: Resources/templates/Localizable.strings:227
+#: Resources/templates/Localizable.strings:228
 #, no-wrap
 msgid ""
 "Install Clover Preference Pane on target volume.\n"
@@ -1114,12 +1125,6 @@ msgstr "Нет доступных обновлений."
 #, no-wrap
 msgid "Ok"
 msgstr "Угу"
-
-#. type: "12.title"
-#: ../CloverPrefpane/CloverPrefpane.strings:1
-#, no-wrap
-msgid "Clover"
-msgstr "Clover"
 
 #. type: "Never"
 #: ../CloverPrefpane/CloverPrefpane.strings:2
@@ -1395,6 +1400,12 @@ msgstr "Установить папку EFI"
 #, no-wrap
 msgid "Unknown"
 msgstr "Неизвестно"
+
+#~ msgid "Clover v2"
+#~ msgstr "Clover v2.5k"
+
+#~ msgid "http://sourceforge.net/projects/cloverefiboot/"
+#~ msgstr "http://sourceforge.net/projects/cloverefiboot/"
 
 #~ msgid "Install & Start 32bit boot first"
 #~ msgstr "Установить 32-битный загрузчик первым"

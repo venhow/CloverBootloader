@@ -51,7 +51,7 @@ UsbBotInit (
   //
   // Allocate the BOT context for USB_BOT_PROTOCOL and two endpoint descriptors.
   //
-  UsbBot = AllocateZeroPool (sizeof (USB_BOT_PROTOCOL) + 2 * sizeof (EFI_USB_ENDPOINT_DESCRIPTOR));
+  UsbBot = AllocateZeroPool(sizeof (USB_BOT_PROTOCOL) + 2 * sizeof (EFI_USB_ENDPOINT_DESCRIPTOR));
   ASSERT (UsbBot != NULL);
 
   UsbBot->UsbIo = UsbIo;
@@ -62,7 +62,7 @@ UsbBotInit (
   //
   Status = UsbIo->UsbGetInterfaceDescriptor (UsbIo, &UsbBot->Interface);
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto ON_ERROR;
   }
 
@@ -79,7 +79,7 @@ UsbBotInit (
   for (Index = 0; Index < Interface->NumEndpoints; Index++) {
     Status = UsbIo->UsbGetEndpointDescriptor (UsbIo, Index, &EndPoint);
 
-    if (EFI_ERROR (Status) || !USB_IS_BULK_ENDPOINT (EndPoint.Attributes)) {
+    if (EFI_ERROR(Status) || !USB_IS_BULK_ENDPOINT (EndPoint.Attributes)) {
       continue;
     }
 
@@ -94,7 +94,7 @@ UsbBotInit (
        (UsbBot->BulkOutEndpoint == NULL)) {
 
       UsbBot->BulkOutEndpoint   = (EFI_USB_ENDPOINT_DESCRIPTOR *) (UsbBot + 1) + 1;
-      CopyMem (UsbBot->BulkOutEndpoint, &EndPoint, sizeof(EndPoint));
+      CopyMem(UsbBot->BulkOutEndpoint, &EndPoint, sizeof(EndPoint));
     }
   }
 
@@ -114,13 +114,13 @@ UsbBotInit (
   if (Context != NULL) {
     *Context = UsbBot;
   } else {
-    FreePool (UsbBot);
+    FreePool(UsbBot);
   }
 
   return EFI_SUCCESS;
 
 ON_ERROR:
-  FreePool (UsbBot);
+  FreePool(UsbBot);
   return Status;
 }
 
@@ -172,7 +172,7 @@ UsbBotSendCommand (
   Cbw.CmdLen    = CmdLen;
 
   ZeroMem (Cbw.CmdBlock, USB_BOT_MAX_CMDLEN);
-  CopyMem (Cbw.CmdBlock, Cmd, CmdLen);
+  CopyMem(Cbw.CmdBlock, Cmd, CmdLen);
 
   Result  = 0;
   DataLen = sizeof (USB_BOT_CBW);
@@ -189,7 +189,7 @@ UsbBotSendCommand (
                             Timeout,
                             &Result
                             );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     if (USB_IS_ERROR (Result, EFI_USB_ERR_STALL) && DataDir == EfiUsbDataOut) {
       //
       // Respond to Bulk-Out endpoint stall with a Reset Recovery,
@@ -264,7 +264,7 @@ UsbBotDataTransfer (
                             Timeout,
                             &Result
                             );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     if (USB_IS_ERROR (Result, EFI_USB_ERR_STALL)) {
       DEBUG ((EFI_D_INFO, "UsbBotDataTransfer: (%r)\n", Status));
       DEBUG ((EFI_D_INFO, "UsbBotDataTransfer: DataIn Stall\n"));
@@ -415,7 +415,7 @@ UsbBotExecCommand (
   // rejects the command.
   //
   Status = UsbBotSendCommand (UsbBot, Cmd, CmdLen, DataDir, DataLen, Lun);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG ((EFI_D_ERROR, "UsbBotExecCommand: UsbBotSendCommand (%r)\n", Status));
     return Status;
   }
@@ -432,7 +432,7 @@ UsbBotExecCommand (
   // Get the status, if that succeeds, interpret the result
   //
   Status = UsbBotGetStatus (UsbBot, DataLen, &Result);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG ((EFI_D_ERROR, "UsbBotExecCommand: UsbBotGetStatus (%r)\n", Status));
     return Status;
   }
@@ -476,7 +476,7 @@ UsbBotResetDevice (
     // If we need to do strictly reset, reset its parent hub port
     //
     Status = UsbBot->UsbIo->UsbPortReset (UsbBot->UsbIo);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return EFI_DEVICE_ERROR;
     }
   }
@@ -502,7 +502,7 @@ UsbBotResetDevice (
                             &Result
                             );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return EFI_DEVICE_ERROR;
   }
 
@@ -572,7 +572,7 @@ UsbBotGetMaxLun (
                             1,
                             &Result
                             );
-  if (EFI_ERROR (Status) || *MaxLun > USB_BOT_MAX_LUN) {
+  if (EFI_ERROR(Status) || *MaxLun > USB_BOT_MAX_LUN) {
     //
     // If the Get LUN request returns an error or the MaxLun is larger than
     // the maximum LUN value (0x0f) supported by the USB Mass Storage Class
@@ -601,7 +601,7 @@ UsbBotCleanUp (
   IN  VOID                    *Context
   )
 {
-  FreePool (Context);
+  FreePool(Context);
   return EFI_SUCCESS;
 }
 

@@ -185,8 +185,8 @@ InitializeDeviceManager (
                   &gDeviceManagerPrivate.ConfigAccess,
                   NULL
                   );
-//  ASSERT_EFI_ERROR (Status);
-  if (EFI_ERROR (Status)) {
+//  ASSERT_EFI_ERROR(Status);
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -198,8 +198,8 @@ InitializeDeviceManager (
                   &gDeviceManagerPrivate.DriverHealthConfigAccess,
                   NULL
                   );
-//  ASSERT_EFI_ERROR (Status);
-  if (EFI_ERROR (Status)) {
+//  ASSERT_EFI_ERROR(Status);
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -278,7 +278,7 @@ ExtractDisplayedHiiFormFromHiiHandle (
 //  ASSERT (HiiPackageList != NULL);
 
   Status = gHiiDatabase->ExportPackageLists (gHiiDatabase, Handle, &BufferSize, HiiPackageList);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return FALSE;
   }
 
@@ -291,7 +291,7 @@ ExtractDisplayedHiiFormFromHiiHandle (
 
   while (Offset < PackageListLength) {
     Package = ((UINT8 *) HiiPackageList) + Offset;
-    CopyMem (&PackageHeader, Package, sizeof (EFI_HII_PACKAGE_HEADER));
+    CopyMem(&PackageHeader, Package, sizeof (EFI_HII_PACKAGE_HEADER));
 
     if (PackageHeader.Type == EFI_HII_PACKAGE_FORMS) {
       //
@@ -316,21 +316,21 @@ ExtractDisplayedHiiFormFromHiiHandle (
             ClassGuid = (EFI_GUID *) (VOID *)(OpCodeData + sizeof (EFI_IFR_FORM_SET));
             while (ClassGuidNum-- > 0) {
               if (CompareGuid (SetupClassGuid, ClassGuid)) {
-                CopyMem (FormSetTitle, &((EFI_IFR_FORM_SET *) OpCodeData)->FormSetTitle, sizeof (EFI_STRING_ID));
-                CopyMem (FormSetHelp, &((EFI_IFR_FORM_SET *) OpCodeData)->Help, sizeof (EFI_STRING_ID));
-                *FormSetGuid = AllocateCopyPool (sizeof (EFI_GUID), &((EFI_IFR_FORM_SET *) OpCodeData)->Guid);
+                CopyMem(FormSetTitle, &((EFI_IFR_FORM_SET *) OpCodeData)->FormSetTitle, sizeof (EFI_STRING_ID));
+                CopyMem(FormSetHelp, &((EFI_IFR_FORM_SET *) OpCodeData)->Help, sizeof (EFI_STRING_ID));
+                *FormSetGuid = AllocateCopyPool(sizeof (EFI_GUID), &((EFI_IFR_FORM_SET *) OpCodeData)->Guid);
                 ASSERT (*FormSetGuid != NULL);
-                FreePool (HiiPackageList);
+                FreePool(HiiPackageList);
                 return TRUE;
               }
               ClassGuid ++;
             }
            } else {
-             CopyMem (FormSetTitle, &((EFI_IFR_FORM_SET *) OpCodeData)->FormSetTitle, sizeof (EFI_STRING_ID));
-             CopyMem (FormSetHelp, &((EFI_IFR_FORM_SET *) OpCodeData)->Help, sizeof (EFI_STRING_ID));
-             *FormSetGuid = AllocateCopyPool (sizeof (EFI_GUID), &((EFI_IFR_FORM_SET *) OpCodeData)->Guid);
+             CopyMem(FormSetTitle, &((EFI_IFR_FORM_SET *) OpCodeData)->FormSetTitle, sizeof (EFI_STRING_ID));
+             CopyMem(FormSetHelp, &((EFI_IFR_FORM_SET *) OpCodeData)->Help, sizeof (EFI_STRING_ID));
+             *FormSetGuid = AllocateCopyPool(sizeof (EFI_GUID), &((EFI_IFR_FORM_SET *) OpCodeData)->Guid);
              ASSERT (*FormSetGuid != NULL);
-             FreePool (HiiPackageList);
+             FreePool(HiiPackageList);
              return TRUE;
           }
         }
@@ -343,7 +343,7 @@ ExtractDisplayedHiiFormFromHiiHandle (
     Offset += PackageHeader.Length;
   }
 
-  FreePool (HiiPackageList);
+  FreePool(HiiPackageList);
 
   return FALSE;
 }
@@ -387,7 +387,7 @@ GetMacAddressString(
   // The size is the Number size + ":" size + Vlan size(\XXXX) + End
   //
   BufferLen = (4 + 2 * HwAddressSize + (HwAddressSize - 1) + 5 + 1) * sizeof (CHAR16);
-  String = AllocateZeroPool (BufferLen);
+  String = AllocateZeroPool(BufferLen);
   if (String == NULL) {
     return FALSE;
   }
@@ -401,7 +401,7 @@ GetMacAddressString(
   //
   HwAddress = &MacAddressNode->MacAddress.Addr[0];
   for (Index = 0; Index < HwAddressSize; Index++) {
-    String += UnicodeValueToString (String, PREFIX_ZERO | RADIX_HEX, *(HwAddress++), 2);
+    String += UnicodeValueToStringS(String, BufferLen, PREFIX_ZERO | RADIX_HEX, *(HwAddress++), 2);
     if (Index < HwAddressSize - 1) {
       *String++ = L':';
     }
@@ -411,17 +411,17 @@ GetMacAddressString(
   // If VLAN is configured, it will need extra 5 characters like "\0005".
   // Plus one unicode character for the null-terminator.
   //
-  Node = (EFI_DEVICE_PATH_PROTOCOL  *)MacAddressNode;
+  Node = (EFI_DEVICE_PATH_PROTOCOL*)MacAddressNode;
   while (!IsDevicePathEnd (Node)) {
     if (Node->Type == MESSAGING_DEVICE_PATH && Node->SubType == MSG_VLAN_DP) {
-      VlanId = ((VLAN_DEVICE_PATH *) Node)->VlanId;
+      VlanId = ((VLAN_DEVICE_PATH*) Node)->VlanId;
     }
     Node = NextDevicePathNode (Node);
   }
 
   if (VlanId != 0) {
     *String++ = L'\\';
-    String += UnicodeValueToString (String, PREFIX_ZERO | RADIX_HEX, VlanId, 4);
+    String += UnicodeValueToStringS(String, BufferLen, PREFIX_ZERO | RADIX_HEX, VlanId, 4);
   }
 
   //
@@ -479,7 +479,7 @@ AddIdToMacDeviceList (
   } else {
     mMacDeviceList.MaxListLen += MAX_MAC_ADDRESS_NODE_LIST_LEN;
     if (mMacDeviceList.CurListLen != 0) {
-      TempDeviceList = (MENU_INFO_ITEM *)AllocateCopyPool (sizeof (MENU_INFO_ITEM) * mMacDeviceList.MaxListLen, (VOID *)mMacDeviceList.NodeList);
+      TempDeviceList = (MENU_INFO_ITEM *)AllocateCopyPool(sizeof (MENU_INFO_ITEM) * mMacDeviceList.MaxListLen, (VOID *)mMacDeviceList.NodeList);
     } else {
       TempDeviceList = (MENU_INFO_ITEM *)AllocatePool (sizeof (MENU_INFO_ITEM) * mMacDeviceList.MaxListLen);
     }
@@ -574,7 +574,7 @@ IsMacAddressDevicePath (
   }
 
   if (Buffer != NULL) {
-    FreePool (Buffer);
+    FreePool(Buffer);
   }
 
   return ReturnVal;
@@ -615,14 +615,14 @@ IsNeedAddNetworkMenu (
   *ItemCount = 0;
 
   Status = gHiiDatabase->GetPackageListHandle (gHiiDatabase, Handle, &DriverHandle);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return FALSE;
   }
   //
   // Get the device path by the got Driver handle .
   //
   Status = gBS->HandleProtocol (DriverHandle, &gEfiDevicePathProtocolGuid, (VOID **) &DevicePath);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return FALSE;
   }
   TmpDevicePath = DevicePath;
@@ -646,7 +646,7 @@ IsNeedAddNetworkMenu (
   //
   TmpDevicePath = DevicePath;
   Status = gBS->LocateDevicePath(&gEfiDevicePathProtocolGuid, &TmpDevicePath, &ControllerHandle);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return FALSE;
   }
 
@@ -665,7 +665,7 @@ IsNeedAddNetworkMenu (
                   &OpenInfoBuffer,
                   &EntryCount
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return FALSE;
   }
 
@@ -686,7 +686,7 @@ IsNeedAddNetworkMenu (
                       NULL,
                       EFI_OPEN_PROTOCOL_GET_PROTOCOL
                       );
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         continue;
       }
 
@@ -719,7 +719,7 @@ IsNeedAddNetworkMenu (
 
 Done:
   if (OpenInfoBuffer != NULL) {
-    FreePool (OpenInfoBuffer);  
+    FreePool(OpenInfoBuffer);  
   }
   return IsNeedAdd; 
 }
@@ -770,22 +770,22 @@ AdjustArrayData (
   //
   // +2 means include the new HiiHandle and the last empty NULL pointer.
   //
-  NewHiiHandles = AllocateZeroPool ((ArrayCount + 2) * sizeof (EFI_HII_HANDLE));
+  NewHiiHandles = AllocateZeroPool((ArrayCount + 2) * sizeof (EFI_HII_HANDLE));
   ASSERT (NewHiiHandles != NULL);
 
-  CopyMem (NewHiiHandles, *HiiHandles, Offset * sizeof (EFI_HII_HANDLE));
+  CopyMem(NewHiiHandles, *HiiHandles, Offset * sizeof (EFI_HII_HANDLE));
   NewHiiHandles[Offset] = NewHiiHandles[Offset - 1];
-  CopyMem (NewHiiHandles + Offset + 1, *HiiHandles + Offset, (ArrayCount - Offset) * sizeof (EFI_HII_HANDLE));
+  CopyMem(NewHiiHandles + Offset + 1, *HiiHandles + Offset, (ArrayCount - Offset) * sizeof (EFI_HII_HANDLE));
 
-  NewGuidLists = AllocateZeroPool ((ArrayCount + 2) * sizeof (EFI_GUID *));
+  NewGuidLists = AllocateZeroPool((ArrayCount + 2) * sizeof (EFI_GUID *));
   ASSERT (NewGuidLists != NULL);
 
-  CopyMem (NewGuidLists, *GuidLists, Offset * sizeof (EFI_GUID *));
+  CopyMem(NewGuidLists, *GuidLists, Offset * sizeof (EFI_GUID *));
   NewGuidLists[Offset] = FormSetGuid;
 
-  FreePool (*HiiHandles);
+  FreePool(*HiiHandles);
   *HiiHandles = NewHiiHandles;
-  FreePool (*GuidLists);
+  FreePool(*GuidLists);
   *GuidLists = NewGuidLists;
 }
 
@@ -886,8 +886,8 @@ CallDeviceManager (
     NewStringTitle = AllocatePool (NewStringLen);
     UnicodeSPrint (NewStringTitle, NewStringLen, L"%s %s", String, mSelectedMacAddrString);
     HiiSetString (HiiHandle, STRING_TOKEN (STR_FORM_NETWORK_DEVICE_TITLE), NewStringTitle, NULL);    
-    FreePool (String);
-    FreePool (NewStringTitle);
+    FreePool(String);
+    FreePool(NewStringTitle);
   }
 
   //
@@ -932,7 +932,7 @@ CallDeviceManager (
   }
 
   HandleNum = GetHiiHandleCount (HiiHandles);
-  GuidLists = AllocateZeroPool ((HandleNum + 1) * sizeof (EFI_GUID *));
+  GuidLists = AllocateZeroPool((HandleNum + 1) * sizeof (EFI_GUID *));
   ASSERT (GuidLists != NULL);
 
   //
@@ -973,7 +973,7 @@ CallDeviceManager (
       }
     }
     Token = HiiSetString (HiiHandle, 0, String, NULL);
-    FreePool (String);
+    FreePool(String);
 
     String = HiiGetString (HiiHandles[Index], FormSetHelp, NULL);
     if (String == NULL) {
@@ -984,7 +984,7 @@ CallDeviceManager (
       }
     }
     TokenHelp = HiiSetString (HiiHandle, 0, String, NULL);
-    FreePool (String);
+    FreePool(String);
 
     //
     // Network device process
@@ -1196,14 +1196,14 @@ Done:
 
   HiiFreeOpCodeHandle (StartOpCodeHandle);
   HiiFreeOpCodeHandle (EndOpCodeHandle);
-  FreePool (HiiHandles);
+  FreePool(HiiHandles);
 
   for (Index = 0; Index < HandleNum; Index++) {
     if (GuidLists[Index] != NULL) {
-      FreePool (GuidLists[Index]);
+      FreePool(GuidLists[Index]);
     }
   }
-  FreePool (GuidLists);
+  FreePool(GuidLists);
 
   return Status;
 }
@@ -1392,14 +1392,14 @@ CallDriverHealth (
     //
     // Assume no line strings is longer than 512 bytes.
     //
-    String = (EFI_STRING) AllocateZeroPool (0x200);
+    String = (EFI_STRING) AllocateZeroPool(0x200);
 //    ASSERT (String != NULL);
     if (!String) {
       break;
     }
 
     Status = DriverHealthGetDriverName (DriverHealthInfo->DriverHandle, &DriverName);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       //
       // Can not get the Driver name, so use the Device path
       //
@@ -1419,7 +1419,7 @@ CallDriverHealth (
                &ControllerName
                );
 
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       //
       // Can not get the Controller name, just let it empty.
       //
@@ -1466,11 +1466,11 @@ CallDriverHealth (
 //    ASSERT (TmpString != NULL);
     if (TmpString) {
       StrCatS (String, 512, TmpString);
-      FreePool (TmpString);
+      FreePool(TmpString);
     }
 
     Token = HiiSetString (HiiHandle, 0, String, NULL);
-    FreePool (String);
+    FreePool(String);
 
     TokenHelp = HiiSetString (HiiHandle, 0, GetStringById( STRING_TOKEN (STR_DH_REPAIR_SINGLE_HELP)), NULL);
 
@@ -1638,7 +1638,7 @@ CallDriverHealth (
 
     if (DriverHealthInfo->MessageList != NULL) {
       FreePool(DriverHealthInfo->MessageList);
-      FreePool (DriverHealthInfo);
+      FreePool(DriverHealthInfo);
     }   
   }
 
@@ -1722,7 +1722,7 @@ GetSingleControllerHealthStatus (
       //
       // Add the driver health related information into the list
       //
-      DriverHealthInfo = AllocateZeroPool (sizeof (DRIVER_HEALTH_INFO));
+      DriverHealthInfo = AllocateZeroPool(sizeof (DRIVER_HEALTH_INFO));
       if (DriverHealthInfo == NULL) {
         return EFI_OUT_OF_RESOURCES;
       }
@@ -1749,7 +1749,7 @@ GetSingleControllerHealthStatus (
   //
   Status = DriverHealth->GetHealthStatus (DriverHealth, ControllerHandle, ChildHandle, HealthStatus, &MessageList, &FormHiiHandle);
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     //
     // If the health status could not be retrieved, then return immediately
     //
@@ -1759,7 +1759,7 @@ GetSingleControllerHealthStatus (
   //
   // Add the driver health related information into the list
   //
-  DriverHealthInfo = AllocateZeroPool (sizeof (DRIVER_HEALTH_INFO));
+  DriverHealthInfo = AllocateZeroPool(sizeof (DRIVER_HEALTH_INFO));
   if (DriverHealthInfo == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
@@ -1832,7 +1832,7 @@ GetAllControllersHealthStatus (
     return EFI_NOT_FOUND;
   }
 
-  if (EFI_ERROR (Status) || DriverHealthHandles == NULL) {
+  if (EFI_ERROR(Status) || DriverHealthHandles == NULL) {
     //
     // If the list of Driver Health Protocol handles can not be retrieved, then 
     // return EFI_OUT_OF_RESOURCES
@@ -1860,7 +1860,7 @@ GetAllControllersHealthStatus (
                     &gEfiDriverHealthProtocolGuid,
                     (VOID **)&DriverHealth
                     );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       //
       // If the Driver Health Protocol can not be retrieved, then skip to the next
       // Driver Health Protocol handle
@@ -1877,7 +1877,7 @@ GetAllControllersHealthStatus (
     // If Status is an error code, then the health information could not be retrieved, so assume healthy
     // and skip to the next Driver Health Protocol handle
     //
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       continue;
     }
 
@@ -1904,7 +1904,7 @@ GetAllControllersHealthStatus (
         &HandleCount,
         &Handles
         );
-      if (EFI_ERROR (Status) || Handles == NULL) {
+      if (EFI_ERROR(Status) || Handles == NULL) {
         //
         // If all the handles in the handle database can not be retrieved, then 
         // return EFI_OUT_OF_RESOURCES
@@ -1925,7 +1925,7 @@ GetAllControllersHealthStatus (
       }
 
       Status = GetSingleControllerHealthStatus (DriverHealthList, DriverHealthHandles[DriverHealthIndex], Handles[ControllerIndex], NULL, DriverHealth, &HealthStatus);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         //
         // If Status is an error code, then the health information could not be retrieved, so assume healthy
         //
@@ -1935,7 +1935,7 @@ GetAllControllersHealthStatus (
       //
       // If CheckHealthSingleController() returned an error on a terminal state, then do not check the health of child controllers
       //
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         continue;
       }
 
@@ -1951,7 +1951,7 @@ GetAllControllersHealthStatus (
         }
 
         Status = GetSingleControllerHealthStatus (DriverHealthList, DriverHealthHandles[DriverHealthIndex], Handles[ControllerIndex], Handles[ChildIndex], DriverHealth, &HealthStatus);
-        if (EFI_ERROR (Status)) {
+        if (EFI_ERROR(Status)) {
           //
           // If Status is an error code, then the health information could not be retrieved, so assume healthy
           //
@@ -1961,7 +1961,7 @@ GetAllControllersHealthStatus (
         //
         // If CheckHealthSingleController() returned an error on a terminal state, then skip to the next child
         //
-        if (EFI_ERROR (Status)) {
+        if (EFI_ERROR(Status)) {
           continue;
         }
       }
@@ -1972,10 +1972,10 @@ GetAllControllersHealthStatus (
 
 Done:
   if (Handles != NULL) {
-    gBS->FreePool (Handles);
+    gBS->FreePool(Handles);
   }
   if (DriverHealthHandles != NULL) {
-    gBS->FreePool (DriverHealthHandles);
+    gBS->FreePool(DriverHealthHandles);
   }
 
   return Status;
@@ -2032,14 +2032,14 @@ PlaformHealthStatusCheck (
   //
   // Found one or more Handles.
   //
-  if (!EFI_ERROR (Status)) {    
+  if (!EFI_ERROR(Status)) {    
     for (Index = 0; Index < NoHandles; Index++) {
       Status = gBS->HandleProtocol (
                       DriverHealthHandles[Index],
                       &gEfiDriverHealthProtocolGuid,
                       (VOID **) &DriverHealth
                       );
-      if (!EFI_ERROR (Status)) {
+      if (!EFI_ERROR(Status)) {
         Status = DriverHealth->GetHealthStatus (
                                  DriverHealth,
                                  NULL,
@@ -2052,7 +2052,7 @@ PlaformHealthStatusCheck (
       //
       // Get the healthy status of the module
       //
-      if (!EFI_ERROR (Status)) {
+      if (!EFI_ERROR(Status)) {
          if (HealthStatus != EfiDriverHealthStatusHealthy) {
            //
            // Return immediately one driver's status not in healthy.
@@ -2130,8 +2130,8 @@ ProcessSingleControllerHealth (
                                   NULL,
                                   NULL
                                   );
-//        ASSERT( !EFI_ERROR (Status));
-        if (EFI_ERROR (Status)) {
+//        ASSERT( !EFI_ERROR(Status));
+        if (EFI_ERROR(Status)) {
           break;
         }
       } else {
@@ -2150,8 +2150,8 @@ ProcessSingleControllerHealth (
                               NULL,
                               &FormHiiHandle
                               );
-//    ASSERT_EFI_ERROR (Status);
-    if (EFI_ERROR (Status)) {
+//    ASSERT_EFI_ERROR(Status);
+    if (EFI_ERROR(Status)) {
       break;
     }
 
@@ -2180,7 +2180,7 @@ ProcessSingleControllerHealth (
   //
   if (LocalHealthStatus == EfiDriverHealthStatusReconnectRequired) {
     Status = gBS->DisconnectController (ControllerHandle, NULL, NULL);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       //
       // Disconnect failed.  Need to promote reconnect to a reboot.
       //
@@ -2355,7 +2355,7 @@ DriverHealthSelectBestLanguage (
                    NULL
                    );
   if (LanguageVariable != NULL) {
-    FreePool (LanguageVariable);
+    FreePool(LanguageVariable);
   }
 
   return BestLanguage;
@@ -2402,7 +2402,7 @@ GetComponentNameWorker (
                  NULL,
                  EFI_OPEN_PROTOCOL_GET_PROTOCOL
                  );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -2457,7 +2457,7 @@ GetDriverNameWorker (
              &ComponentName,
              &BestLanguage
              );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
  
@@ -2469,7 +2469,7 @@ GetDriverNameWorker (
                             BestLanguage,
                             DriverName
                             );
-  FreePool (BestLanguage);
+  FreePool(BestLanguage);
  
   return Status;
 }
@@ -2503,7 +2503,7 @@ DriverHealthGetDriverName (
   // Get driver name from UEFI 2.0 Component Name 2 protocol interface.
   //
   Status = GetDriverNameWorker (&gEfiComponentName2ProtocolGuid, DriverBindingHandle, DriverName);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     //
     // If it fails to get the driver name from Component Name protocol interface, we should fall back on
     // EFI 1.1 Component Name protocol interface.
@@ -2562,7 +2562,7 @@ GetControllerNameWorker (
              &ComponentName,
              &BestLanguage
              );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -2576,7 +2576,7 @@ GetControllerNameWorker (
                             BestLanguage,
                             ControllerName
                             );
-  FreePool (BestLanguage);
+  FreePool(BestLanguage);
 
   return Status;
 }
@@ -2624,7 +2624,7 @@ DriverHealthGetControllerName (
              ChildHandle,
              ControllerName
              );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     //
     // If it fails to get the controller name from Component Name protocol interface, we should fall back on
     // EFI 1.1 Component Name protocol interface.

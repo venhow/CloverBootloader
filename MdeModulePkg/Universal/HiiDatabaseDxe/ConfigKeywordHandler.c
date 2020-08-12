@@ -109,7 +109,7 @@ ExtractDevicePath (
   // as the device path resides in RAM memory.
   // Translate the data into binary.
   //
-  DevicePathBuffer = (UINT8 *) AllocateZeroPool ((Length + 1) / 2);
+  DevicePathBuffer = (UINT8 *) AllocateZeroPool((Length + 1) / 2);
   if (DevicePathBuffer == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
@@ -137,7 +137,7 @@ ExtractDevicePath (
       //
       // Invalid device path
       //
-      FreePool (DevicePathBuffer);
+      FreePool(DevicePathBuffer);
       return EFI_INVALID_PARAMETER;
     }
     DevicePath = NextDevicePathNode (DevicePath);
@@ -281,7 +281,7 @@ ExtractKeyword (
   }
   *NextString = String + StrLen (String);
 
-  *Keyword = AllocateCopyPool (StrSize (String), String);
+  *Keyword = AllocateCopyPool(StrSize (String), String);
   if (*Keyword == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
@@ -336,7 +336,7 @@ ExtractValue (
   }
   *NextString = String + StrLen (String);
 
-  *Value = AllocateCopyPool (StrSize (String), String);
+  *Value = AllocateCopyPool(StrSize (String), String);
   if (*Value == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
@@ -733,7 +733,7 @@ GetUnicodeStringTextAndSize (
     return EFI_OUT_OF_RESOURCES;
   }
 
-  CopyMem (*StringDest, StringSrc, StringSize);
+  CopyMem(*StringDest, StringSrc, StringSize);
 
   *BufferSize = StringSize;
   return EFI_SUCCESS;
@@ -823,7 +823,7 @@ GetStringIdFromString (
       break;
 
     case EFI_HII_SIBT_STRINGS_SCSU:
-      CopyMem (&StringCount, BlockHdr + sizeof (EFI_HII_STRING_BLOCK), sizeof (UINT16));
+      CopyMem(&StringCount, BlockHdr + sizeof (EFI_HII_STRING_BLOCK), sizeof (UINT16));
       StringTextPtr = (UINT8*)((UINTN)BlockHdr + sizeof (EFI_HII_SIBT_STRINGS_SCSU_BLOCK) - sizeof (UINT8));
       BlockSize += StringTextPtr - BlockHdr;
 
@@ -839,7 +839,7 @@ GetStringIdFromString (
       break;
 
     case EFI_HII_SIBT_STRINGS_SCSU_FONT:
-      CopyMem (
+      CopyMem(
         &StringCount,
         (UINT8*)((UINTN)BlockHdr + sizeof (EFI_HII_STRING_BLOCK) + sizeof (UINT8)),
         sizeof (UINT16)
@@ -866,7 +866,7 @@ GetStringIdFromString (
       // terminator.
       //
       Status = GetUnicodeStringTextAndSize (StringTextPtr, &StringSize, &String);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         goto Done;
       }
       ASSERT (String != NULL);
@@ -886,7 +886,7 @@ GetStringIdFromString (
       // terminator.
       //
       Status = GetUnicodeStringTextAndSize (StringTextPtr, &StringSize, &String);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         goto Done;
       }
       ASSERT (String != NULL);
@@ -902,10 +902,10 @@ GetStringIdFromString (
       Offset = sizeof (EFI_HII_SIBT_STRINGS_UCS2_BLOCK) - sizeof (CHAR16);
       StringTextPtr = BlockHdr + Offset;
       BlockSize += Offset;
-      CopyMem (&StringCount, BlockHdr + sizeof (EFI_HII_STRING_BLOCK), sizeof (UINT16));
+      CopyMem(&StringCount, BlockHdr + sizeof (EFI_HII_STRING_BLOCK), sizeof (UINT16));
       for (Index = 0; Index < StringCount; Index++) {
         Status = GetUnicodeStringTextAndSize (StringTextPtr, &StringSize, &String);
-        if (EFI_ERROR (Status)) {
+        if (EFI_ERROR(Status)) {
           goto Done;
         }
         ASSERT (String != NULL);
@@ -923,14 +923,14 @@ GetStringIdFromString (
       Offset = sizeof (EFI_HII_SIBT_STRINGS_UCS2_FONT_BLOCK) - sizeof (CHAR16);
       StringTextPtr = BlockHdr + Offset;
       BlockSize += Offset;
-      CopyMem (
+      CopyMem(
         &StringCount,
         (UINT8*)((UINTN)BlockHdr + sizeof (EFI_HII_STRING_BLOCK) + sizeof (UINT8)),
         sizeof (UINT16)
         );
       for (Index = 0; Index < StringCount; Index++) {
         Status = GetUnicodeStringTextAndSize (StringTextPtr, &StringSize, &String);
-        if (EFI_ERROR (Status)) {
+        if (EFI_ERROR(Status)) {
           goto Done;
         }
         ASSERT (String != NULL);
@@ -956,13 +956,13 @@ GetStringIdFromString (
       break;
 
     case EFI_HII_SIBT_SKIP2:
-      CopyMem (&SkipCount, BlockHdr + sizeof (EFI_HII_STRING_BLOCK), sizeof (UINT16));
+      CopyMem(&SkipCount, BlockHdr + sizeof (EFI_HII_STRING_BLOCK), sizeof (UINT16));
       CurrentStringId = (UINT16) (CurrentStringId + SkipCount);
       BlockSize       +=  sizeof (EFI_HII_SIBT_SKIP2_BLOCK);
       break;
 
     case EFI_HII_SIBT_EXT1:
-      CopyMem (
+      CopyMem(
         &Length8,
         (UINT8*)((UINTN)BlockHdr + sizeof (EFI_HII_STRING_BLOCK) + sizeof (UINT8)),
         sizeof (UINT8)
@@ -971,12 +971,12 @@ GetStringIdFromString (
       break;
 
     case EFI_HII_SIBT_EXT2:
-      CopyMem (&Ext2, BlockHdr, sizeof (EFI_HII_SIBT_EXT2_BLOCK));
+      CopyMem(&Ext2, BlockHdr, sizeof (EFI_HII_SIBT_EXT2_BLOCK));
       BlockSize += Ext2.Length;
       break;
 
     case EFI_HII_SIBT_EXT4:
-      CopyMem (
+      CopyMem(
         &Length32,
         (UINT8*)((UINTN)BlockHdr + sizeof (EFI_HII_STRING_BLOCK) + sizeof (UINT8)),
         sizeof (UINT32)
@@ -990,7 +990,7 @@ GetStringIdFromString (
     }
 
     if (String != NULL) {
-      FreePool (String);
+      FreePool(String);
       String = NULL;
     }
 
@@ -1001,10 +1001,10 @@ GetStringIdFromString (
 
 Done:
   if (AsciiKeywordValue != NULL) {
-    FreePool (AsciiKeywordValue);
+    FreePool(AsciiKeywordValue);
   }
   if (String != NULL) {
-    FreePool (String);
+    FreePool(String);
   }
   return Status;
 }
@@ -1099,7 +1099,7 @@ GetNextStringId (
       break;
 
     case EFI_HII_SIBT_STRINGS_SCSU:
-      CopyMem (&StringCount, BlockHdr + sizeof (EFI_HII_STRING_BLOCK), sizeof (UINT16));
+      CopyMem(&StringCount, BlockHdr + sizeof (EFI_HII_STRING_BLOCK), sizeof (UINT16));
       StringTextPtr = (UINT8*)((UINTN)BlockHdr + sizeof (EFI_HII_SIBT_STRINGS_SCSU_BLOCK) - sizeof (UINT8));
       BlockSize += StringTextPtr - BlockHdr;
 
@@ -1123,7 +1123,7 @@ GetNextStringId (
       break;
 
     case EFI_HII_SIBT_STRINGS_SCSU_FONT:
-      CopyMem (
+      CopyMem(
         &StringCount,
         (UINT8*)((UINTN)BlockHdr + sizeof (EFI_HII_STRING_BLOCK) + sizeof (UINT8)),
         sizeof (UINT16)
@@ -1197,7 +1197,7 @@ GetNextStringId (
       Offset = sizeof (EFI_HII_SIBT_STRINGS_UCS2_BLOCK) - sizeof (CHAR16);
       StringTextPtr = BlockHdr + Offset;
       BlockSize += Offset;
-      CopyMem (&StringCount, BlockHdr + sizeof (EFI_HII_STRING_BLOCK), sizeof (UINT16));
+      CopyMem(&StringCount, BlockHdr + sizeof (EFI_HII_STRING_BLOCK), sizeof (UINT16));
       for (Index = 0; Index < StringCount; Index++) {
         GetUnicodeStringTextAndSize (StringTextPtr, &StringSize, &String);
 
@@ -1218,7 +1218,7 @@ GetNextStringId (
       Offset = sizeof (EFI_HII_SIBT_STRINGS_UCS2_FONT_BLOCK) - sizeof (CHAR16);
       StringTextPtr = BlockHdr + Offset;
       BlockSize += Offset;
-      CopyMem (
+      CopyMem(
         &StringCount,
         (UINT8*)((UINTN)BlockHdr + sizeof (EFI_HII_STRING_BLOCK) + sizeof (UINT8)),
         sizeof (UINT16)
@@ -1250,13 +1250,13 @@ GetNextStringId (
       break;
 
     case EFI_HII_SIBT_SKIP2:
-      CopyMem (&SkipCount, BlockHdr + sizeof (EFI_HII_STRING_BLOCK), sizeof (UINT16));
+      CopyMem(&SkipCount, BlockHdr + sizeof (EFI_HII_STRING_BLOCK), sizeof (UINT16));
       CurrentStringId = (UINT16) (CurrentStringId + SkipCount);
       BlockSize       +=  sizeof (EFI_HII_SIBT_SKIP2_BLOCK);
       break;
 
     case EFI_HII_SIBT_EXT1:
-      CopyMem (
+      CopyMem(
         &Length8,
         (UINT8*)((UINTN)BlockHdr + sizeof (EFI_HII_STRING_BLOCK) + sizeof (UINT8)),
         sizeof (UINT8)
@@ -1265,12 +1265,12 @@ GetNextStringId (
       break;
 
     case EFI_HII_SIBT_EXT2:
-      CopyMem (&Ext2, BlockHdr, sizeof (EFI_HII_SIBT_EXT2_BLOCK));
+      CopyMem(&Ext2, BlockHdr, sizeof (EFI_HII_SIBT_EXT2_BLOCK));
       BlockSize += Ext2.Length;
       break;
 
     case EFI_HII_SIBT_EXT4:
-      CopyMem (
+      CopyMem(
         &Length32,
         (UINT8*)((UINTN)BlockHdr + sizeof (EFI_HII_STRING_BLOCK) + sizeof (UINT8)),
         sizeof (UINT32)
@@ -1284,7 +1284,7 @@ GetNextStringId (
     }
 
     if (String != NULL) {
-      FreePool (String);
+      FreePool(String);
       String = NULL;
     }
 
@@ -1339,13 +1339,13 @@ GetStringIdFromRecord (
   for (Link = PackageListNode->StringPkgHdr.ForwardLink; Link != &PackageListNode->StringPkgHdr; Link = Link->ForwardLink) {
     StringPackage = CR (Link, HII_STRING_PACKAGE_INSTANCE, StringEntry, HII_STRING_PACKAGE_SIGNATURE);
 
-    if (AsciiStrnCmp(Name, StringPackage->StringPkgHdr->Language, AsciiStrLen (Name)) == 0) {
+    if (AsciiStrnCmp(Name, StringPackage->StringPkgHdr->Language, AsciiStrLen(Name)) == 0) {
       Status = GetStringIdFromString (StringPackage, KeywordValue, StringId);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         return KEYWORD_HANDLER_KEYWORD_NOT_FOUND;
       } else {
         if (*NameSpace == NULL) {
-          *NameSpace = AllocateCopyPool (AsciiStrSize (StringPackage->StringPkgHdr->Language), StringPackage->StringPkgHdr->Language);
+          *NameSpace = AllocateCopyPool(AsciiStrSize (StringPackage->StringPkgHdr->Language), StringPackage->StringPkgHdr->Language);
           if (*NameSpace == NULL) {
             return KEYWORD_HANDLER_UNDEFINED_PROCESSING_ERROR;
           }
@@ -1703,7 +1703,7 @@ ConstructConfigHdr (
 
   if (AsciiName != NULL) {
     NameSize = AsciiStrSize (AsciiName);
-    Name = AllocateZeroPool (NameSize * sizeof (CHAR16));
+    Name = AllocateZeroPool(NameSize * sizeof (CHAR16));
     ASSERT (Name != NULL);
     AsciiStrToUnicodeStrS (AsciiName, Name, NameSize);
   } else {
@@ -1740,7 +1740,7 @@ ConstructConfigHdr (
   // | 5 | sizeof (EFI_GUID) * 2 | 6 | NameStrLen*4 | 6 | DevicePathSize * 2 | 1 |
   //
   MaxLen = 5 + sizeof (EFI_GUID) * 2 + 6 + NameLength * 4 + 6 + DevicePathSize * 2 + 1;
-  String = AllocateZeroPool (MaxLen * sizeof (CHAR16));
+  String = AllocateZeroPool(MaxLen * sizeof (CHAR16));
   if (String == NULL) {
     return NULL;
   }
@@ -1862,7 +1862,7 @@ ConstructRequestElement (
   //
   // Allocate buffer for the entire <ConfigRequest>
   //
-  StringPtr = AllocateZeroPool (Length * sizeof (CHAR16));
+  StringPtr = AllocateZeroPool(Length * sizeof (CHAR16));
   ASSERT (StringPtr != NULL);
 
   if (Name != NULL) {
@@ -1933,7 +1933,7 @@ GetNameFromId (
                    NULL
                    );
   if (BestLanguage == NULL) {
-    BestLanguage = AllocateCopyPool (AsciiStrLen ("en-US"), "en-US");
+    BestLanguage = AllocateCopyPool(AsciiStrLen("en-US"), "en-US");
     ASSERT (BestLanguage != NULL);
   }
 
@@ -1951,7 +1951,7 @@ GetNameFromId (
     goto Done;
   }
 
-  Name = AllocateZeroPool (StringSize);
+  Name = AllocateZeroPool(StringSize);
   if (Name == NULL) {
     goto Done;
   }
@@ -1966,8 +1966,8 @@ GetNameFromId (
                           NULL
                           );
 
-  if (EFI_ERROR (Status)) {
-    FreePool (Name);
+  if (EFI_ERROR(Status)) {
+    FreePool(Name);
     Name = NULL;
     goto Done;
   }
@@ -1977,10 +1977,10 @@ Done:
     FreePool(SupportedLanguages);
   }
   if (BestLanguage != NULL) {
-    FreePool (BestLanguage);
+    FreePool(BestLanguage);
   }
   if (PlatformLanguage != NULL) {
-    FreePool (PlatformLanguage);
+    FreePool(PlatformLanguage);
   }
 
   return Name;
@@ -2064,8 +2064,8 @@ ExtractConfigRequest (
       MaxLen = StrLen (ConfigHdr) + 1 + StrLen(RequestElement) + 1;
       *ConfigRequest = AllocatePool (MaxLen * sizeof (CHAR16));
       if (*ConfigRequest == NULL) {
-        FreePool (ConfigHdr);
-        FreePool (RequestElement);
+        FreePool(ConfigHdr);
+        FreePool(RequestElement);
         return EFI_OUT_OF_RESOURCES;
       }
       StringPtr = *ConfigRequest;
@@ -2076,8 +2076,8 @@ ExtractConfigRequest (
 
       StrCatS (StringPtr, MaxLen, RequestElement);
 
-      FreePool (ConfigHdr);
-      FreePool (RequestElement);
+      FreePool(ConfigHdr);
+      FreePool(RequestElement);
 
       return EFI_SUCCESS;
     }
@@ -2168,8 +2168,8 @@ ExtractConfigResp (
       MaxLen = StrLen (ConfigHdr) + 1 + StrLen(RequestElement) + 1 + StrLen (L"VALUE=") + StrLen(ValueElement) + 1;
       *ConfigResp = AllocatePool (MaxLen * sizeof (CHAR16));
       if (*ConfigResp == NULL) {
-        FreePool (ConfigHdr);
-        FreePool (RequestElement);
+        FreePool(ConfigHdr);
+        FreePool(RequestElement);
         return EFI_OUT_OF_RESOURCES;
       }
       StringPtr = *ConfigResp;
@@ -2187,8 +2187,8 @@ ExtractConfigResp (
 
       StrCatS (StringPtr, MaxLen, ValueElement);
 
-      FreePool (ConfigHdr);
-      FreePool (RequestElement);
+      FreePool(ConfigHdr);
+      FreePool(RequestElement);
 
       return EFI_SUCCESS;
     }
@@ -2230,7 +2230,7 @@ ExtractValueFromDriver (
                       &Progress,
                       &Result
                       );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -2244,7 +2244,7 @@ ExtractValueFromDriver (
     *StringEnd = L'\0';
   }
 
-  *ValueElement = AllocateCopyPool (StrSize (StringPtr), StringPtr);
+  *ValueElement = AllocateCopyPool(StrSize (StringPtr), StringPtr);
   if (*ValueElement == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
@@ -2252,7 +2252,7 @@ ExtractValueFromDriver (
   if (StringEnd != NULL) {
     *StringEnd = L'&';
   }
-  FreePool (Result);
+  FreePool(Result);
 
   return EFI_SUCCESS;
 }
@@ -2339,7 +2339,7 @@ GetStringIdFromDatabase (
         if ((DevicePathPkg = Record->PackageList->DevicePathPkg) != NULL) {
           DestDevicePath = (EFI_DEVICE_PATH_PROTOCOL *) (DevicePathPkg + sizeof (EFI_HII_PACKAGE_HEADER));
           DevicePathSize = GetDevicePathSize ((EFI_DEVICE_PATH_PROTOCOL *) DestDevicePath);
-          *DevicePath = AllocateCopyPool (DevicePathSize, DestDevicePath);
+          *DevicePath = AllocateCopyPool(DevicePathSize, DestDevicePath);
           if (*DevicePath == NULL) {
             return EFI_OUT_OF_RESOURCES;
           }
@@ -2411,7 +2411,7 @@ GenerateKeywordResp (
   // 1.1 NameSpaceId size.
   // 'NAMESPACE='<String>
   //
-  NameSpaceLength = AsciiStrLen (NameSpace);
+  NameSpaceLength = AsciiStrLen(NameSpace);
   RespStrLen = 10 + NameSpaceLength;
   UnicodeNameSpace = AllocatePool ((NameSpaceLength + 1) * sizeof (CHAR16));
   if (UnicodeNameSpace == NULL) {
@@ -2460,7 +2460,7 @@ GenerateKeywordResp (
   *KeywordResp = AllocatePool (RespStrLen * sizeof (CHAR16));
   if (*KeywordResp == NULL) {
     if (UnicodeNameSpace != NULL) {
-      FreePool (UnicodeNameSpace);
+      FreePool(UnicodeNameSpace);
     }
 
     return EFI_OUT_OF_RESOURCES;
@@ -2499,10 +2499,10 @@ GenerateKeywordResp (
   }
 
   if (UnicodeNameSpace != NULL) {
-    FreePool (UnicodeNameSpace);
+    FreePool(UnicodeNameSpace);
   }
   if (PathHdr != NULL) {
-    FreePool (PathHdr);
+    FreePool(PathHdr);
   }
 
   return EFI_SUCCESS;
@@ -2627,12 +2627,12 @@ EnumerateAllKeywords (
       //
       // Check whether has keyword string package.
       //
-      if (AsciiStrnCmp(NameSpace, StringPackage->StringPkgHdr->Language, AsciiStrLen (NameSpace)) == 0) {
+      if (AsciiStrnCmp(NameSpace, StringPackage->StringPkgHdr->Language, AsciiStrLen(NameSpace)) == 0) {
         FindKeywordPackages = TRUE;
         //
         // Keep the NameSpace string.
         //
-        LocalNameSpace = AllocateCopyPool (AsciiStrSize (StringPackage->StringPkgHdr->Language), StringPackage->StringPkgHdr->Language);
+        LocalNameSpace = AllocateCopyPool(AsciiStrSize (StringPackage->StringPkgHdr->Language), StringPackage->StringPkgHdr->Language);
         if (LocalNameSpace == NULL) {
           return EFI_OUT_OF_RESOURCES;
         }
@@ -2652,7 +2652,7 @@ EnumerateAllKeywords (
           // 3.3 Construct the ConfigRequest string.
           //
           Status = ExtractConfigRequest (DataBaseRecord, NextStringId, &OpCode, &ConfigRequest);
-          if (EFI_ERROR (Status)) {
+          if (EFI_ERROR(Status)) {
             //
             // If can't generate ConfigRequest for this question, skip it and start the next.
             //
@@ -2663,7 +2663,7 @@ EnumerateAllKeywords (
           // 3.4 Extract Value for the input keyword.
           //
           Status = ExtractValueFromDriver(ConfigRequest, &ValueElement);
-          if (EFI_ERROR (Status)) {
+          if (EFI_ERROR(Status)) {
             if (Status != EFI_OUT_OF_RESOURCES) {
               //
               // If can't generate ConfigRequest for this question, skip it and start the next.
@@ -2697,7 +2697,7 @@ EnumerateAllKeywords (
           // 6. Merge to the MultiKeywordResp string.
           //
           Status = MergeToMultiKeywordResp(&MultiKeywordResp, &KeywordResp);
-          if (EFI_ERROR (Status)) {
+          if (EFI_ERROR(Status)) {
             goto Done;
           }
 Error:
@@ -2705,21 +2705,21 @@ Error:
           // Clean the temp buffer to later use again.
           //
           if (ConfigRequest != NULL) {
-            FreePool (ConfigRequest);
+            FreePool(ConfigRequest);
             ConfigRequest = NULL;
           }
           if (ValueElement != NULL) {
-            FreePool (ValueElement);
+            FreePool(ValueElement);
             ValueElement = NULL;
           }
           if (KeywordResp != NULL) {
-            FreePool (KeywordResp);
+            FreePool(KeywordResp);
             KeywordResp = NULL;
           }
         }
 
         if (LocalNameSpace != NULL) {
-          FreePool (LocalNameSpace);
+          FreePool(LocalNameSpace);
           LocalNameSpace = NULL;
         }
       }
@@ -2743,13 +2743,13 @@ Error:
 
 Done:
   if (LocalNameSpace != NULL) {
-    FreePool (LocalNameSpace);
+    FreePool(LocalNameSpace);
   }
   if (ConfigRequest != NULL) {
-    FreePool (ConfigRequest);
+    FreePool(ConfigRequest);
   }
   if (ValueElement != NULL) {
-    FreePool (ValueElement);
+    FreePool(ValueElement);
   }
 
   return Status;
@@ -2860,7 +2860,7 @@ EfiConfigKeywordHandlerSetData (
   //
   // Use temp string to avoid changing input string buffer.
   //
-  TempString = AllocateCopyPool (StrSize (KeywordString), KeywordString);
+  TempString = AllocateCopyPool(StrSize (KeywordString), KeywordString);
   ASSERT (TempString != NULL);
   StringPtr = TempString;
 
@@ -2869,7 +2869,7 @@ EfiConfigKeywordHandlerSetData (
     // 1. Get NameSpace from NameSpaceId keyword.
     //
     Status = ExtractNameSpace (StringPtr, &NameSpace, &NextStringPtr);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       *ProgressErr = KEYWORD_HANDLER_MALFORMED_STRING;
       goto Done;
     }
@@ -2877,7 +2877,7 @@ EfiConfigKeywordHandlerSetData (
     //
     // 1.1 Check whether the input namespace is valid.
     //
-    if (AsciiStrnCmp(NameSpace, UEFI_CONFIG_LANG, AsciiStrLen (UEFI_CONFIG_LANG)) != 0) {
+    if (AsciiStrnCmp(NameSpace, UEFI_CONFIG_LANG, AsciiStrLen(UEFI_CONFIG_LANG)) != 0) {
       *ProgressErr = KEYWORD_HANDLER_MALFORMED_STRING;
       Status = EFI_INVALID_PARAMETER;
       goto Done;
@@ -2889,7 +2889,7 @@ EfiConfigKeywordHandlerSetData (
     // 2. Get possible Device Path info from KeywordString.
     //
     Status = ExtractDevicePath (StringPtr, (UINT8 **)&DevicePath, &NextStringPtr);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       *ProgressErr = KEYWORD_HANDLER_MALFORMED_STRING;
       goto Done;
     }
@@ -2900,7 +2900,7 @@ EfiConfigKeywordHandlerSetData (
     //
     KeywordStartPos = StringPtr;
     Status = ExtractKeyword(StringPtr, &KeywordData, &NextStringPtr);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       //
       // Can't find Keyword base on the input device path info.
       //
@@ -2914,7 +2914,7 @@ EfiConfigKeywordHandlerSetData (
     // 4. Extract Value from the KeywordRequest string.
     //
     Status = ExtractValue (StringPtr, &ValueElement, &NextStringPtr);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       //
       // Can't find Value base on the input device path info.
       //
@@ -2938,7 +2938,7 @@ EfiConfigKeywordHandlerSetData (
     // 6. Get EFI_STRING_ID for the input keyword.
     //
     Status = GetStringIdFromDatabase (&DevicePath, &NameSpace, KeywordData, &RetVal, &KeywordStringId, &DataBaseRecord);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       *ProgressErr = RetVal;
       goto Done;
     }
@@ -2947,7 +2947,7 @@ EfiConfigKeywordHandlerSetData (
     // 7. Construct the ConfigRequest string.
     //
     Status = ExtractConfigResp (DataBaseRecord, KeywordStringId, ValueElement, &OpCode, &ConfigResp);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       goto Done;
     }
 
@@ -2973,23 +2973,23 @@ EfiConfigKeywordHandlerSetData (
     // 9. Merge to the MultiKeywordResp string.
     //
     Status = MergeToMultiKeywordResp(&MultiConfigResp, &ConfigResp);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       goto Done;
     }
 
     //
     // 10. Clean the temp buffer point.
     //
-    FreePool (NameSpace);
-    FreePool (DevicePath);
-    FreePool (KeywordData);
-    FreePool (ValueElement);
+    FreePool(NameSpace);
+    FreePool(DevicePath);
+    FreePool(KeywordData);
+    FreePool(ValueElement);
     NameSpace = NULL;
     DevicePath = NULL;
     KeywordData = NULL;
     ValueElement = NULL;
     if (ConfigResp != NULL) {
-      FreePool (ConfigResp);
+      FreePool(ConfigResp);
       ConfigResp = NULL;
     }
     KeywordStartPos = NULL;
@@ -3003,7 +3003,7 @@ EfiConfigKeywordHandlerSetData (
                     (EFI_STRING) MultiConfigResp,
                     &InternalProgress
                     );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     Status = EFI_DEVICE_ERROR;
     goto Done;
   }
@@ -3018,24 +3018,24 @@ Done:
   }
 
   ASSERT (TempString != NULL);
-  FreePool (TempString);
+  FreePool(TempString);
   if (NameSpace != NULL) {
-    FreePool (NameSpace);
+    FreePool(NameSpace);
   }
   if (DevicePath != NULL) {
-    FreePool (DevicePath);
+    FreePool(DevicePath);
   }
   if (KeywordData != NULL) {
-    FreePool (KeywordData);
+    FreePool(KeywordData);
   }
   if (ValueElement != NULL) {
-    FreePool (ValueElement);
+    FreePool(ValueElement);
   }
   if (ConfigResp != NULL) {
-    FreePool (ConfigResp);
+    FreePool(ConfigResp);
   }
   if (MultiConfigResp != NULL && MultiConfigResp != ConfigResp) {
-    FreePool (MultiConfigResp);
+    FreePool(MultiConfigResp);
   }
 
   return Status;
@@ -3158,7 +3158,7 @@ EfiConfigKeywordHandlerGetData (
   // Use temp string to avoid changing input string buffer.
   //
   if (NameSpaceId != NULL) {
-    TempString = AllocateCopyPool (StrSize (NameSpaceId), NameSpaceId);
+    TempString = AllocateCopyPool(StrSize (NameSpaceId), NameSpaceId);
     ASSERT (TempString != NULL);
   }
   //
@@ -3166,10 +3166,10 @@ EfiConfigKeywordHandlerGetData (
   //
   Status = ExtractNameSpace (TempString, &NameSpace, NULL);
   if (TempString != NULL) {
-    FreePool (TempString);
+    FreePool(TempString);
     TempString = NULL;
   }
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     *ProgressErr = KEYWORD_HANDLER_MALFORMED_STRING;
     return Status;
   }
@@ -3177,7 +3177,7 @@ EfiConfigKeywordHandlerGetData (
   // 1.1 Check whether the input namespace is valid.
   //
   if (NameSpace != NULL){
-    if (AsciiStrnCmp(NameSpace, UEFI_CONFIG_LANG, AsciiStrLen (UEFI_CONFIG_LANG)) != 0) {
+    if (AsciiStrnCmp(NameSpace, UEFI_CONFIG_LANG, AsciiStrLen(UEFI_CONFIG_LANG)) != 0) {
       *ProgressErr = KEYWORD_HANDLER_MALFORMED_STRING;
       return EFI_INVALID_PARAMETER;
     }
@@ -3187,7 +3187,7 @@ EfiConfigKeywordHandlerGetData (
     //
     // Use temp string to avoid changing input string buffer.
     //
-    TempString = AllocateCopyPool (StrSize (KeywordString), KeywordString);
+    TempString = AllocateCopyPool(StrSize (KeywordString), KeywordString);
     ASSERT (TempString != NULL);
     StringPtr = TempString;
 
@@ -3196,7 +3196,7 @@ EfiConfigKeywordHandlerGetData (
       // 2. Get possible Device Path info from KeywordString.
       //
       Status = ExtractDevicePath (StringPtr, (UINT8 **)&DevicePath, &NextStringPtr);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         *ProgressErr = KEYWORD_HANDLER_MALFORMED_STRING;
         goto Done;
       }
@@ -3209,7 +3209,7 @@ EfiConfigKeywordHandlerGetData (
       // 3.1 Extract keyword from the KeywordRequest string.
       //
       Status = ExtractKeyword(StringPtr, &KeywordData, &NextStringPtr);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         //
         // Can't find Keyword base on the input device path info.
         //
@@ -3222,7 +3222,7 @@ EfiConfigKeywordHandlerGetData (
       // 3.2 Get EFI_STRING_ID for the input keyword.
       //
       Status = GetStringIdFromDatabase (&DevicePath, &NameSpace, KeywordData, &RetVal, &KeywordStringId, &DataBaseRecord);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         *ProgressErr = RetVal;
         goto Done;
       }
@@ -3231,7 +3231,7 @@ EfiConfigKeywordHandlerGetData (
       // 3.3 Construct the ConfigRequest string.
       //
       Status = ExtractConfigRequest (DataBaseRecord, KeywordStringId, &OpCode, &ConfigRequest);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         goto Done;
       }
 
@@ -3239,7 +3239,7 @@ EfiConfigKeywordHandlerGetData (
       // 3.4 Extract Value for the input keyword.
       //
       Status = ExtractValueFromDriver(ConfigRequest, &ValueElement);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         if (Status != EFI_OUT_OF_RESOURCES) {
           Status = EFI_DEVICE_ERROR;
         }
@@ -3271,7 +3271,7 @@ EfiConfigKeywordHandlerGetData (
       // 6. Merge to the MultiKeywordResp string.
       //
       Status = MergeToMultiKeywordResp(&MultiKeywordResp, &KeywordResp);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         goto Done;
       }
 
@@ -3283,16 +3283,16 @@ EfiConfigKeywordHandlerGetData (
       //
       // 8. Clean the temp buffer.
       //
-      FreePool (DevicePath);
-      FreePool (KeywordData);
-      FreePool (ValueElement);
-      FreePool (ConfigRequest);
+      FreePool(DevicePath);
+      FreePool(KeywordData);
+      FreePool(ValueElement);
+      FreePool(ConfigRequest);
       DevicePath = NULL;
       KeywordData = NULL;
       ValueElement = NULL;
       ConfigRequest = NULL;
       if (KeywordResp != NULL) {
-        FreePool (KeywordResp);
+        FreePool(KeywordResp);
         KeywordResp = NULL;
       }
     }
@@ -3301,7 +3301,7 @@ EfiConfigKeywordHandlerGetData (
     // Enumerate all keyword in the system.
     //
     Status = EnumerateAllKeywords(NameSpace, &MultiKeywordResp, ProgressErr);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       goto Done;
     }
     *Results = MultiKeywordResp;
@@ -3313,16 +3313,16 @@ Done:
   *Progress = KeywordString + (StringPtr - TempString);
 
   if (TempString != NULL) {
-    FreePool (TempString);
+    FreePool(TempString);
   }
   if (NameSpace != NULL) {
-    FreePool (NameSpace);
+    FreePool(NameSpace);
   }
   if (DevicePath != NULL) {
-    FreePool (DevicePath);
+    FreePool(DevicePath);
   }
   if (KeywordData != NULL) {
-    FreePool (KeywordData);
+    FreePool(KeywordData);
   }
 
   return Status;

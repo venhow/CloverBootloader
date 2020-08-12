@@ -118,7 +118,7 @@ GetNextComponent (
   )
 {
   while (*Cp != 0) {
-    if (*Cp == DT_PATH_NAME_SEPERATOR) {
+    if (*Cp == DT_PATH_NAME_SEPARATOR) {
       Cp++;
       break;
     }
@@ -148,11 +148,11 @@ FindChild (
   Index = 1;
   Child = GetFirstChild (Cur);
   while (1) {
-    if (EFI_ERROR (DTGetProperty (Child, "name", (VOID **)&Str, &Dummy))) {
+    if (EFI_ERROR(DTGetProperty(Child, "name", (VOID **)&Str, &Dummy))) {
       break;
     }
 
-    if (AsciiStrCmp (Str, Buf) == 0) {
+    if (AsciiStrCmp(Str, Buf) == 0) {
       return Child;
     }
 
@@ -193,7 +193,7 @@ DTLookupEntry (
   }
 
   Cp = PathName;
-  if (*Cp == DT_PATH_NAME_SEPERATOR) {
+  if (*Cp == DT_PATH_NAME_SEPARATOR) {
     Cp++;
     if (*Cp == '\0') {
       *FoundEntry = Cur;
@@ -264,10 +264,10 @@ DTDisposeEntryIterator (
 
   while ((Scope = Iterator->SavedScope) != NULL) {
     Iterator->SavedScope = Scope->NextScope;
-    FreePool (Scope);
+    FreePool(Scope);
   }
 
-  FreePool (Iterator);
+  FreePool(Iterator);
   return EFI_SUCCESS;
 }
 
@@ -323,7 +323,7 @@ DTExitEntry (
 
   *CurrentPosition = Iterator->CurrentEntry;
 
-  FreePool (NewScope);
+  FreePool(NewScope);
 
   return EFI_SUCCESS;
 }
@@ -360,7 +360,7 @@ DTRestartEntryIteration (
 }
 
 EFI_STATUS
-DTGetProperty (
+DTGetProperty(
   IN CONST DTEntry       Entry,
   IN CHAR8               *PropertyName,
   IN VOID                **PropertyValue,
@@ -376,7 +376,7 @@ DTGetProperty (
 
   Prop = (DTProperty *) (Entry + 1);
   for (Count = 0; Count < Entry->NumProperties; Count++) {
-    if (AsciiStrCmp (Prop->Name, PropertyName) == 0) {
+    if (AsciiStrCmp(Prop->Name, PropertyName) == 0) {
       *PropertyValue = (VOID *) (((UINT8 *)Prop) + sizeof (DTProperty));
       *PropertySize = Prop->Length;
       return EFI_SUCCESS;
@@ -465,29 +465,29 @@ DumpDeviceTreeNodeRecusively (
 
   Status = DTCreatePropertyIterator (Entry, PropIter);
 
-  if (!EFI_ERROR (Status)) {
+  if (!EFI_ERROR(Status)) {
     PropertyParent = "/";
 
-    while ((Status = DTIterateProperties (PropIter, &PropertyName)) == EFI_SUCCESS) {
-      if ((Status = DTGetProperty (Entry, (CHAR8 *)PropertyName, (void *)&PropertyValue, &PropertySize)) != EFI_SUCCESS) {
+    while (!EFI_ERROR(DTIterateProperties (PropIter, &PropertyName))) {
+      if ((Status = DTGetProperty(Entry, (CHAR8 *)PropertyName, (void *)&PropertyValue, &PropertySize)) != EFI_SUCCESS) {
         DEBUG ((DEBUG_WARN, "DeviceTree is probably invalid - %r\n", Status));
         break;
       }
 
-      if (AsciiStrnCmp (PropertyName, "name", 4) == 0) {
+      if (AsciiStrnCmp(PropertyName, "name", 4) == 0) {
         DEBUG ((DEBUG_INFO, "+%*ao %a\n", mDTNodeDepth * Spacer, "-", PropertyValue, mDTNodeDepth));
         DEBUG ((DEBUG_INFO, "|%*a\n", mDTNodeDepth * Spacer, " {" , mDTNodeDepth));
         PropertyParent = PropertyValue;
         mDTNodeDepth++;
-      } else if (AsciiStrnCmp (PropertyName, "guid", 4) == 0) {
+      } else if (AsciiStrnCmp(PropertyName, "guid", 4) == 0) {
         //
         // Show Guid.
         //
         DEBUG ((DEBUG_INFO, "|%*a \"%a\" = < %g >\n", mDTNodeDepth * Spacer, " ", PropertyName, PropertyValue, PropertySize));
-      } else if (AsciiStrnCmp (PropertyParent, "memory-map", 10) == 0) {
+      } else if (AsciiStrnCmp(PropertyParent, "memory-map", 10) == 0) {
         MemMap = (DTMemMapEntry *)PropertyValue;
 
-        if (AsciiStrnCmp (PropertyName, "Driver-", 7) == 0) {
+        if (AsciiStrnCmp(PropertyName, "Driver-", 7) == 0) {
           Kext = (DTBooterKextFileInfo *)(UINTN)MemMap->Address;
 
           if (Kext != NULL && Kext->ExecutablePhysAddr != 0) {
@@ -527,14 +527,14 @@ DumpDeviceTreeNodeRecusively (
 
   Status = DTCreateEntryIterator (Root, &EntryIterator);
 
-  if (!EFI_ERROR (Status)) {
+  if (!EFI_ERROR(Status)) {
     while (!EFI_ERROR(DTIterateEntries (EntryIterator, &Root))) {
       DumpDeviceTreeNodeRecusively (Root);
       mDTNodeDepth--;
     }
   }
 
-  return !EFI_ERROR (Status) ? EFI_SUCCESS : EFI_NOT_FOUND;
+  return !EFI_ERROR(Status) ? EFI_SUCCESS : EFI_NOT_FOUND;
 }
 
 VOID
@@ -544,7 +544,7 @@ DumpDeviceTree (
 {
   DTEntry DTRoot = NULL;
 
-  if (!EFI_ERROR (DTLookupEntry (NULL, "/", &DTRoot))) {
+  if (!EFI_ERROR(DTLookupEntry (NULL, "/", &DTRoot))) {
     DumpDeviceTreeNodeRecusively (DTRoot);
   }
 }
@@ -553,7 +553,7 @@ DumpDeviceTree (
 ///
 ///
 /// @param[in] Base      Pointer to the Device Tree
-/// @param[in] Length    Pointer to location containg the Device Tree length
+/// @param[in] Length    Pointer to location containing the Device Tree length
 ///
 
 VOID
@@ -593,9 +593,9 @@ DTDeleteProperty (
   DeviceTreeEnd  = (CHAR8 *) mDTRootNode + *mDTLength;
   DeleteLength   = 0;
 
-  if (!EFI_ERROR (DTLookupEntry (NULL, NodeName, &Node))) {
-    if (!EFI_ERROR (DTCreatePropertyIterator (Node, PropIter))) {
-      while (!EFI_ERROR (DTIterateProperties (PropIter, &DeletePosition))) {
+  if (!EFI_ERROR(DTLookupEntry (NULL, NodeName, &Node))) {
+    if (!EFI_ERROR(DTCreatePropertyIterator (Node, PropIter))) {
+      while (!EFI_ERROR(DTIterateProperties (PropIter, &DeletePosition))) {
         if (AsciiStrStr (DeletePosition, DeletePropertyName) != NULL) {
           Property     = (DTProperty *)DeletePosition;
           DeleteLength = sizeof (DTProperty) + ALIGN_VALUE (Property->Length, sizeof (UINT32));
@@ -610,7 +610,7 @@ DTDeleteProperty (
           //
           // Delete Property.
           //
-          CopyMem (DeletePosition, DeletePosition + DeleteLength, DeviceTreeEnd - DeletePosition);
+          CopyMem(DeletePosition, DeletePosition + DeleteLength, DeviceTreeEnd - DeletePosition);
           ZeroMem (DeviceTreeEnd - DeleteLength, DeleteLength);
 
           //
@@ -662,9 +662,9 @@ DTInsertProperty (
   DeviceTreeEnd  = (CHAR8 *)mDTRootNode + *mDTLength;
   InsertPosition = NULL;
 
-  if (!EFI_ERROR (DTLookupEntry (NULL, NodeName, &Node))) {
-    if (!EFI_ERROR (DTCreatePropertyIterator (Node, PropIter))) {
-      while (!EFI_ERROR (DTIterateProperties (PropIter, &DeviceTree))) {
+  if (!EFI_ERROR(DTLookupEntry (NULL, NodeName, &Node))) {
+    if (!EFI_ERROR(DTCreatePropertyIterator (Node, PropIter))) {
+      while (!EFI_ERROR(DTIterateProperties (PropIter, &DeviceTree))) {
         InsertPosition = DeviceTree;
         if (AsciiStrStr (InsertPosition, InsertPropertyName) != NULL) {
           break;
@@ -681,13 +681,13 @@ DTInsertProperty (
       //
       // Make space.
       //
-      CopyMem (InsertPosition + sizeof (DTProperty) + EntryLength, InsertPosition, DeviceTreeEnd - InsertPosition);
+      CopyMem(InsertPosition + sizeof (DTProperty) + EntryLength, InsertPosition, DeviceTreeEnd - InsertPosition);
       ZeroMem (InsertPosition, sizeof (DTProperty) + EntryLength);
 
       //
       // Insert Property Name.
       //
-      CopyMem (Property->Name, AddPropertyName, AsciiStrLen (AddPropertyName));
+      CopyMem(Property->Name, AddPropertyName, AsciiStrLen(AddPropertyName));
 
       //
       // Insert Property Value Length.
@@ -697,7 +697,7 @@ DTInsertProperty (
       //
       // Insert Property Value.
       //
-      CopyMem (InsertPosition + sizeof (DTProperty), AddPropertyValue, ValueLength);
+      CopyMem(InsertPosition + sizeof (DTProperty), AddPropertyValue, ValueLength);
 
       //
       // Increment Nodes Properties Count.

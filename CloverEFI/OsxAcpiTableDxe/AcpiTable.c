@@ -49,7 +49,7 @@ InitializeAcpiTableDxe (
   //
   // Initialize our protocol
   //
-  PrivateData = AllocateZeroPool (sizeof (EFI_ACPI_TABLE_INSTANCE));
+  PrivateData = AllocateZeroPool(sizeof (EFI_ACPI_TABLE_INSTANCE));
  // ASSERT (PrivateData);
   if (!PrivateData) {
     return EFI_OUT_OF_RESOURCES;
@@ -60,8 +60,8 @@ InitializeAcpiTableDxe (
   // Call all constructors per produced protocols
   //
   Status = AcpiTableAcpiTableConstructor (PrivateData);
-  if (EFI_ERROR (Status)) {
-    gBS->FreePool (PrivateData);
+  if (EFI_ERROR(Status)) {
+    gBS->FreePool(PrivateData);
     return EFI_LOAD_ERROR;
   }
 
@@ -87,7 +87,7 @@ InitializeAcpiTableDxe (
                     NULL
                     );
 //  }
-//  ASSERT_EFI_ERROR (Status);
+//  ASSERT_EFI_ERROR(Status);
 
 	//
 	// Register the event to install ACPI Table into EFI System Table

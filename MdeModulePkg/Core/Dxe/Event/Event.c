@@ -399,7 +399,7 @@ CoreCreateEventInternal (
        break;
      }
   }
-  if(EFI_ERROR (Status)) {
+  if(EFI_ERROR(Status)) {
     return EFI_INVALID_PARAMETER;
   }
 
@@ -458,7 +458,7 @@ CoreCreateEventInternal (
   if ((Type & EVT_RUNTIME) != 0) {
     IEvent = AllocateRuntimeZeroPool (sizeof (IEVENT));
   } else {
-    IEvent = AllocateZeroPool (sizeof (IEVENT));
+    IEvent = AllocateZeroPool(sizeof (IEVENT));
   }
   if (IEvent == NULL) {
     return EFI_OUT_OF_RESOURCES;
@@ -768,8 +768,8 @@ CoreCloseEvent (
   // clear the Signature of Event before free pool.
   //
   Event->Signature = 0;
-  Status = CoreFreePool (Event);
-  ASSERT_EFI_ERROR (Status);
+  Status = CoreFreePool(Event);
+  ASSERT_EFI_ERROR(Status);
 
   return Status;
 }

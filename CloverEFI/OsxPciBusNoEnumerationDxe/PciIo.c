@@ -181,7 +181,7 @@ PciIoConfigWrite (
 
 EFI_STATUS
 EFIAPI
-PciIoCopyMem (
+PciIoCopyMem(
   IN     EFI_PCI_IO_PROTOCOL  *This,
   IN     EFI_PCI_IO_PROTOCOL_WIDTH    Width,
   IN     UINT8                        DestBarIndex,
@@ -326,7 +326,7 @@ Returns:
 --*/
 
 {
-  CopyMem (&PciIoDevice->PciIo, &PciIoInterface, sizeof (EFI_PCI_IO_PROTOCOL));
+  CopyMem(&PciIoDevice->PciIo, &PciIoInterface, sizeof (EFI_PCI_IO_PROTOCOL));
 //  return EFI_SUCCESS;
 }
 
@@ -480,7 +480,7 @@ Returns:
   }
 
   Status = PciIoVerifyBarAccess (PciIoDevice, BarIndex, PciBarTypeMem, Width, 1, &Offset);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return EFI_UNSUPPORTED;
   }
 
@@ -536,7 +536,7 @@ Returns:
   }
 
   Status = PciIoVerifyBarAccess (PciIoDevice, BarIndex, PciBarTypeIo, Width, 1, &Offset);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return EFI_UNSUPPORTED;
   }
 
@@ -591,7 +591,7 @@ Returns:
   }
 
   Status = PciIoVerifyBarAccess (PciIoDevice, BarIndex, PciBarTypeMem, Width, Count, &Offset);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return EFI_UNSUPPORTED;
   }
 
@@ -644,7 +644,7 @@ Returns:
   }
 
   Status = PciIoVerifyBarAccess (PciIoDevice, BarIndex, PciBarTypeMem, Width, Count, &Offset);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return EFI_UNSUPPORTED;
   }
 
@@ -697,7 +697,7 @@ Returns:
   }
 
   Status = PciIoVerifyBarAccess (PciIoDevice, BarIndex, PciBarTypeIo, Width, Count, &Offset);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return EFI_UNSUPPORTED;
   }
 
@@ -750,7 +750,7 @@ Returns:
   }
 
   Status = PciIoVerifyBarAccess (PciIoDevice, BarIndex, PciBarTypeIo, Width, Count, &Offset);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return EFI_UNSUPPORTED;
   }
 
@@ -796,7 +796,7 @@ Returns:
 
   Address     = Offset;
   Status      = PciIoVerifyConfigAccess (PciIoDevice, Width, Count, &Address);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -842,7 +842,7 @@ Returns:
 
   Address     = Offset;
   Status      = PciIoVerifyConfigAccess (PciIoDevice, Width, Count, &Address);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -859,7 +859,7 @@ Returns:
 
 EFI_STATUS
 EFIAPI
-PciIoCopyMem (
+PciIoCopyMem(
   IN EFI_PCI_IO_PROTOCOL              *This,
   IN     EFI_PCI_IO_PROTOCOL_WIDTH    Width,
   IN     UINT8                        DestBarIndex,
@@ -903,16 +903,16 @@ Returns:
   }
 
   Status = PciIoVerifyBarAccess (PciIoDevice, DestBarIndex, PciBarTypeMem, Width, Count, &DestOffset);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return EFI_UNSUPPORTED;
   }
 
   Status = PciIoVerifyBarAccess (PciIoDevice, SrcBarIndex, PciBarTypeMem, Width, Count, &SrcOffset);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return EFI_UNSUPPORTED;
   }
 
-  Status = PciIoDevice->PciRootBridgeIo->CopyMem (
+  Status = PciIoDevice->PciRootBridgeIo->CopyMem(
                                           PciIoDevice->PciRootBridgeIo,
                                           (EFI_PCI_ROOT_BRIDGE_IO_PROTOCOL_WIDTH) Width,
                                           DestOffset,
@@ -1373,7 +1373,7 @@ Returns:
                                              NULL,
                                              NULL
                                              );
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
       //
       // The PCI Root Bridge could not modify the attributes, so return the error.
       //
@@ -1635,7 +1635,7 @@ Returns:
   }
 
   if (Resources != NULL) {
-    Configuration = AllocateZeroPool (sizeof (EFI_ACPI_ADDRESS_SPACE_DESCRIPTOR) + sizeof (EFI_ACPI_END_TAG_DESCRIPTOR));
+    Configuration = AllocateZeroPool(sizeof (EFI_ACPI_ADDRESS_SPACE_DESCRIPTOR) + sizeof (EFI_ACPI_END_TAG_DESCRIPTOR));
     if (Configuration == NULL) {
       return EFI_OUT_OF_RESOURCES;
     }
@@ -1788,7 +1788,7 @@ Returns:
             (UINT32) *Length,
             &NonRelativeOffset
             );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return EFI_UNSUPPORTED;
   }
 

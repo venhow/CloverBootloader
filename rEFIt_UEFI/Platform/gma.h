@@ -6,7 +6,7 @@ BOOLEAN setup_gma_devprop(LOADER_ENTRY *Entry, pci_dt_t *gma_dev);
 
 struct gma_gpu_t {
 	UINT32 device;
-	CHAR8 *name;
+	CONST CHAR8 *name;
 };
 
 /*
@@ -26,5 +26,10 @@ switch (ram)
     break;
   default:
 */    
+
+CONST CHAR8
+*get_gma_model (
+  IN UINT16 DeviceID
+  );
     
 #endif /* !__LIBSAIO_GMA_H */

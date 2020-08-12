@@ -172,7 +172,7 @@ InitializeBmmConfig (
   //
   // Backup Initialize BMM configuartion data to BmmOldFakeNVData
   //
-  CopyMem (&CallbackData->BmmOldFakeNVData, &CallbackData->BmmFakeNvData, sizeof (BMM_FAKE_NV_DATA));
+  CopyMem(&CallbackData->BmmOldFakeNVData, &CallbackData->BmmFakeNvData, sizeof (BMM_FAKE_NV_DATA));
 }
 
 /**
@@ -288,14 +288,14 @@ BootMaintExtractConfig (
     //
     EFI_STRING ConfigRequestHdr = HiiConstructConfigHdr (&gBootMaintFormSetGuid, mBootMaintStorageName, Private->BmmDriverHandle);
     Size = (StrLen (ConfigRequestHdr) + 32 + 1) * sizeof (CHAR16);
-    ConfigRequest = AllocateZeroPool (Size);
+    ConfigRequest = AllocateZeroPool(Size);
   //  ASSERT (ConfigRequest != NULL);
     if (!ConfigRequest) {
       return EFI_OUT_OF_RESOURCES;
     }
     AllocatedRequest = TRUE;
     UnicodeSPrint (ConfigRequest, Size, L"%s&OFFSET=0&WIDTH=%016LX", ConfigRequestHdr, (UINT64)BufferSize);
-    FreePool (ConfigRequestHdr);
+    FreePool(ConfigRequestHdr);
   }
 
   Status = gHiiConfigRouting->BlockToConfig (
@@ -310,7 +310,7 @@ BootMaintExtractConfig (
   // Free the allocated config request string.
   //
   if (AllocatedRequest) {
-    FreePool (ConfigRequest);
+    FreePool(ConfigRequest);
     ConfigRequest = NULL;
   }
   //
@@ -401,7 +401,7 @@ BootMaintRouteConfig (
                   NULL, 
                   (VOID**) &ConfigRouting
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -422,7 +422,7 @@ BootMaintRouteConfig (
                             &BufferSize,
                             Progress
                             );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
   //
   // Compare new and old BMM configuration data and only do action for modified item to 
   // avoid setting unnecessary non-volatile variable
@@ -608,7 +608,7 @@ BootMaintRouteConfig (
   //
   // After user do the save action, need to update OldBmmData.
   //
-  CopyMem (OldBmmData, NewBmmData, sizeof (BMM_FAKE_NV_DATA));
+  CopyMem(OldBmmData, NewBmmData, sizeof (BMM_FAKE_NV_DATA));
 
   return EFI_SUCCESS;
 }
@@ -738,7 +738,7 @@ BootMaintCallback (
     // Initilize Form for legacy boot option.
     //
     Status = EfiLibLocateProtocol (&gEfiLegacyBiosProtocolGuid, (VOID **) &LegacyBios);
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       InitializeLegacyBootOption ();
     }
     
@@ -1030,7 +1030,7 @@ BootMaintCallback (
           Index++;
         }
 
-        CopyMem (
+        CopyMem(
           OldLegacyDev,
           NewLegacyDev,
           Number
@@ -1090,11 +1090,11 @@ DiscardChangeHandler (
 
   switch (Private->BmmPreviousPageId) {
   case FORM_BOOT_CHG_ID:
-    CopyMem (CurrentFakeNVMap->BootOptionOrder, Private->BmmOldFakeNVData.BootOptionOrder, sizeof (CurrentFakeNVMap->BootOptionOrder));
+    CopyMem(CurrentFakeNVMap->BootOptionOrder, Private->BmmOldFakeNVData.BootOptionOrder, sizeof (CurrentFakeNVMap->BootOptionOrder));
     break;
 
   case FORM_DRV_CHG_ID:
-    CopyMem (CurrentFakeNVMap->DriverOptionOrder, Private->BmmOldFakeNVData.DriverOptionOrder, sizeof (CurrentFakeNVMap->DriverOptionOrder));
+    CopyMem(CurrentFakeNVMap->DriverOptionOrder, Private->BmmOldFakeNVData.DriverOptionOrder, sizeof (CurrentFakeNVMap->DriverOptionOrder));
     break;
 
   case FORM_BOOT_DEL_ID:
@@ -1177,7 +1177,7 @@ InitializeBM (
   //
   // Allocate the storage for the entire Package List
   //
-  PackageListHeader = AllocateZeroPool (Length);
+  PackageListHeader = AllocateZeroPool(Length);
 
   //
   // If the Package List can not be allocated, then return a NULL HII Handle
@@ -1196,7 +1196,7 @@ InitializeBM (
   //
   Data = (UINT8 *)(PackageListHeader + 1);
   Length = ReadUnaligned32 ((UINT32 *) BdsDxeStrings) - sizeof (UINT32);
-  CopyMem (Data, (UINT8 *) BdsDxeStrings + sizeof (UINT32), Length);
+  CopyMem(Data, (UINT8 *) BdsDxeStrings + sizeof (UINT32), Length);
 
   //
   // Add End type HII package.
@@ -1217,7 +1217,7 @@ InitializeBM (
   CopyGuid (&PackageListHeader->PackageListGuid, &gFileExploreFormSetGuid);
   Status = gHiiDatabase->UpdatePackageList (gHiiDatabase, BmmCallbackInfo->FeHiiHandle, PackageListHeader);
   
-  FreePool (PackageListHeader);
+  FreePool(PackageListHeader);
 
   //
   // Init OpCode Handle and Allocate space for creation of Buffer
@@ -1341,7 +1341,7 @@ InitializeStringDepository (
   )
 {
   STRING_DEPOSITORY *StringDepository;
-  StringDepository              = AllocateZeroPool (sizeof (STRING_DEPOSITORY) * STRING_DEPOSITORY_NUMBER);
+  StringDepository              = AllocateZeroPool(sizeof (STRING_DEPOSITORY) * STRING_DEPOSITORY_NUMBER);
   FileOptionStrDepository       = StringDepository++;
 //  ConsoleOptionStrDepository    = StringDepository++;
   BootOptionStrDepository       = StringDepository++;
@@ -1380,7 +1380,7 @@ GetStringTokenFromDepository (
     //
     // If there is no usable node in the list, update the list.
     //
-    NextListNode = AllocateZeroPool (sizeof (STRING_LIST_NODE));
+    NextListNode = AllocateZeroPool(sizeof (STRING_LIST_NODE));
     ASSERT (NextListNode != NULL);
     NextListNode->StringToken = HiiSetString (CallbackData->BmmHiiHandle, 0, L" ", NULL);
     ASSERT (NextListNode->StringToken != 0);
@@ -1441,7 +1441,7 @@ CleanUpStringDepository (
     CurrentListNode = StringDepository->ListHead;
     for (NodeIndex = 0; NodeIndex < StringDepository->TotalNodeNumber; NodeIndex++) {
       NextListNode = CurrentListNode->Next;
-      FreePool (CurrentListNode);
+      FreePool(CurrentListNode);
       CurrentListNode = NextListNode;
     }
 
@@ -1450,7 +1450,7 @@ CleanUpStringDepository (
   //
   // Release string depository.
   //
-  FreePool (FileOptionStrDepository);
+  FreePool(FileOptionStrDepository);
 }
 
 /**
@@ -1580,7 +1580,7 @@ InitBMPackage (
   //
   // Create CallbackData structures for Driver Callback
   //
-  BmmCallbackInfo = AllocateZeroPool (sizeof (BMM_CALLBACK_DATA));
+  BmmCallbackInfo = AllocateZeroPool(sizeof (BMM_CALLBACK_DATA));
   if (BmmCallbackInfo == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
@@ -1588,9 +1588,9 @@ InitBMPackage (
   //
   // Create LoadOption in BmmCallbackInfo for Driver Callback
   //
-  Ptr = AllocateZeroPool (sizeof (BM_LOAD_CONTEXT) + sizeof (BM_FILE_CONTEXT) + sizeof (BM_HANDLE_CONTEXT) + sizeof (BM_MENU_ENTRY));
+  Ptr = AllocateZeroPool(sizeof (BM_LOAD_CONTEXT) + sizeof (BM_FILE_CONTEXT) + sizeof (BM_HANDLE_CONTEXT) + sizeof (BM_MENU_ENTRY));
   if (Ptr == NULL) {
-    FreePool (BmmCallbackInfo);
+    FreePool(BmmCallbackInfo);
     BmmCallbackInfo = NULL;
     return EFI_OUT_OF_RESOURCES;
   }
@@ -1627,8 +1627,8 @@ InitBMPackage (
                   &BmmCallbackInfo->BmmConfigAccess,
                   NULL
                   );
-//  ASSERT_EFI_ERROR (Status);
-  if (EFI_ERROR (Status)) {
+//  ASSERT_EFI_ERROR(Status);
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -1643,8 +1643,8 @@ InitBMPackage (
                   &BmmCallbackInfo->FeConfigAccess,
                   NULL
                   );
-//  ASSERT_EFI_ERROR (Status);
-  if (EFI_ERROR (Status)) {
+//  ASSERT_EFI_ERROR(Status);
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -1718,8 +1718,8 @@ FreeBMPackage (
            );
     }
 
-  FreePool (BmmCallbackInfo->LoadContext);
-  FreePool (BmmCallbackInfo);
+  FreePool(BmmCallbackInfo->LoadContext);
+  FreePool(BmmCallbackInfo);
 
   mBmmCallbackInfo = NULL; 
 

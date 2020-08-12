@@ -643,14 +643,14 @@ InternalPeiServicesInstallFvInfoPpi (
     //
     // To install FvInfo Ppi.
     //
-    FvInfoPpi = AllocateZeroPool (sizeof (EFI_PEI_FIRMWARE_VOLUME_INFO_PPI));
+    FvInfoPpi = AllocateZeroPool(sizeof (EFI_PEI_FIRMWARE_VOLUME_INFO_PPI));
     ASSERT (FvInfoPpi != NULL);
     PpiGuid = &gEfiPeiFirmwareVolumeInfoPpiGuid;
   } else {
     //
     // To install FvInfo2 Ppi.
     //
-    FvInfoPpi = AllocateZeroPool (sizeof (EFI_PEI_FIRMWARE_VOLUME_INFO2_PPI));
+    FvInfoPpi = AllocateZeroPool(sizeof (EFI_PEI_FIRMWARE_VOLUME_INFO2_PPI));
     ASSERT (FvInfoPpi != NULL);
     ((EFI_PEI_FIRMWARE_VOLUME_INFO2_PPI *) FvInfoPpi)->AuthenticationStatus = AuthenticationStatus;
     PpiGuid = &gEfiPeiFirmwareVolumeInfo2PpiGuid;
@@ -674,12 +674,12 @@ InternalPeiServicesInstallFvInfoPpi (
   FvInfoPpi->FvInfo = (VOID *) FvInfo;
   FvInfoPpi->FvInfoSize = FvInfoSize;
   if (ParentFvName != NULL) {
-    ParentFvNameValue = AllocateCopyPool (sizeof (EFI_GUID), ParentFvName);
+    ParentFvNameValue = AllocateCopyPool(sizeof (EFI_GUID), ParentFvName);
     ASSERT (ParentFvNameValue != NULL);
     FvInfoPpi->ParentFvName = ParentFvNameValue;
   }
   if (ParentFileName != NULL) {
-    ParentFileNameValue = AllocateCopyPool (sizeof (EFI_GUID), ParentFileName);
+    ParentFileNameValue = AllocateCopyPool(sizeof (EFI_GUID), ParentFileName);
     ASSERT (ParentFileNameValue != NULL);
     FvInfoPpi->ParentFileName = ParentFileNameValue;
   }
@@ -691,7 +691,7 @@ InternalPeiServicesInstallFvInfoPpi (
   FvInfoPpiDescriptor->Flags = EFI_PEI_PPI_DESCRIPTOR_PPI | EFI_PEI_PPI_DESCRIPTOR_TERMINATE_LIST;
   FvInfoPpiDescriptor->Ppi   = (VOID *) FvInfoPpi;
   Status = PeiServicesInstallPpi (FvInfoPpiDescriptor);
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
 }
 

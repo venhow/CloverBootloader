@@ -108,6 +108,7 @@
   CapsuleLib|MdeModulePkg/Library/DxeCapsuleLibNull/DxeCapsuleLibNull.inf
   #PeCoffExtraActionLib|MdePkg/Library/BasePeCoffExtraActionLibNull/BasePeCoffExtraActionLibNull.inf
   NetLib|NetworkPkg/Library/DxeNetLib/DxeNetLib.inf
+  FrameBufferBltLib|MdeModulePkg/Library/FrameBufferBltLib/FrameBufferBltLib.inf
   #
   # Platform
   #
@@ -157,8 +158,38 @@
   MemLogLib|Library/MemLogLibDefault/MemLogLibDefault.inf
   VideoBiosPatchLib|Library/VideoBiosPatchLib/VideoBiosPatchLib.inf
   WaveLib|Library/WaveLib/WaveLib.inf
+  HdaDevicesLib|Library/HdaDevicesLib/HdaDevicesLib.inf
 
+  #
+  # OC libs
+  #
   OcGuardLib|Library/OcGuardLib/OcGuardLib.inf
+  OcAfterBootCompatLib|Library/OcAfterBootCompatLib/OcAfterBootCompatLib.inf
+  OcAppleBootPolicyLib|Library/OcAppleBootPolicyLib/OcAppleBootPolicyLib.inf
+  OcAppleChunklistLib|Library/OcAppleChunklistLib/OcAppleChunklistLib.inf
+  OcAppleDiskImageLib|Library/OcAppleDiskImageLib/OcAppleDiskImageLib.inf
+  OcAppleKeyMapLib|Library/OcAppleKeyMapLib/OcAppleKeyMapLib.inf
+  OcAppleKeysLib|Library/OcAppleKeysLib/OcAppleKeysLib.inf
+  OcAppleRamDiskLib|Library/OcAppleRamDiskLib/OcAppleRamDiskLib.inf
+  OcBootManagementLib|Library/OcBootManagementLib/OcBootManagementLib.inf
+  OcCompressionLib|Library/OcCompressionLib/OcCompressionLib.inf
+  OcConsoleLib|Library/OcConsoleLib/OcConsoleLib.inf
+  OcCpuLib|Library/OcCpuLib/OcCpuLib.inf
+  OcCryptoLib|Library/OcCryptoLib/OcCryptoLib.inf
+  OcDebugLogLib|Library/OcDebugLogLib/OcDebugLogLib.inf
+  OcDevicePathLib|Library/OcDevicePathLib/OcDevicePathLib.inf
+  OcFileLib|Library/OcFileLib/OcFileLib.inf
+  OcMemoryLib|Library/OcMemoryLib/OcMemoryLib.inf
+  OcMiscLib|Library/OcMiscLib/OcMiscLib.inf
+  OcOSInfoLib|Library/OcOSInfoLib/OcOSInfoLib.inf
+  OcRngLib|Library/OcRngLib/OcRngLib.inf
+  OcRtcLib|Library/OcRtcLib/OcRtcLib.inf
+  OcSerializeLib|Library/OcSerializeLib/OcSerializeLib.inf
+  OcStringLib|Library/OcStringLib/OcStringLib.inf
+  OcStorageLib|Library/OcStorageLib/OcStorageLib.inf
+  OcTemplateLib|Library/OcTemplateLib/OcTemplateLib.inf
+  OcXmlLib|Library/OcXmlLib/OcXmlLib.inf
+
   MachoLib|Library/MachoLib/MachoLib.inf
   DeviceTreeLib|Library/DeviceTreeLib/DeviceTreeLib.inf
 
@@ -385,7 +416,7 @@
   CloverEFI/BiosVideo/BiosVideo.inf
   #BiosVideoAuto/BiosVideo.inf
   LegacyBios/VideoDxe/VideoDxe.inf
-  #LegacyBios/VideoDxe/VideoDxe2.inf
+  LegacyBios/VideoDxe/VideoDxe2.inf
 
   # IDE/AHCI Support
 !ifdef USE_BIOS_BLOCKIO
@@ -588,6 +619,8 @@
   MemoryFix/OsxAptioFixDrv/OsxAptioFix3Drv.inf
   MemoryFix/OsxLowMemFixDrv/OsxLowMemFixDrv.inf
   MemoryFix/AptioMemoryFix/AptioMemoryFix.inf
+  MemoryFix/OpenRuntime/OpenRuntime.inf
+  MemoryFix/OcQuirks/OcQuirks.inf
 !ifdef DEBUG_ON_SERIAL_PORT
   MemoryFix/OsxAptioFixDrv/OsxAptioFixDrv.inf {
     #
@@ -656,10 +689,6 @@
   DEFINE ANDX86_FLAG = -DANDX86
 #!endif
 
-#!ifdef LODEPNG
-  DEFINE LODEPNG_FLAG = -DLODEPNG
-#!endif
-
 !ifdef ENABLE_PS2MOUSE_LEGACYBOOT
   DEFINE PS2MOUSE_LEGACYBOOT_FLAG = -DENABLE_PS2MOUSE_LEGACYBOOT
 !endif
@@ -678,12 +707,15 @@ DEFINE EXIT_USBKB_FLAG = -DEXIT_USBKB
 !endif
 
 
-DEFINE BUILD_OPTIONS=-DMDEPKG_NDEBUG -DCLOVER_BUILD $(VBIOS_PATCH_CLOVEREFI_FLAG) $(ONLY_SATA_0_FLAG) $(BLOCKIO_FLAG) $(NOUSB_FLAG) $(NOUDMA_FLAG) $(AMD_FLAG) $(SECURE_BOOT_FLAG) $(ANDX86_FLAG) $(LODEPNG_FLAG) $(PS2MOUSE_LEGACYBOOT_FLAG) $(DEBUG_ON_SERIAL_PORT_FLAG) $(EXIT_USBKB_FLAG)
+DEFINE BUILD_OPTIONS=-DMDEPKG_NDEBUG -DCLOVER_BUILD $(VBIOS_PATCH_CLOVEREFI_FLAG) $(ONLY_SATA_0_FLAG) $(BLOCKIO_FLAG) $(NOUSB_FLAG) $(NOUDMA_FLAG) $(AMD_FLAG) $(SECURE_BOOT_FLAG) $(ANDX86_FLAG) $(PS2MOUSE_LEGACYBOOT_FLAG) $(DEBUG_ON_SERIAL_PORT_FLAG) $(EXIT_USBKB_FLAG)
 
   #MSFT:*_*_*_CC_FLAGS  = /FAcs /FR$(@R).SBR /wd4701 /wd4703 $(BUILD_OPTIONS)
-  MSFT:*_*_*_CC_FLAGS  = /FAcs /FR$(@R).SBR $(BUILD_OPTIONS) -Dinline=__inline
+  MSFT:*_*_*_CC_FLAGS  = /FAcs $(BUILD_OPTIONS) -Dinline=__inline /Zi -D DISABLE_NEW_DEPRECATED_INTERFACES
 
-  XCODE:*_*_*_CC_FLAGS = -fno-unwind-tables -Wno-msvc-include -Os $(BUILD_OPTIONS) $(DISABLE_LTO_FLAG)
-  GCC:*_*_*_CC_FLAGS   = $(BUILD_OPTIONS) $(DISABLE_LTO_FLAG)
+  XCODE:*_*_*_CC_FLAGS = -fno-unwind-tables -Wno-msvc-include -Os $(BUILD_OPTIONS) $(DISABLE_LTO_FLAG) -D DISABLE_NEW_DEPRECATED_INTERFACES
+  GCC:*_*_*_CC_FLAGS   = $(BUILD_OPTIONS) $(DISABLE_LTO_FLAG) -D DISABLE_NEW_DEPRECATED_INTERFACES
+  GCC:*_*_*_CXX_FLAGS  = $(BUILD_OPTIONS) $(DISABLE_LTO_FLAG) -D DISABLE_NEW_DEPRECATED_INTERFACES
+  #-fanalyzer -Wmismatched-tags 
+  #-Weffc++
   #-Wunused-but-set-variable
   # -Os -fno-omit-frame-pointer -maccumulate-outgoing-args

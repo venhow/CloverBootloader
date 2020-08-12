@@ -394,7 +394,7 @@ EmmcBlockIoPeimReadBlocks (
                PartitionConfig,
                0x0
                );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
     Private->Slot[SlotNum].ExtCsd.PartitionConfig = PartitionConfig;
@@ -413,13 +413,13 @@ EmmcBlockIoPeimReadBlocks (
     }
 
     Status = EmmcPeimSetBlkCount (&Private->Slot[SlotNum], (UINT16)NumberOfBlocks);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
 
     BufferSize = NumberOfBlocks * BlockSize;
     Status = EmmcPeimRwMultiBlocks (&Private->Slot[SlotNum], StartLBA, BlockSize, Buffer, BufferSize, TRUE);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
 
@@ -532,7 +532,7 @@ EmmcBlockIoPeimGetMediaInfo2 (
               DeviceIndex,
               &Media
               );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -551,7 +551,7 @@ EmmcBlockIoPeimGetMediaInfo2 (
     }
   }
 
-  CopyMem (MediaInfo, &(Private->Slot[SlotNum].Media[MediaNum]), sizeof (EFI_PEI_BLOCK_IO2_MEDIA));
+  CopyMem(MediaInfo, &(Private->Slot[SlotNum].Media[MediaNum]), sizeof (EFI_PEI_BLOCK_IO2_MEDIA));
   return EFI_SUCCESS;
 }
 
@@ -684,7 +684,7 @@ InitializeEmmcBlockIoPeim (
   //
   // Shadow this PEIM to run from memory
   //
-  if (!EFI_ERROR (PeiServicesRegisterForShadow (FileHandle))) {
+  if (!EFI_ERROR(PeiServicesRegisterForShadow (FileHandle))) {
     return EFI_SUCCESS;
   }
 
@@ -697,7 +697,7 @@ InitializeEmmcBlockIoPeim (
              NULL,
              (VOID **) &SdMmcHcPpi
              );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return EFI_DEVICE_ERROR;
   }
 
@@ -710,7 +710,7 @@ InitializeEmmcBlockIoPeim (
     //
     // When status is error, meant no controller is found
     //
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       break;
     }
 
@@ -719,7 +719,7 @@ InitializeEmmcBlockIoPeim (
       continue;
     }
 
-    Private = AllocateCopyPool (sizeof (EMMC_PEIM_HC_PRIVATE_DATA), &gEmmcHcPrivateTemplate);
+    Private = AllocateCopyPool(sizeof (EMMC_PEIM_HC_PRIVATE_DATA), &gEmmcHcPrivateTemplate);
     if (Private == NULL) {
       Status = EFI_OUT_OF_RESOURCES;
       break;
@@ -730,14 +730,14 @@ InitializeEmmcBlockIoPeim (
     // Initialize the memory pool which will be used in all transactions.
     //
     Status = EmmcPeimInitMemPool (Private);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       Status = EFI_OUT_OF_RESOURCES;
       break;
     }
 
     for (Index = 0; Index < BarNum; Index++) {
       Status = EmmcPeimHcGetCapability (MmioBase[Index], &Capability);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         continue;
       }
       if (Capability.SlotType != 0x1) {
@@ -747,27 +747,27 @@ InitializeEmmcBlockIoPeim (
       }
 
       Status = EmmcPeimHcReset (MmioBase[Index]);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         continue;
       }
       Status = EmmcPeimHcCardDetect (MmioBase[Index]);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         continue;
       }
       Status = EmmcPeimHcInitHost (MmioBase[Index]);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         continue;
       }
 
       SlotNum = Private->SlotNum;
       Slot    = &Private->Slot[SlotNum];
-      CopyMem (Slot, &gEmmcHcSlotTemplate, sizeof (EMMC_PEIM_HC_SLOT));
+      CopyMem(Slot, &gEmmcHcSlotTemplate, sizeof (EMMC_PEIM_HC_SLOT));
       Slot->Private    = Private;
       Slot->EmmcHcBase = MmioBase[Index];
-      CopyMem (&Slot->Capability, &Capability, sizeof (Capability));
+      CopyMem(&Slot->Capability, &Capability, sizeof (Capability));
 
       Status = EmmcPeimIdentification (Slot);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         continue;
       }
 
@@ -829,7 +829,7 @@ InitializeEmmcBlockIoPeim (
     }
     Controller++;
 
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       PeiServicesInstallPpi (&Private->BlkIoPpiList);
       PeiServicesNotifyPpi (&Private->EndOfPeiNotifyList);
     } else {

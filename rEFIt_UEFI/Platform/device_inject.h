@@ -10,60 +10,14 @@
 #ifndef __LIBSAIO_DEVICE_INJECT_H
 #define __LIBSAIO_DEVICE_INJECT_H
 
+#include "../include/Pci.h"
+
 /* No more used
 #define DP_ADD_TEMP_VAL(dev, val) devprop_add_value(dev, (CHAR8*)val[0], (UINT8*)val[1], (UINT32)AsciiStrLen(val[1]))
 #define DP_ADD_TEMP_VAL_DATA(dev, val) devprop_add_value(dev, (CHAR8*)val.name, (UINT8*)val.data, val.size)
  */
 #define MAX_PCI_DEV_PATHS 16
 
-//#define REG8(reg)  ((volatile UINT8 *)regs)[(reg)]
-//#define REG16(reg)  ((volatile UINT16 *)regs)[(reg) >> 1]
-//#define REG32(reg)  ((volatile UINT32 *)regs)[(reg) >> 2]
-//UINT32 REG32(UINT32 reg);
-//VOID WRITEREG32 (UINT32 reg, UINT32 value);
-
-
-typedef struct {
-	UINT32		:2;
-	UINT32	reg :6;
-	UINT32	func:3;
-	UINT32	dev :5;
-	UINT32	bus :8;
-	UINT32		:7;
-	UINT32	eb	:1;
-} pci_addr_t;
-
-typedef union {
-	pci_addr_t	bits;
-	UINT32	    addr;
-} pci_dev_t;
-
-typedef struct pci_dt_t {
-//  EFI_PCI_IO_PROTOCOL		*PciIo;
-//  PCI_TYPE00            Pci;
-  EFI_HANDLE    DeviceHandle;
-  UINT8*        regs;
-	pci_dev_t			dev;
-
-	UINT16				vendor_id;
-	UINT16				device_id;
-
-	union {
-		struct {
-			UINT16	  vendor_id;
-			UINT16	  device_id;
-		} subsys;
-		UINT32	    subsys_id;
-	} subsys_id;
-	UINT8		      revision;
-	UINT8		      subclass;
-	UINT16				class_id;
-
-	struct pci_dt_t			*parent;
-	struct pci_dt_t			*children;
-	struct pci_dt_t			*next;
-  BOOLEAN             used;
-} pci_dt_t;
 
 #pragma pack(1)
 /* Option ROM header */
@@ -94,7 +48,7 @@ typedef struct {
 } option_rom_pci_header_t;
 
 
-CHAR8  *get_pci_dev_path(pci_dt_t *pci_dt);
+XString8 get_pci_dev_path(pci_dt_t *pci_dt);
 UINT32 pci_config_read32(pci_dt_t *pci_dt, UINT8 reg);
 extern pci_dt_t* nvdevice;
 VOID* PCIReadRom(pci_dt_t* device);
@@ -154,6 +108,7 @@ struct DevPropString {
 
 typedef struct DevPropString  DevPropString;
 
+extern UINT32                          devices_number;
 extern DevPropString *device_inject_string;
 extern UINT8 *device_inject_stringdata;
 extern UINT32 device_inject_stringlength;
@@ -162,11 +117,13 @@ extern UINT32 device_inject_stringlength;
 DevPropString	*devprop_create_string(void);
 //DevPropDevice	*devprop_add_device(DevPropString *string, char *path);
 DevPropDevice	*devprop_add_device_pci(DevPropString *string, pci_dt_t *PciDt, EFI_DEVICE_PATH_PROTOCOL *DevicePath);
-BOOLEAN			devprop_add_value(DevPropDevice *device, CHAR8 *nm, UINT8 *vl, UINTN len);
+BOOLEAN			devprop_add_value(DevPropDevice *device, CONST CHAR8 *nm, UINT8 *vl, UINTN len);
 CHAR8			*devprop_generate_string(DevPropString *string);
 VOID			devprop_free_string(DevPropString *string);
 
 BOOLEAN set_eth_props(pci_dt_t *eth_dev);
 BOOLEAN set_usb_props(pci_dt_t *usb_dev);
+
+UINT32 PciAddrFromDevicePath(EFI_DEVICE_PATH_PROTOCOL* DevicePath);
 
 #endif /* !__LIBSAIO_DEVICE_INJECT_H */

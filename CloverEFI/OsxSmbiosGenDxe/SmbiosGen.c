@@ -70,16 +70,19 @@ InstallProcessorSmbios (
   // Set ProcessorVersion string
   //
   AString = GetSmbiosString (SmbiosTable, SmbiosTable.Type4->ProcessorVersion);
-  UString = AllocateZeroPool ((AsciiStrLen(AString) + 1) * sizeof(CHAR16));
-  ASSERT (UString != NULL);
-  AsciiStrToUnicodeStr (AString, UString);
+  INTN Size = (AsciiStrLen(AString) + 1);
+  UString = AllocateZeroPool(Size * sizeof(CHAR16));
+  if (UString == NULL) {
+    return;
+  }
+  AsciiStrToUnicodeStrS(AString, UString, Size);
 
   Token = HiiSetString (gStringHandle, 0, UString, NULL);
   if (Token == 0) {
-    gBS->FreePool (UString);
+    gBS->FreePool(UString);
     return ;
   }
-  gBS->FreePool (UString);
+  gBS->FreePool(UString);
   return ;
 }
 
@@ -114,6 +117,8 @@ InstallMemorySmbios (
   return ;
 }
 
+//Slice - this is very old and wrong function but it used and not influences on further behaviour
+// so let it be as is
 VOID
 InstallMiscSmbios (
   IN VOID                  *Smbios
@@ -137,17 +142,20 @@ InstallMiscSmbios (
   // Record Type 2
   //
   AString = GetSmbiosString (SmbiosTable, SmbiosTable.Type0->BiosVersion);
-  UString = AllocateZeroPool ((AsciiStrLen(AString) + 1) * sizeof(CHAR16) + sizeof(FIRMWARE_BIOS_VERSIONE));
-  ASSERT (UString != NULL);
-  CopyMem (UString, FIRMWARE_BIOS_VERSIONE, sizeof(FIRMWARE_BIOS_VERSIONE));
-  AsciiStrToUnicodeStr (AString, UString + sizeof(FIRMWARE_BIOS_VERSIONE) / sizeof(CHAR16) - 1);
+  INTN Size = (AsciiStrLen(AString) + 1) + sizeof(FIRMWARE_BIOS_VERSIONE) / sizeof(CHAR16);
+  UString = AllocateZeroPool(Size * sizeof(CHAR16));
+  if (UString == NULL) {
+    return;
+  }
+  CopyMem(UString, FIRMWARE_BIOS_VERSIONE, sizeof(FIRMWARE_BIOS_VERSIONE));
+  AsciiStrToUnicodeStrS(AString, UString + sizeof(FIRMWARE_BIOS_VERSIONE) / sizeof(CHAR16) - 1, Size);
 
-  Token = HiiSetString (gStringHandle, 0, UString, NULL);
+  Token = HiiSetString(gStringHandle, 0, UString, NULL);
   if (Token == 0) {
-    gBS->FreePool (UString);
+    gBS->FreePool(UString);
     return ;
   }
-  gBS->FreePool (UString);
+  gBS->FreePool(UString);
 
   //
   // Log Smios Type 0
@@ -167,17 +175,20 @@ InstallMiscSmbios (
   // Record Type 3
   //
   AString = GetSmbiosString (SmbiosTable, SmbiosTable.Type1->ProductName);
-  UString = AllocateZeroPool ((AsciiStrLen(AString) + 1) * sizeof(CHAR16) + sizeof(FIRMWARE_PRODUCT_NAME));
-  ASSERT (UString != NULL);
-  CopyMem (UString, FIRMWARE_PRODUCT_NAME, sizeof(FIRMWARE_PRODUCT_NAME));
-  AsciiStrToUnicodeStr (AString, UString + sizeof(FIRMWARE_PRODUCT_NAME) / sizeof(CHAR16) - 1);
+  Size = (AsciiStrLen(AString) + 1) + sizeof(FIRMWARE_PRODUCT_NAME) / sizeof(CHAR16);
+  UString = AllocateZeroPool(Size * sizeof(CHAR16));
+  if (UString == NULL) {
+    return;
+  }
+  CopyMem(UString, FIRMWARE_PRODUCT_NAME, sizeof(FIRMWARE_PRODUCT_NAME));
+  AsciiStrToUnicodeStrS(AString, UString + sizeof(FIRMWARE_PRODUCT_NAME) / sizeof(CHAR16) - 1, Size);
 
-  Token = HiiSetString (gStringHandle, 0, UString, NULL);
+  Token = HiiSetString(gStringHandle, 0, UString, NULL);
   if (Token == 0) {
-    gBS->FreePool (UString);
+    gBS->FreePool(UString);
     return ;
   }
-  gBS->FreePool (UString);
+  gBS->FreePool(UString);
 
   //
   // Log Smbios Type 1
@@ -207,7 +218,7 @@ SmbiosGenEntrypoint (
                   NULL,
                   (VOID**)&gSmbios
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
   
@@ -326,5 +337,5 @@ LogSmbiosData (
                      &SmbiosHandle,
                      (EFI_SMBIOS_TABLE_HEADER*)Buffer
                      );
-//  ASSERT_EFI_ERROR (Status);
+//  ASSERT_EFI_ERROR(Status);
 }

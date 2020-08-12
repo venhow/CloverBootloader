@@ -57,7 +57,7 @@ Returns:
   //
   // Initialize the Device IO device instance.
   //
-  Private = AllocateZeroPool (sizeof (DEVICE_IO_PRIVATE_DATA));
+  Private = AllocateZeroPool(sizeof (DEVICE_IO_PRIVATE_DATA));
   if (Private == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
@@ -91,7 +91,7 @@ Returns:
                   &Private->DeviceIo,
                   NULL
                   );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   return Status;
 }
@@ -138,7 +138,7 @@ Returns:
   }
   if (Width >= MMIO_COPY_UINT8) {
     Width = (EFI_IO_WIDTH) (Width - MMIO_COPY_UINT8);
-    Status = Private->PciRootBridgeIo->CopyMem (
+    Status = Private->PciRootBridgeIo->CopyMem(
                                          Private->PciRootBridgeIo,
                                          (EFI_PCI_ROOT_BRIDGE_IO_PROTOCOL_WIDTH) Width,
                                          (UINT64)(UINTN) Buffer,
@@ -202,7 +202,7 @@ Returns:
   }
   if (Width >= MMIO_COPY_UINT8) {
     Width = (EFI_IO_WIDTH) (Width - MMIO_COPY_UINT8);
-    Status = Private->PciRootBridgeIo->CopyMem (
+    Status = Private->PciRootBridgeIo->CopyMem(
                                          Private->PciRootBridgeIo,
                                          (EFI_PCI_ROOT_BRIDGE_IO_PROTOCOL_WIDTH) Width,
                                          Address,
@@ -767,7 +767,7 @@ Returns:
                   Pages,
                   &HostAddress
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 

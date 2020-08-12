@@ -32,7 +32,7 @@ ReadIdtGateDescriptor (
  AsmReadIdtr (&IdtrValue);
  IdtTable = (IA32_IDT_GATE_DESCRIPTOR *) IdtrValue.Base;
 
- CopyMem ((VOID *) IdtGateDescriptor, (VOID *) &(IdtTable)[Vector], sizeof (IA32_IDT_GATE_DESCRIPTOR));
+ CopyMem((VOID *) IdtGateDescriptor, (VOID *) &(IdtTable)[Vector], sizeof (IA32_IDT_GATE_DESCRIPTOR));
 }
 
 /**
@@ -54,7 +54,7 @@ WriteIdtGateDescriptor (
  AsmReadIdtr (&IdtrValue);
  IdtTable = (IA32_IDT_GATE_DESCRIPTOR *) IdtrValue.Base;
 
- CopyMem ((VOID *) &(IdtTable)[Vector], (VOID *) IdtGateDescriptor, sizeof (IA32_IDT_GATE_DESCRIPTOR));
+ CopyMem((VOID *) &(IdtTable)[Vector], (VOID *) IdtGateDescriptor, sizeof (IA32_IDT_GATE_DESCRIPTOR));
 }
 
 /**
@@ -301,11 +301,11 @@ PlUnloadDebugSupportDriver (
     // Free space for each Interrupt Stub precedure.
     //
     if (IdtEntryTable[ExceptionType].StubEntry != NULL) {
-      FreePool ((VOID *)(UINTN)IdtEntryTable[ExceptionType].StubEntry);
+      FreePool((VOID *)(UINTN)IdtEntryTable[ExceptionType].StubEntry);
     }
   }
 
-  FreePool (IdtEntryTable);
+  FreePool(IdtEntryTable);
 
   return EFI_SUCCESS;
 }
@@ -336,7 +336,7 @@ PlInitializeDebugSupportDriver (
     return EFI_UNSUPPORTED;
   }
 
-  IdtEntryTable = AllocateZeroPool (sizeof (IDT_ENTRY) * NUM_IDT_ENTRIES);
+  IdtEntryTable = AllocateZeroPool(sizeof (IDT_ENTRY) * NUM_IDT_ENTRIES);
   if (IdtEntryTable == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
@@ -350,7 +350,7 @@ PlInitializeDebugSupportDriver (
     //
     // Copy Interrupt stub code.
     //
-    CopyMem ((VOID *)(UINTN)IdtEntryTable[ExceptionType].StubEntry, InterruptEntryStub, StubSize);
+    CopyMem((VOID *)(UINTN)IdtEntryTable[ExceptionType].StubEntry, InterruptEntryStub, StubSize);
   }
   return EFI_SUCCESS;
 
@@ -358,10 +358,10 @@ ErrorCleanup:
 
   for (ExceptionType = 0; ExceptionType < NUM_IDT_ENTRIES; ExceptionType++) {
     if (IdtEntryTable[ExceptionType].StubEntry != NULL) {
-      FreePool ((VOID *)(UINTN)IdtEntryTable[ExceptionType].StubEntry);
+      FreePool((VOID *)(UINTN)IdtEntryTable[ExceptionType].StubEntry);
     }
   }
-  FreePool (IdtEntryTable);
+  FreePool(IdtEntryTable);
 
   return EFI_OUT_OF_RESOURCES;
 }

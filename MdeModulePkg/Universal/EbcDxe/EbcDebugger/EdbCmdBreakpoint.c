@@ -116,7 +116,7 @@ DebuggerBreakpointAdd (
   DebuggerPrivate->DebuggerBreakpointContext[DebuggerPrivate->DebuggerBreakpointCount].BreakpointAddress = Address;
   DebuggerPrivate->DebuggerBreakpointContext[DebuggerPrivate->DebuggerBreakpointCount].State = TRUE;
   DebuggerPrivate->DebuggerBreakpointContext[DebuggerPrivate->DebuggerBreakpointCount].OldInstruction = 0;
-  CopyMem (
+  CopyMem(
     &DebuggerPrivate->DebuggerBreakpointContext[DebuggerPrivate->DebuggerBreakpointCount].OldInstruction,
     (VOID *)Address,
     sizeof(UINT16)
@@ -325,7 +325,7 @@ DebuggerBreakpointSet (
   // Get breakpoint address
   //
   Status = Symboltoi (CommandArg, &Address);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     if (Status == EFI_NOT_FOUND) {
       Address = Xtoi(CommandArg);
     } else {

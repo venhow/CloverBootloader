@@ -174,7 +174,7 @@ SendCommunicateBuffer (
 
   CommSize = DataSize + SMM_COMMUNICATE_HEADER_SIZE + SMM_VARIABLE_COMMUNICATE_HEADER_SIZE;
   Status = mSmmCommunication->Communicate (mSmmCommunication, mVariableBufferPhysical, &CommSize);
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   SmmCommunicateHeader      = (EFI_SMM_COMMUNICATE_HEADER *) mVariableBuffer;
   SmmVariableFunctionHeader = (SMM_VARIABLE_COMMUNICATE_HEADER *)SmmCommunicateHeader->Data;
@@ -231,14 +231,14 @@ VariableLockRequestToLock (
   //
   PayloadSize = OFFSET_OF (SMM_VARIABLE_COMMUNICATE_LOCK_VARIABLE, Name) + VariableNameSize;
   Status = InitCommunicateBuffer ((VOID **) &VariableToLock, PayloadSize, SMM_VARIABLE_FUNCTION_LOCK_VARIABLE);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto Done;
   }
   ASSERT (VariableToLock != NULL);
 
   CopyGuid (&VariableToLock->Guid, VendorGuid);
   VariableToLock->NameSize = VariableNameSize;
-  CopyMem (VariableToLock->Name, VariableName, VariableToLock->NameSize);
+  CopyMem(VariableToLock->Name, VariableName, VariableToLock->NameSize);
 
   //
   // Send data to SMM.
@@ -331,15 +331,15 @@ VarCheckVariablePropertySet (
   //
   PayloadSize = OFFSET_OF (SMM_VARIABLE_COMMUNICATE_VAR_CHECK_VARIABLE_PROPERTY, Name) + VariableNameSize;
   Status = InitCommunicateBuffer ((VOID **) &CommVariableProperty, PayloadSize, SMM_VARIABLE_FUNCTION_VAR_CHECK_VARIABLE_PROPERTY_SET);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto Done;
   }
   ASSERT (CommVariableProperty != NULL);
 
   CopyGuid (&CommVariableProperty->Guid, Guid);
-  CopyMem (&CommVariableProperty->VariableProperty, VariableProperty, sizeof (*VariableProperty));
+  CopyMem(&CommVariableProperty->VariableProperty, VariableProperty, sizeof (*VariableProperty));
   CommVariableProperty->NameSize = VariableNameSize;
-  CopyMem (CommVariableProperty->Name, Name, CommVariableProperty->NameSize);
+  CopyMem(CommVariableProperty->Name, Name, CommVariableProperty->NameSize);
 
   //
   // Send data to SMM.
@@ -402,21 +402,21 @@ VarCheckVariablePropertyGet (
   //
   PayloadSize = OFFSET_OF (SMM_VARIABLE_COMMUNICATE_VAR_CHECK_VARIABLE_PROPERTY, Name) + VariableNameSize;
   Status = InitCommunicateBuffer ((VOID **) &CommVariableProperty, PayloadSize, SMM_VARIABLE_FUNCTION_VAR_CHECK_VARIABLE_PROPERTY_GET);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto Done;
   }
   ASSERT (CommVariableProperty != NULL);
 
   CopyGuid (&CommVariableProperty->Guid, Guid);
   CommVariableProperty->NameSize = VariableNameSize;
-  CopyMem (CommVariableProperty->Name, Name, CommVariableProperty->NameSize);
+  CopyMem(CommVariableProperty->Name, Name, CommVariableProperty->NameSize);
 
   //
   // Send data to SMM.
   //
   Status = SendCommunicateBuffer (PayloadSize);
   if (Status == EFI_SUCCESS) {
-    CopyMem (VariableProperty, &CommVariableProperty->VariableProperty, sizeof (*VariableProperty));
+    CopyMem(VariableProperty, &CommVariableProperty->VariableProperty, sizeof (*VariableProperty));
   }
 
 Done:
@@ -489,7 +489,7 @@ RuntimeServiceGetVariable (
   PayloadSize = OFFSET_OF (SMM_VARIABLE_COMMUNICATE_ACCESS_VARIABLE, Name) + VariableNameSize + TempDataSize;
 
   Status = InitCommunicateBuffer ((VOID **)&SmmVariableHeader, PayloadSize, SMM_VARIABLE_FUNCTION_GET_VARIABLE);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto Done;
   }
   ASSERT (SmmVariableHeader != NULL);
@@ -502,7 +502,7 @@ RuntimeServiceGetVariable (
   } else {
     SmmVariableHeader->Attributes = *Attributes;
   }
-  CopyMem (SmmVariableHeader->Name, VariableName, SmmVariableHeader->NameSize);
+  CopyMem(SmmVariableHeader->Name, VariableName, SmmVariableHeader->NameSize);
 
   //
   // Send data to SMM.
@@ -523,12 +523,12 @@ RuntimeServiceGetVariable (
     *Attributes = SmmVariableHeader->Attributes;
   }
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto Done;
   }
 
   if (Data != NULL) {
-    CopyMem (Data, (UINT8 *)SmmVariableHeader->Name + SmmVariableHeader->NameSize, SmmVariableHeader->DataSize);
+    CopyMem(Data, (UINT8 *)SmmVariableHeader->Name + SmmVariableHeader->NameSize, SmmVariableHeader->DataSize);
   } else {
     Status = EFI_INVALID_PARAMETER;
   }
@@ -599,7 +599,7 @@ RuntimeServiceGetNextVariableName (
   PayloadSize = OFFSET_OF (SMM_VARIABLE_COMMUNICATE_GET_NEXT_VARIABLE_NAME, Name) + MAX (OutVariableNameSize, InVariableNameSize);
 
   Status = InitCommunicateBuffer ((VOID **)&SmmGetNextVariableName, PayloadSize, SMM_VARIABLE_FUNCTION_GET_NEXT_VARIABLE_NAME);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto Done;
   }
   ASSERT (SmmGetNextVariableName != NULL);
@@ -613,7 +613,7 @@ RuntimeServiceGetNextVariableName (
   //
   // Copy whole string
   //
-  CopyMem (SmmGetNextVariableName->Name, VariableName, InVariableNameSize);
+  CopyMem(SmmGetNextVariableName->Name, VariableName, InVariableNameSize);
   if (OutVariableNameSize > InVariableNameSize) {
     ZeroMem ((UINT8 *) SmmGetNextVariableName->Name + InVariableNameSize, OutVariableNameSize - InVariableNameSize);
   }
@@ -633,12 +633,12 @@ RuntimeServiceGetNextVariableName (
     //
     *VariableNameSize = SmmGetNextVariableName->NameSize;
   }
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto Done;
   }
 
   CopyGuid (VendorGuid, &SmmGetNextVariableName->Guid);
-  CopyMem (VariableName, SmmGetNextVariableName->Name, SmmGetNextVariableName->NameSize);
+  CopyMem(VariableName, SmmGetNextVariableName->Name, SmmGetNextVariableName->NameSize);
 
 Done:
   ReleaseLockOnlyAtBootTime (&mVariableServicesLock);
@@ -710,7 +710,7 @@ RuntimeServiceSetVariable (
   //
   PayloadSize = OFFSET_OF (SMM_VARIABLE_COMMUNICATE_ACCESS_VARIABLE, Name) + VariableNameSize + DataSize;
   Status = InitCommunicateBuffer ((VOID **)&SmmVariableHeader, PayloadSize, SMM_VARIABLE_FUNCTION_SET_VARIABLE);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto Done;
   }
   ASSERT (SmmVariableHeader != NULL);
@@ -719,8 +719,8 @@ RuntimeServiceSetVariable (
   SmmVariableHeader->DataSize   = DataSize;
   SmmVariableHeader->NameSize   = VariableNameSize;
   SmmVariableHeader->Attributes = Attributes;
-  CopyMem (SmmVariableHeader->Name, VariableName, SmmVariableHeader->NameSize);
-  CopyMem ((UINT8 *) SmmVariableHeader->Name + SmmVariableHeader->NameSize, Data, DataSize);
+  CopyMem(SmmVariableHeader->Name, VariableName, SmmVariableHeader->NameSize);
+  CopyMem((UINT8 *) SmmVariableHeader->Name + SmmVariableHeader->NameSize, Data, DataSize);
 
   //
   // Send data to SMM.
@@ -731,7 +731,7 @@ Done:
   ReleaseLockOnlyAtBootTime (&mVariableServicesLock);
 
   if (!EfiAtRuntime ()) {
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       SecureBootHook (
         VariableName,
         VendorGuid
@@ -786,7 +786,7 @@ RuntimeServiceQueryVariableInfo (
   //
   PayloadSize = sizeof (SMM_VARIABLE_COMMUNICATE_QUERY_VARIABLE_INFO);
   Status = InitCommunicateBuffer ((VOID **)&SmmQueryVariableInfo, PayloadSize, SMM_VARIABLE_FUNCTION_QUERY_VARIABLE_INFO);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto Done;
   }
   ASSERT (SmmQueryVariableInfo != NULL);
@@ -797,7 +797,7 @@ RuntimeServiceQueryVariableInfo (
   // Send data to SMM.
   //
   Status = SendCommunicateBuffer (PayloadSize);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto Done;
   }
 
@@ -931,7 +931,7 @@ GetVariablePayloadSize (
   // SMM_COMMUNICATE_HEADER_SIZE + SMM_VARIABLE_COMMUNICATE_HEADER_SIZE + sizeof (SMM_VARIABLE_COMMUNICATE_GET_PAYLOAD_SIZE);
   //
   CommSize = SMM_COMMUNICATE_HEADER_SIZE + SMM_VARIABLE_COMMUNICATE_HEADER_SIZE + sizeof (SMM_VARIABLE_COMMUNICATE_GET_PAYLOAD_SIZE);
-  CommBuffer = AllocateZeroPool (CommSize);
+  CommBuffer = AllocateZeroPool(CommSize);
   if (CommBuffer == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Done;
@@ -949,10 +949,10 @@ GetVariablePayloadSize (
   // Send data to SMM.
   //
   Status = mSmmCommunication->Communicate (mSmmCommunication, CommBuffer, &CommSize);
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   Status = SmmVariableFunctionHeader->ReturnStatus;
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto Done;
   }
 
@@ -963,7 +963,7 @@ GetVariablePayloadSize (
 
 Done:
   if (CommBuffer != NULL) {
-    FreePool (CommBuffer);
+    FreePool(CommBuffer);
   }
   ReleaseLockOnlyAtBootTime (&mVariableServicesLock);
   return Status;
@@ -986,18 +986,18 @@ SmmVariableReady (
   EFI_STATUS                                Status;
 
   Status = gBS->LocateProtocol (&gEfiSmmVariableProtocolGuid, NULL, (VOID **)&mSmmVariable);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return;
   }
 
   Status = gBS->LocateProtocol (&gEfiSmmCommunicationProtocolGuid, NULL, (VOID **) &mSmmCommunication);
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   //
   // Allocate memory for variable communicate buffer.
   //
   Status = GetVariablePayloadSize (&mVariableBufferPayloadSize);
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
   mVariableBufferSize  = SMM_COMMUNICATE_HEADER_SIZE + SMM_VARIABLE_COMMUNICATE_HEADER_SIZE + mVariableBufferPayloadSize;
   mVariableBuffer      = AllocateRuntimePool (mVariableBufferSize);
   ASSERT (mVariableBuffer != NULL);
@@ -1021,7 +1021,7 @@ SmmVariableReady (
                   EFI_NATIVE_INTERFACE,
                   NULL
                   );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   mVariableLock.RequestToLock = VariableLockRequestToLock;
   Status = gBS->InstallMultipleProtocolInterfaces (
@@ -1030,7 +1030,7 @@ SmmVariableReady (
                   &mVariableLock,
                   NULL
                   );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   mVarCheck.RegisterSetVariableCheckHandler = VarCheckRegisterSetVariableCheckHandler;
   mVarCheck.VariablePropertySet = VarCheckVariablePropertySet;
@@ -1041,7 +1041,7 @@ SmmVariableReady (
                   &mVarCheck,
                   NULL
                   );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   gBS->CloseEvent (Event);
 }
@@ -1068,7 +1068,7 @@ SmmVariableWriteReady (
   // Check whether the protocol is installed or not.
   //
   Status = gBS->LocateProtocol (&gSmmVariableWriteGuid, NULL, (VOID **) &ProtocolOps);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return;
   }
 
@@ -1084,7 +1084,7 @@ SmmVariableWriteReady (
                   EFI_NATIVE_INTERFACE,
                   NULL
                   );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   gBS->CloseEvent (Event);
 }

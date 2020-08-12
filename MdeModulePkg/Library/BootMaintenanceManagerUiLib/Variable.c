@@ -41,7 +41,7 @@ Var_DelBootOption (
     }
 
     Status = EfiBootManagerDeleteLoadOptionVariable (NewMenuEntry->OptionNumber,LoadOptionTypeBoot);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
      return Status;
     }
     Index2++;
@@ -96,7 +96,7 @@ Var_DelDriverOption (
       continue;
     }
     Status = EfiBootManagerDeleteLoadOptionVariable (NewMenuEntry->OptionNumber,LoadOptionTypeDriver);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
 
@@ -153,7 +153,7 @@ Var_UpdateConsoleOption (
   GetEfiGlobalVariable2 (ConsoleName, (VOID**)&ConDevicePath, NULL);
   if (ConDevicePath != NULL) {
     EfiLibDeleteVariable (ConsoleName, &gEfiGlobalVariableGuid);
-    FreePool (ConDevicePath);
+    FreePool(ConDevicePath);
     ConDevicePath = NULL;
   };
 
@@ -184,7 +184,7 @@ Var_UpdateConsoleOption (
       Vendor.Header.SubType = MSG_VENDOR_DP;
 
       ASSERT (NewTerminalContext->TerminalType < (ARRAY_SIZE (TerminalTypeGuid)));
-      CopyMem (
+      CopyMem(
         &Vendor.Guid,
         &TerminalTypeGuid[NewTerminalContext->TerminalType],
         sizeof (EFI_GUID)
@@ -211,7 +211,7 @@ Var_UpdateConsoleOption (
                     GetDevicePathSize (ConDevicePath),
                     ConDevicePath
                     );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
   }
@@ -339,12 +339,12 @@ Var_UpdateDriverOption (
              OptionalDesData,
              OptionalDataSize
            );
-  if (EFI_ERROR (Status)){
+  if (EFI_ERROR(Status)){
     return Status;
   }
 
   Status = EfiBootManagerAddLoadOptionVariable (&LoadOption,(UINTN) -1 );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     EfiBootManagerFreeLoadOption(&LoadOption);
     return Status;
   }
@@ -354,18 +354,18 @@ Var_UpdateDriverOption (
   NewLoadContext->Attributes = LoadOption.Attributes;
   NewLoadContext->FilePathListLength = (UINT16)GetDevicePathSize (LoadOption.FilePath);
 
-  NewLoadContext->Description = AllocateZeroPool (StrSize (DescriptionData));
+  NewLoadContext->Description = AllocateZeroPool(StrSize (DescriptionData));
   ASSERT (NewLoadContext->Description != NULL);
   NewMenuEntry->DisplayString = NewLoadContext->Description;
-  CopyMem (
+  CopyMem(
     NewLoadContext->Description,
     LoadOption.Description,
     StrSize (DescriptionData)
     );
 
-  NewLoadContext->FilePathList = AllocateZeroPool (GetDevicePathSize (CallbackData->LoadContext->FilePathList));
+  NewLoadContext->FilePathList = AllocateZeroPool(GetDevicePathSize (CallbackData->LoadContext->FilePathList));
   ASSERT (NewLoadContext->FilePathList != NULL);
-  CopyMem (
+  CopyMem(
     NewLoadContext->FilePathList,
     LoadOption.FilePath,
     GetDevicePathSize (CallbackData->LoadContext->FilePathList)
@@ -377,9 +377,9 @@ Var_UpdateDriverOption (
   NewMenuEntry->HelpStringToken = HiiSetString (HiiHandle, 0, NewMenuEntry->HelpString, NULL);
 
   if (OptionalDataExist) {
-    NewLoadContext->OptionalData = AllocateZeroPool (LoadOption.OptionalDataSize);
+    NewLoadContext->OptionalData = AllocateZeroPool(LoadOption.OptionalDataSize);
     ASSERT (NewLoadContext->OptionalData != NULL);
-    CopyMem (
+    CopyMem(
       NewLoadContext->OptionalData,
       LoadOption.OptionalData,
       LoadOption.OptionalDataSize
@@ -457,12 +457,12 @@ Var_UpdateBootOption (
              OptionalData,
              OptionalDataSize
            );
-  if (EFI_ERROR (Status)){
+  if (EFI_ERROR(Status)){
     return Status;
   }
 
   Status = EfiBootManagerAddLoadOptionVariable (&LoadOption,(UINTN) -1 );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     EfiBootManagerFreeLoadOption(&LoadOption);
     return Status;
   }
@@ -472,20 +472,20 @@ Var_UpdateBootOption (
   NewLoadContext->Attributes = LoadOption.Attributes;
   NewLoadContext->FilePathListLength = (UINT16) GetDevicePathSize (LoadOption.FilePath);
 
-  NewLoadContext->Description = AllocateZeroPool (StrSize (NvRamMap->BootDescriptionData));
+  NewLoadContext->Description = AllocateZeroPool(StrSize (NvRamMap->BootDescriptionData));
   ASSERT (NewLoadContext->Description != NULL);
 
   NewMenuEntry->DisplayString = NewLoadContext->Description;
 
-  CopyMem (
+  CopyMem(
     NewLoadContext->Description,
     LoadOption.Description,
     StrSize (NvRamMap->BootDescriptionData)
     );
 
-  NewLoadContext->FilePathList = AllocateZeroPool (GetDevicePathSize (CallbackData->LoadContext->FilePathList));
+  NewLoadContext->FilePathList = AllocateZeroPool(GetDevicePathSize (CallbackData->LoadContext->FilePathList));
   ASSERT (NewLoadContext->FilePathList != NULL);
-  CopyMem (
+  CopyMem(
     NewLoadContext->FilePathList,
     LoadOption.FilePath,
     GetDevicePathSize (CallbackData->LoadContext->FilePathList)
@@ -497,9 +497,9 @@ Var_UpdateBootOption (
   NewMenuEntry->HelpStringToken = HiiSetString (CallbackData->BmmHiiHandle, 0, NewMenuEntry->HelpString, NULL);
 
   if (OptionalDataExist) {
-    NewLoadContext->OptionalData = AllocateZeroPool (LoadOption.OptionalDataSize);
+    NewLoadContext->OptionalData = AllocateZeroPool(LoadOption.OptionalDataSize);
     ASSERT (NewLoadContext->OptionalData != NULL);
-    CopyMem (
+    CopyMem(
       NewLoadContext->OptionalData,
       LoadOption.OptionalData,
       LoadOption.OptionalDataSize
@@ -613,7 +613,7 @@ Var_UpdateBootOrder (
     for (Index = OrderIndex; Index < BootOrderSize / sizeof (UINT16); Index++) {
       if ((BootOrder[Index] == (UINT16) (CallbackData->BmmFakeNvData.BootOptionOrder[OrderIndex] - 1)) && (OrderIndex != Index)) {
         OptionNumber = BootOrder[Index];
-        CopyMem (&BootOrder[OrderIndex + 1], &BootOrder[OrderIndex], (Index - OrderIndex) * sizeof (UINT16));
+        CopyMem(&BootOrder[OrderIndex + 1], &BootOrder[OrderIndex], (Index - OrderIndex) * sizeof (UINT16));
         BootOrder[OrderIndex] = OptionNumber;
       }
     }
@@ -626,7 +626,7 @@ Var_UpdateBootOrder (
                   BootOrderSize,
                   BootOrder
                   );
-  FreePool (BootOrder);
+  FreePool(BootOrder);
 
   BOpt_FreeMenu (&BootOptionMenu);
   BOpt_GetBootOptions (CallbackData);
@@ -665,7 +665,7 @@ Var_UpdateDriverOrder (
   // First check whether DriverOrder is present in current configuration
   //
   GetEfiGlobalVariable2 (L"DriverOrder", (VOID **) &DriverOrderList, &DriverOrderListSize);
-  NewDriverOrderList = AllocateZeroPool (DriverOrderListSize);
+  NewDriverOrderList = AllocateZeroPool(DriverOrderListSize);
 
   if (NewDriverOrderList == NULL) {
     return EFI_OUT_OF_RESOURCES;
@@ -675,7 +675,7 @@ Var_UpdateDriverOrder (
   //
   if (DriverOrderList != NULL) {
     EfiLibDeleteVariable (L"DriverOrder", &gEfiGlobalVariableGuid);
-    FreePool (DriverOrderList);
+    FreePool(DriverOrderList);
   }
 
   ASSERT (DriverOptionMenu.MenuNumber <= (sizeof (CallbackData->BmmFakeNvData.DriverOptionOrder) / sizeof (CallbackData->BmmFakeNvData.DriverOptionOrder[0])));
@@ -690,7 +690,7 @@ Var_UpdateDriverOrder (
                   DriverOrderListSize,
                   NewDriverOrderList
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -708,6 +708,8 @@ Var_UpdateDriverOrder (
   @return Other value if the Text Mode of Console is not updated.
 
 **/
+
+
 EFI_STATUS
 Var_UpdateConMode (
   IN BMM_CALLBACK_DATA            *CallbackData
@@ -721,9 +723,9 @@ Var_UpdateConMode (
 
   Status = gST->ConOut->QueryMode (gST->ConOut, Mode, &(ModeInfo.Column), &(ModeInfo.Row));
   if (!EFI_ERROR(Status)) {
-    Status = PcdSet32S (PcdSetupConOutColumn, (UINT32) ModeInfo.Column);
-    if (!EFI_ERROR (Status)) {
-      Status = PcdSet32S (PcdSetupConOutRow, (UINT32) ModeInfo.Row);
+    Status = PcdSet32S(PcdSetupConOutColumn, ((UINT32)ModeInfo.Column) );
+    if (!EFI_ERROR(Status)) {
+      Status = PcdSet32S(PcdSetupConOutRow, ((UINT32)ModeInfo.Row) );
     }
   }
 

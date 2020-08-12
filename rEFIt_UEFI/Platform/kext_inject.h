@@ -5,8 +5,10 @@ kext injection
 #ifndef __KEXT_INJECT_H__
 #define __KEXT_INJECT_H__
 
-#include "LoaderUefi.h"
-#include "device_tree.h"
+//#include <IndustryStardard/MachO-loader.h>
+//#include "LoaderUefi.h"
+//#include "device_tree.h"
+#include <UefiLoader.h>
 #include "kernel_patcher.h"
 
 ////////////////////
@@ -89,9 +91,6 @@ typedef struct
 ////////////////////
 // functions
 ////////////////////
-EFI_STATUS LoadKexts(IN LOADER_ENTRY *Entry);
-EFI_STATUS InjectKexts(IN UINT32 deviceTreeP, IN UINT32* deviceTreeLength, LOADER_ENTRY *Entry);
-
-VOID EFIAPI KernelBooterExtensionsPatch(IN UINT8 *KernelData, LOADER_ENTRY *Entry);
+class LOADER_ENTRY;
 
 #endif

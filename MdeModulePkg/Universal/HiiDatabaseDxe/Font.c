@@ -59,7 +59,7 @@ NewCell (
 
   ASSERT (Cell != NULL && GlyphInfoList != NULL);
 
-  GlyphInfo = (HII_GLYPH_INFO *) AllocateZeroPool (sizeof (HII_GLYPH_INFO));
+  GlyphInfo = (HII_GLYPH_INFO *) AllocateZeroPool(sizeof (HII_GLYPH_INFO));
   if (GlyphInfo == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
@@ -73,7 +73,7 @@ NewCell (
   if (Cell->AdvanceX == 0) {
     Cell->AdvanceX = Cell->Width;
   }
-  CopyMem (&GlyphInfo->Cell, Cell, sizeof (EFI_HII_GLYPH_INFO));
+  CopyMem(&GlyphInfo->Cell, Cell, sizeof (EFI_HII_GLYPH_INFO));
   InsertTailList (GlyphInfoList, &GlyphInfo->Entry);
 
   return EFI_SUCCESS;
@@ -121,7 +121,7 @@ GetCell (
   for (Link = GlyphInfoList->BackLink; Link != GlyphInfoList; Link = Link->BackLink) {
     GlyphInfo = CR (Link, HII_GLYPH_INFO, Entry, HII_GLYPH_INFO_SIGNATURE);
     if (GlyphInfo->CharId <= CharValue) {
-      CopyMem (Cell, &GlyphInfo->Cell, sizeof (EFI_HII_GLYPH_INFO));
+      CopyMem(Cell, &GlyphInfo->Cell, sizeof (EFI_HII_GLYPH_INFO));
       return EFI_SUCCESS;
     }
   }
@@ -210,16 +210,16 @@ GetGlyphBuffer (
         //
         NarrowPtr = (EFI_NARROW_GLYPH *) ((UINT8 *) (SimpleFont->SimpleFontPkgHdr) + HeaderSize);
         for (Index = 0; Index < SimpleFont->SimpleFontPkgHdr->NumberOfNarrowGlyphs; Index++) {
-          CopyMem (&Narrow, NarrowPtr + Index,sizeof (EFI_NARROW_GLYPH));
+          CopyMem(&Narrow, NarrowPtr + Index,sizeof (EFI_NARROW_GLYPH));
           if (Narrow.UnicodeWeight == Char) {
-            *GlyphBuffer = (UINT8 *) AllocateZeroPool (EFI_GLYPH_HEIGHT);
+            *GlyphBuffer = (UINT8 *) AllocateZeroPool(EFI_GLYPH_HEIGHT);
             if (*GlyphBuffer == NULL) {
               return EFI_OUT_OF_RESOURCES;
             }
             Cell->Width    = EFI_GLYPH_WIDTH;
             Cell->Height   = EFI_GLYPH_HEIGHT;
             Cell->AdvanceX = Cell->Width;
-            CopyMem (*GlyphBuffer, Narrow.GlyphCol1, Cell->Height);
+            CopyMem(*GlyphBuffer, Narrow.GlyphCol1, Cell->Height);
             if (Attributes != NULL) {
               *Attributes = (UINT8) (Narrow.Attributes | NARROW_GLYPH);
             }
@@ -231,17 +231,17 @@ GetGlyphBuffer (
         //
         WidePtr = (EFI_WIDE_GLYPH *) (NarrowPtr + SimpleFont->SimpleFontPkgHdr->NumberOfNarrowGlyphs);
         for (Index = 0; Index < SimpleFont->SimpleFontPkgHdr->NumberOfWideGlyphs; Index++) {
-          CopyMem (&Wide, WidePtr + Index, sizeof (EFI_WIDE_GLYPH));
+          CopyMem(&Wide, WidePtr + Index, sizeof (EFI_WIDE_GLYPH));
           if (Wide.UnicodeWeight == Char) {
-            *GlyphBuffer    = (UINT8 *) AllocateZeroPool (EFI_GLYPH_HEIGHT * 2);
+            *GlyphBuffer    = (UINT8 *) AllocateZeroPool(EFI_GLYPH_HEIGHT * 2);
             if (*GlyphBuffer == NULL) {
               return EFI_OUT_OF_RESOURCES;
             }
             Cell->Width    = EFI_GLYPH_WIDTH * 2;
             Cell->Height   = EFI_GLYPH_HEIGHT;
             Cell->AdvanceX = Cell->Width;
-            CopyMem (*GlyphBuffer, Wide.GlyphCol1, EFI_GLYPH_HEIGHT);
-            CopyMem (*GlyphBuffer + EFI_GLYPH_HEIGHT, Wide.GlyphCol2, EFI_GLYPH_HEIGHT);
+            CopyMem(*GlyphBuffer, Wide.GlyphCol1, EFI_GLYPH_HEIGHT);
+            CopyMem(*GlyphBuffer + EFI_GLYPH_HEIGHT, Wide.GlyphCol2, EFI_GLYPH_HEIGHT);
             if (Attributes != NULL) {
               *Attributes = (UINT8) (Wide.Attributes | EFI_GLYPH_WIDE);
             }
@@ -613,15 +613,15 @@ WriteOutputParam (
   }
 
   if (Cell != NULL) {
-    CopyMem (Cell, InputCell, sizeof (EFI_HII_GLYPH_INFO));
+    CopyMem(Cell, InputCell, sizeof (EFI_HII_GLYPH_INFO));
   }
 
   if (GlyphBuffer != NULL && BufferLen > 0) {
-    *GlyphBuffer = (UINT8 *) AllocateZeroPool (BufferLen);
+    *GlyphBuffer = (UINT8 *) AllocateZeroPool(BufferLen);
     if (*GlyphBuffer == NULL) {
       return EFI_OUT_OF_RESOURCES;
     }
-    CopyMem (*GlyphBuffer, BufferIn, BufferLen);
+    CopyMem(*GlyphBuffer, BufferIn, BufferLen);
   }
 
   if (GlyphBufferLen != NULL) {
@@ -690,10 +690,10 @@ FindGlyphBlock (
                &FontPackage->GlyphInfoList,
                (EFI_HII_GLYPH_INFO *) ((UINT8 *) FontPackage->FontPkgHdr + 3 * sizeof (UINT32))
                );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
-    CopyMem (
+    CopyMem(
       &LocalCell,
       (UINT8 *) FontPackage->FontPkgHdr + 3 * sizeof (UINT32),
       sizeof (EFI_HII_GLYPH_INFO)
@@ -717,10 +717,10 @@ FindGlyphBlock (
                    &FontPackage->GlyphInfoList,
                    (EFI_HII_GLYPH_INFO *) (BlockPtr + sizeof (EFI_HII_GLYPH_BLOCK))
                    );
-        if (EFI_ERROR (Status)) {
+        if (EFI_ERROR(Status)) {
           return Status;
         }
-        CopyMem (
+        CopyMem(
           &LocalCell,
           BlockPtr + sizeof (EFI_HII_GLYPH_BLOCK),
           sizeof (EFI_HII_GLYPH_INFO)
@@ -737,7 +737,7 @@ FindGlyphBlock (
 
     case EFI_HII_GIBT_DUPLICATE:
       if (CharCurrent == CharValue) {
-        CopyMem (&CharValue, BlockPtr + sizeof (EFI_HII_GLYPH_BLOCK), sizeof (CHAR16));
+        CopyMem(&CharValue, BlockPtr + sizeof (EFI_HII_GLYPH_BLOCK), sizeof (CHAR16));
         CharCurrent = 1;
         BlockPtr    = FontPackage->GlyphBlock;
         continue;
@@ -750,7 +750,7 @@ FindGlyphBlock (
       BlockPtr += *(UINT8*)((UINTN)BlockPtr + sizeof (EFI_HII_GLYPH_BLOCK) + sizeof (UINT8));
       break;
     case EFI_HII_GIBT_EXT2:
-      CopyMem (
+      CopyMem(
         &Length16,
         (UINT8*)((UINTN)BlockPtr + sizeof (EFI_HII_GLYPH_BLOCK) + sizeof (UINT8)),
         sizeof (UINT16)
@@ -758,7 +758,7 @@ FindGlyphBlock (
       BlockPtr += Length16;
       break;
     case EFI_HII_GIBT_EXT4:
-      CopyMem (
+      CopyMem(
         &Length32,
         (UINT8*)((UINTN)BlockPtr + sizeof (EFI_HII_GLYPH_BLOCK) + sizeof (UINT8)),
         sizeof (UINT32)
@@ -767,7 +767,7 @@ FindGlyphBlock (
       break;
 
     case EFI_HII_GIBT_GLYPH:
-      CopyMem (
+      CopyMem(
         &LocalCell,
         BlockPtr + sizeof (EFI_HII_GLYPH_BLOCK),
         sizeof (EFI_HII_GLYPH_INFO)
@@ -797,9 +797,9 @@ FindGlyphBlock (
 
     case EFI_HII_GIBT_GLYPHS:
       BlockPtr += sizeof (EFI_HII_GLYPH_BLOCK);
-      CopyMem (&Glyphs.Cell, BlockPtr, sizeof (EFI_HII_GLYPH_INFO));
+      CopyMem(&Glyphs.Cell, BlockPtr, sizeof (EFI_HII_GLYPH_INFO));
       BlockPtr += sizeof (EFI_HII_GLYPH_INFO);
-      CopyMem (&Glyphs.Count, BlockPtr, sizeof (UINT16));
+      CopyMem(&Glyphs.Count, BlockPtr, sizeof (UINT16));
       BlockPtr += sizeof (UINT16);
 
       if (CharValue == (CHAR16) (-1)) {
@@ -830,7 +830,7 @@ FindGlyphBlock (
 
     case EFI_HII_GIBT_GLYPH_DEFAULT:
       Status = GetCell (CharCurrent, &FontPackage->GlyphInfoList, &DefaultCell);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         return Status;
       }
       if (CharValue == (CHAR16) (-1)) {
@@ -858,9 +858,9 @@ FindGlyphBlock (
       break;
 
     case EFI_HII_GIBT_GLYPHS_DEFAULT:
-      CopyMem (&Length16, BlockPtr + sizeof (EFI_HII_GLYPH_BLOCK), sizeof (UINT16));
+      CopyMem(&Length16, BlockPtr + sizeof (EFI_HII_GLYPH_BLOCK), sizeof (UINT16));
       Status = GetCell (CharCurrent, &FontPackage->GlyphInfoList, &DefaultCell);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         return Status;
       }
       if (CharValue == (CHAR16) (-1)) {
@@ -894,7 +894,7 @@ FindGlyphBlock (
       BlockPtr    += sizeof (EFI_HII_GIBT_SKIP1_BLOCK);
       break;
     case EFI_HII_GIBT_SKIP2:
-      CopyMem (&Length16, BlockPtr + sizeof (EFI_HII_GLYPH_BLOCK), sizeof (UINT16));
+      CopyMem(&Length16, BlockPtr + sizeof (EFI_HII_GLYPH_BLOCK), sizeof (UINT16));
       CharCurrent = (UINT16) (CharCurrent + Length16);
       BlockPtr    += sizeof (EFI_HII_GIBT_SKIP2_BLOCK);
       break;
@@ -945,7 +945,7 @@ SaveFontName (
 
   NameSize = StrSize (FontName);
   FontInfoLen = sizeof (EFI_FONT_INFO) - sizeof (CHAR16) + NameSize;
-  *FontInfo = (EFI_FONT_INFO *) AllocateZeroPool (FontInfoLen);
+  *FontInfo = (EFI_FONT_INFO *) AllocateZeroPool(FontInfoLen);
   if (*FontInfo == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
@@ -993,7 +993,7 @@ GetSystemFont (
   //
   NameSize = StrSize (L"sysdefault");
   InfoSize = sizeof (EFI_FONT_DISPLAY_INFO) - sizeof (CHAR16) + NameSize;
-  Info = (EFI_FONT_DISPLAY_INFO *) AllocateZeroPool (InfoSize);
+  Info = (EFI_FONT_DISPLAY_INFO *) AllocateZeroPool(InfoSize);
   if (Info == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
@@ -1054,7 +1054,7 @@ IsSystemFontInfo (
   DefaultLen    = 0;
 
   Status = GetSystemFont (Private, &SystemDefault, &DefaultLen);
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
   ASSERT ((SystemDefault != NULL) && (DefaultLen != 0));
 
   //
@@ -1115,7 +1115,7 @@ IsSystemFontInfo (
 Exit:
   if (SystemInfo == NULL) {
     if (SystemDefault != NULL) {
-      FreePool (SystemDefault);
+      FreePool(SystemDefault);
     }
   }
   return Flag;
@@ -1659,15 +1659,15 @@ HiiStringToImage (
     //
     // Create a new bitmap and draw the string onto this image.
     //
-    Image = AllocateZeroPool (sizeof (EFI_IMAGE_OUTPUT));
+    Image = AllocateZeroPool(sizeof (EFI_IMAGE_OUTPUT));
     if (Image == NULL) {
       return EFI_OUT_OF_RESOURCES;
     }
     Image->Width  = 800;
     Image->Height = 600;
-    Image->Image.Bitmap = AllocateZeroPool (Image->Width * Image->Height *sizeof (EFI_GRAPHICS_OUTPUT_BLT_PIXEL));
+    Image->Image.Bitmap = AllocateZeroPool(Image->Width * Image->Height *sizeof (EFI_GRAPHICS_OUTPUT_BLT_PIXEL));
     if (Image->Image.Bitmap == NULL) {
-      FreePool (Image);
+      FreePool(Image);
       return EFI_OUT_OF_RESOURCES;
     }
 
@@ -1679,11 +1679,11 @@ HiiStringToImage (
   }
 
   StrLength = StrLen(String);
-  GlyphBuf = (UINT8 **) AllocateZeroPool (StrLength * sizeof (UINT8 *));
+  GlyphBuf = (UINT8 **) AllocateZeroPool(StrLength * sizeof (UINT8 *));
   ASSERT (GlyphBuf != NULL);
-  Cell = (EFI_HII_GLYPH_INFO *) AllocateZeroPool (StrLength * sizeof (EFI_HII_GLYPH_INFO));
+  Cell = (EFI_HII_GLYPH_INFO *) AllocateZeroPool(StrLength * sizeof (EFI_HII_GLYPH_INFO));
   ASSERT (Cell != NULL);
-  Attributes = (UINT8 *) AllocateZeroPool (StrLength * sizeof (UINT8));
+  Attributes = (UINT8 *) AllocateZeroPool(StrLength * sizeof (UINT8));
   ASSERT (Attributes != NULL);
 
   RowInfo       = NULL;
@@ -1759,7 +1759,7 @@ HiiStringToImage (
   // without line-break opportunity.
   //
   if ((Flags & EFI_HII_IGNORE_LINE_BREAK) == EFI_HII_IGNORE_LINE_BREAK) {
-    StringIn = AllocateZeroPool (StrSize (StringPtr));
+    StringIn = AllocateZeroPool(StrSize (StringPtr));
     if (StringIn == NULL) {
       Status = EFI_OUT_OF_RESOURCES;
       goto Exit;
@@ -1779,7 +1779,7 @@ HiiStringToImage (
   // If EFI_HII_IGNORE_IF_NO_GLYPH is set, then characters which have no glyphs
   // are not drawn. Otherwise they are replaced with Unicode character 0xFFFD.
   //
-  StringIn2  = AllocateZeroPool (StrSize (StringPtr));
+  StringIn2  = AllocateZeroPool(StrSize (StringPtr));
   if (StringIn2 == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Exit;
@@ -1812,13 +1812,13 @@ HiiStringToImage (
                    &Cell[Index],
                    &Attributes[Index]
                    );
-        if (EFI_ERROR (Status)) {
+        if (EFI_ERROR(Status)) {
           Status = EFI_INVALID_PARAMETER;
         }
       }
     }
 
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       goto Exit;
     }
 
@@ -1849,7 +1849,7 @@ HiiStringToImage (
     MaxRowNum++;
   }
 
-  RowInfo = (EFI_HII_ROW_INFO *) AllocateZeroPool (MaxRowNum * sizeof (EFI_HII_ROW_INFO));
+  RowInfo = (EFI_HII_ROW_INFO *) AllocateZeroPool(MaxRowNum * sizeof (EFI_HII_ROW_INFO));
   if (RowInfo == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Exit;
@@ -2109,12 +2109,12 @@ HiiStringToImage (
                                         RowInfo[RowIndex].LineHeight,
                                         0
                                         );
-        if (EFI_ERROR (Status)) {
-          FreePool (BltBuffer);
+        if (EFI_ERROR(Status)) {
+          FreePool(BltBuffer);
           goto Exit;
         }
 
-        FreePool (BltBuffer);
+        FreePool(BltBuffer);
       }
     } else {
       //
@@ -2189,12 +2189,12 @@ NextLine:
   RowInfoSize = RowIndex * sizeof (EFI_HII_ROW_INFO);
   if (RowInfoArray != NULL) {
     if (RowInfoSize > 0) {
-      *RowInfoArray = AllocateZeroPool (RowInfoSize);
+      *RowInfoArray = AllocateZeroPool(RowInfoSize);
       if (*RowInfoArray == NULL) {
         Status = EFI_OUT_OF_RESOURCES;
         goto Exit;
       }
-      CopyMem (*RowInfoArray, RowInfo, RowInfoSize);
+      CopyMem(*RowInfoArray, RowInfo, RowInfoSize);
     } else {
       *RowInfoArray = NULL;
     }
@@ -2209,32 +2209,32 @@ Exit:
 
   for (Index = 0; Index < StrLength; Index++) {
     if (GlyphBuf[Index] != NULL) {
-      FreePool (GlyphBuf[Index]);
+      FreePool(GlyphBuf[Index]);
     }
   }
   if (StringIn != NULL) {
-    FreePool (StringIn);
+    FreePool(StringIn);
   }
   if (StringIn2 != NULL) {
-    FreePool (StringIn2);
+    FreePool(StringIn2);
   }
   if (StringInfoOut != NULL) {
-    FreePool (StringInfoOut);
+    FreePool(StringInfoOut);
   }
   if (RowInfo != NULL) {
-    FreePool (RowInfo);
+    FreePool(RowInfo);
   }
   if (SystemDefault != NULL) {
-    FreePool (SystemDefault);
+    FreePool(SystemDefault);
   }
   if (GlyphBuf != NULL) {
-    FreePool (GlyphBuf);
+    FreePool(GlyphBuf);
   }
   if (Cell != NULL) {
-    FreePool (Cell);
+    FreePool(Cell);
   }
   if (Attributes != NULL) {
-    FreePool (Attributes);
+    FreePool(Attributes);
   }
 
   return Status;
@@ -2383,7 +2383,7 @@ HiiStringIdToImage (
                         SupportedLanguages,
                         &SupportedLanguagesSize
                         );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto Exit;
   }
 
@@ -2405,7 +2405,7 @@ HiiStringIdToImage (
   }
 
   StringSize = MAX_STRING_LENGTH;
-  String = (EFI_STRING) AllocateZeroPool (StringSize);
+  String = (EFI_STRING) AllocateZeroPool(StringSize);
   if (String == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Exit;
@@ -2421,8 +2421,8 @@ HiiStringIdToImage (
                         &StringFontInfo
                         );
   if (Status == EFI_BUFFER_TOO_SMALL) {
-    FreePool (String);
-    String = (EFI_STRING) AllocateZeroPool (StringSize);
+    FreePool(String);
+    String = (EFI_STRING) AllocateZeroPool(StringSize);
     if (String == NULL) {
       Status = EFI_OUT_OF_RESOURCES;
       goto Exit;
@@ -2438,7 +2438,7 @@ HiiStringIdToImage (
                           );
   }
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto Exit;
   }
 
@@ -2450,7 +2450,7 @@ HiiStringIdToImage (
   if (StringFontInfo != NULL && IsSystemFontInfo (Private, (EFI_FONT_DISPLAY_INFO *) StringInfo, NULL, NULL)) {
     NameSize = StrSize (StringFontInfo->FontName);
     FontLen = sizeof (EFI_FONT_DISPLAY_INFO) - sizeof (CHAR16) + NameSize;
-    NewStringInfo = AllocateZeroPool (FontLen);
+    NewStringInfo = AllocateZeroPool(FontLen);
     if (NewStringInfo == NULL) {
       Status = EFI_OUT_OF_RESOURCES;
       goto Exit;
@@ -2490,22 +2490,22 @@ HiiStringIdToImage (
 
 Exit:
   if (SupportedLanguages != NULL) {
-    FreePool (SupportedLanguages);
+    FreePool(SupportedLanguages);
   }
   if (CurrentLanguage != NULL) {
-    FreePool (CurrentLanguage);
+    FreePool(CurrentLanguage);
   }
   if (BestLanguage != NULL) {
-    FreePool (BestLanguage);
+    FreePool(BestLanguage);
   }
   if (String != NULL) {
-    FreePool (String);
+    FreePool(String);
   }
   if (StringFontInfo != NULL) {
-    FreePool (StringFontInfo);
+    FreePool(StringFontInfo);
   }
   if (NewStringInfo != NULL) {
-    FreePool (NewStringInfo);
+    FreePool(NewStringInfo);
   }
 
   return Status;
@@ -2586,7 +2586,7 @@ HiiGetGlyph (
     // Find out a EFI_FONT_DISPLAY_INFO which could display the character in
     // the specified color and font.
     //
-    String = (EFI_STRING) AllocateZeroPool (sizeof (CHAR16) * 2);
+    String = (EFI_STRING) AllocateZeroPool(sizeof (CHAR16) * 2);
     if (String == NULL) {
       Status = EFI_OUT_OF_RESOURCES;
       goto Exit;
@@ -2595,7 +2595,7 @@ HiiGetGlyph (
     *(String + 1) = 0;
 
     Status = HiiGetFontInfo (This, &FontHandle, StringInfo, &StringInfoOut, String);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       goto Exit;
     }
     ASSERT (StringInfoOut != NULL);
@@ -2609,11 +2609,11 @@ HiiGetGlyph (
   }
 
   Status = GetGlyphBuffer (Private, Char, FontInfo, &GlyphBuffer, &Cell, &Attributes);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto Exit;
   }
 
-  Image = (EFI_IMAGE_OUTPUT *) AllocateZeroPool (sizeof (EFI_IMAGE_OUTPUT));
+  Image = (EFI_IMAGE_OUTPUT *) AllocateZeroPool(sizeof (EFI_IMAGE_OUTPUT));
   if (Image == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Exit;
@@ -2622,9 +2622,9 @@ HiiGetGlyph (
   Image->Height  = Cell.Height;
 
   if (Image->Width * Image->Height > 0) {
-    Image->Image.Bitmap = AllocateZeroPool (Image->Width * Image->Height * sizeof (EFI_GRAPHICS_OUTPUT_BLT_PIXEL));
+    Image->Image.Bitmap = AllocateZeroPool(Image->Width * Image->Height * sizeof (EFI_GRAPHICS_OUTPUT_BLT_PIXEL));
     if (Image->Image.Bitmap == NULL) {
-      FreePool (Image);
+      FreePool(Image);
       Status = EFI_OUT_OF_RESOURCES;
       goto Exit;
     }
@@ -2667,7 +2667,7 @@ Exit:
     //
     if (Char != REPLACE_UNKNOWN_GLYPH) {
       Status = HiiGetGlyph (This, REPLACE_UNKNOWN_GLYPH, StringInfo, Blt, Baseline);
-      if (!EFI_ERROR (Status)) {
+      if (!EFI_ERROR(Status)) {
         Status = EFI_WARN_UNKNOWN_GLYPH;
       }
     } else {
@@ -2676,16 +2676,16 @@ Exit:
   }
 
   if (SystemDefault != NULL) {
-   FreePool (SystemDefault);
+   FreePool(SystemDefault);
   }
   if (StringInfoOut != NULL) {
-    FreePool (StringInfoOut);
+    FreePool(StringInfoOut);
   }
   if (String != NULL) {
-    FreePool (String);
+    FreePool(String);
   }
   if (GlyphBuffer != NULL) {
-    FreePool (GlyphBuffer);
+    FreePool(GlyphBuffer);
   }
 
   return Status;
@@ -2777,7 +2777,7 @@ HiiGetFontInfo (
     //
     if (LocalFontHandle == NULL) {
       if (StringInfoOut != NULL) {
-        *StringInfoOut = AllocateCopyPool (StringInfoOutLen, SystemDefault);
+        *StringInfoOut = AllocateCopyPool(StringInfoOutLen, SystemDefault);
         if (*StringInfoOut == NULL) {
           Status = EFI_OUT_OF_RESOURCES;
           LocalFontHandle = NULL;
@@ -2819,14 +2819,14 @@ HiiGetFontInfo (
   // Parse the font information mask to find a matching font.
   //
 
-  CopyMem (&InfoOut, (EFI_FONT_DISPLAY_INFO *) StringInfoIn, sizeof (EFI_FONT_DISPLAY_INFO));
+  CopyMem(&InfoOut, (EFI_FONT_DISPLAY_INFO *) StringInfoIn, sizeof (EFI_FONT_DISPLAY_INFO));
 
   if ((StringInfoIn->FontInfoMask & EFI_FONT_INFO_SYS_FONT) == EFI_FONT_INFO_SYS_FONT) {
     Status = SaveFontName (SystemDefault->FontInfo.FontName, &FontInfo);
   } else {
     Status = SaveFontName (((EFI_FONT_DISPLAY_INFO *) StringInfoIn)->FontInfo.FontName, &FontInfo);
   }
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto Exit;
   }
 
@@ -2855,7 +2855,7 @@ HiiGetFontInfo (
       StringIn = String;
       while (*StringIn != 0) {
         Status = FindGlyphBlock (GlobalFont->FontPackage, *StringIn, NULL, NULL, NULL);
-        if (EFI_ERROR (Status)) {
+        if (EFI_ERROR(Status)) {
           LocalFontHandle = NULL;
           goto Exit;
         }
@@ -2867,15 +2867,15 @@ HiiGetFontInfo (
     //
     if (StringInfoOut != NULL) {
       StringInfoOutLen = sizeof (EFI_FONT_DISPLAY_INFO) - sizeof (EFI_FONT_INFO) + GlobalFont->FontInfoSize;
-      *StringInfoOut   = (EFI_FONT_DISPLAY_INFO *) AllocateZeroPool (StringInfoOutLen);
+      *StringInfoOut   = (EFI_FONT_DISPLAY_INFO *) AllocateZeroPool(StringInfoOutLen);
       if (*StringInfoOut == NULL) {
         Status = EFI_OUT_OF_RESOURCES;
         LocalFontHandle = NULL;
         goto Exit;
       }
 
-      CopyMem (*StringInfoOut, &InfoOut, sizeof (EFI_FONT_DISPLAY_INFO));
-      CopyMem (&(*StringInfoOut)->FontInfo, GlobalFont->FontInfo, GlobalFont->FontInfoSize);
+      CopyMem(*StringInfoOut, &InfoOut, sizeof (EFI_FONT_DISPLAY_INFO));
+      CopyMem(&(*StringInfoOut)->FontInfo, GlobalFont->FontInfo, GlobalFont->FontInfoSize);
     }
 
     LocalFontHandle = GlobalFont->Entry.ForwardLink;
@@ -2892,10 +2892,10 @@ Exit:
   }
 
   if (SystemDefault != NULL) {
-   FreePool (SystemDefault);
+   FreePool(SystemDefault);
   }
   if (FontInfo != NULL) {
-   FreePool (FontInfo);
+   FreePool(FontInfo);
   }
   return Status;
 }

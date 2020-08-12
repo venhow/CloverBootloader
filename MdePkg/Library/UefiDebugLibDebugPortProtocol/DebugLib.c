@@ -64,7 +64,7 @@ UefiDebugLibDebugPortProtocolWrite (
     //
     if (mDebugPort == NULL) {
         Status = mDebugBS->LocateProtocol (&gEfiDebugPortProtocolGuid, NULL, (VOID **)&mDebugPort);
-        if (EFI_ERROR (Status)) {
+        if (EFI_ERROR(Status)) {
             return;
         }
 
@@ -78,7 +78,7 @@ UefiDebugLibDebugPortProtocolWrite (
       Length = BufferLength;
 
       Status = mDebugPort->Write (mDebugPort, WRITE_TIMEOUT, &Length, (VOID *) Buffer);
-      if (EFI_ERROR (Status) || BufferLength < Length) {
+      if (EFI_ERROR(Status) || BufferLength < Length) {
         break;
       }
 
@@ -171,7 +171,7 @@ DebugPrintMarker (
     //
     // Send the print string to EFI_DEBUGPORT_PROTOCOL.Write.
     //
-    UefiDebugLibDebugPortProtocolWrite (Buffer, AsciiStrLen (Buffer));
+    UefiDebugLibDebugPortProtocolWrite (Buffer, AsciiStrLen(Buffer));
   }
 }
 
@@ -282,7 +282,7 @@ DebugAssert (
     //
     // Send the print string to EFI_DEBUGPORT_PROTOCOL.Write.
     //
-    UefiDebugLibDebugPortProtocolWrite (Buffer, AsciiStrLen (Buffer));
+    UefiDebugLibDebugPortProtocolWrite (Buffer, AsciiStrLen(Buffer));
 
     //
     // Generate a Breakpoint, DeadLoop, or NOP based on PCD settings
@@ -326,7 +326,7 @@ DebugClearMemory (
   //
   // SetMem() checks for the the ASSERT() condition on Length and returns Buffer
   //
-  return SetMem (Buffer, Length, PcdGet8(PcdDebugClearMemoryValue));
+  return SetMem(Buffer, Length, PcdGet8(PcdDebugClearMemoryValue));
 }
 
 

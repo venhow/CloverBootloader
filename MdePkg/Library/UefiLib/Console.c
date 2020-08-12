@@ -441,7 +441,7 @@ CreatePopUp (
   //
   // Save the current console cursor position and attributes
   //
-  CopyMem (&SavedConsoleMode, ConOut->Mode, sizeof (SavedConsoleMode));
+  CopyMem(&SavedConsoleMode, ConOut->Mode, sizeof (SavedConsoleMode));
 
   //
   // Retrieve the number of columns and rows in the current console mode
@@ -473,7 +473,7 @@ CreatePopUp (
   //
   // Allocate a buffer for a single line of the popup with borders and a Null-terminator
   //
-  Line = AllocateZeroPool ((MaxLength + 3) * sizeof (CHAR16));
+  Line = AllocateZeroPool((MaxLength + 3) * sizeof (CHAR16));
   ASSERT (Line != NULL);
 
   //
@@ -509,14 +509,14 @@ CreatePopUp (
       // Length > MaxLength
       //
       UefiLibGetStringWidth (String, TRUE, MaxLength, &Length);
-      TmpString = AllocateZeroPool ((Length + 1) * sizeof (CHAR16));
+      TmpString = AllocateZeroPool((Length + 1) * sizeof (CHAR16));
       ASSERT (TmpString != NULL);
       StrnCpyS (TmpString, Length + 1, String, Length - 3);
       StrCatS (TmpString, Length + 1, L"...");
 
       ConOut->SetCursorPosition (ConOut, Column + 1, Row++);
       ConOut->OutputString (ConOut, TmpString);
-      FreePool (TmpString);
+      FreePool(TmpString);
     }
     NumberOfLines--;
   }
@@ -535,7 +535,7 @@ CreatePopUp (
   //
   // Free the allocated line buffer
   //
-  FreePool (Line);
+  FreePool(Line);
 
   //
   // Restore the cursor visibility, position, and attributes
@@ -550,7 +550,7 @@ CreatePopUp (
   if (Key != NULL) {
     while (TRUE) {
       Status = gST->ConIn->ReadKeyStroke (gST->ConIn, Key);
-      if (!EFI_ERROR (Status)) {
+      if (!EFI_ERROR(Status)) {
         break;
       }
 

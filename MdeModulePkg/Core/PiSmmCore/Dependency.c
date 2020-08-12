@@ -63,7 +63,7 @@ GrowDepexStack (
     //
     // Copy to Old Stack to the New Stack
     //
-    CopyMem (
+    CopyMem(
       NewStack,
       mDepexEvaluationStack,
       (mDepexEvaluationStackEnd - mDepexEvaluationStack) * sizeof (BOOLEAN)
@@ -72,7 +72,7 @@ GrowDepexStack (
     //
     // Free The Old Stack
     //
-    FreePool (mDepexEvaluationStack);
+    FreePool(mDepexEvaluationStack);
   }
 
   //
@@ -109,7 +109,7 @@ PushBool (
     // Grow the stack
     //
     Status = GrowDepexStack ();
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
   }
@@ -238,17 +238,17 @@ SmmIsSchedulable (
       // Push operator is followed by a GUID. Test to see if the GUID protocol
       // is installed and push the boolean result on the stack.
       //
-      CopyMem (&DriverGuid, Iterator + 1, sizeof (EFI_GUID));
+      CopyMem(&DriverGuid, Iterator + 1, sizeof (EFI_GUID));
 
       Status = SmmLocateProtocol (&DriverGuid, NULL, &Interface);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         //
         // For SMM Driver, it may depend on uefi protocols
         //
         Status = gBS->LocateProtocol (&DriverGuid, NULL, &Interface);
       }
 
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         DEBUG ((DEBUG_DISPATCH, "  PUSH GUID(%g) = FALSE\n", &DriverGuid));
         Status = PushBool (FALSE);
       } else {
@@ -256,7 +256,7 @@ SmmIsSchedulable (
         *Iterator = EFI_DEP_REPLACE_TRUE;
         Status = PushBool (TRUE);
       }
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         DEBUG ((DEBUG_DISPATCH, "  RESULT = FALSE (Unexpected error)\n"));
         return FALSE;
       }
@@ -267,19 +267,19 @@ SmmIsSchedulable (
     case EFI_DEP_AND:
       DEBUG ((DEBUG_DISPATCH, "  AND\n"));
       Status = PopBool (&Operator);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         DEBUG ((DEBUG_DISPATCH, "  RESULT = FALSE (Unexpected error)\n"));
         return FALSE;
       }
 
       Status = PopBool (&Operator2);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         DEBUG ((DEBUG_DISPATCH, "  RESULT = FALSE (Unexpected error)\n"));
         return FALSE;
       }
 
       Status = PushBool ((BOOLEAN)(Operator && Operator2));
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         DEBUG ((DEBUG_DISPATCH, "  RESULT = FALSE (Unexpected error)\n"));
         return FALSE;
       }
@@ -288,19 +288,19 @@ SmmIsSchedulable (
     case EFI_DEP_OR:
       DEBUG ((DEBUG_DISPATCH, "  OR\n"));
       Status = PopBool (&Operator);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         DEBUG ((DEBUG_DISPATCH, "  RESULT = FALSE (Unexpected error)\n"));
         return FALSE;
       }
 
       Status = PopBool (&Operator2);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         DEBUG ((DEBUG_DISPATCH, "  RESULT = FALSE (Unexpected error)\n"));
         return FALSE;
       }
 
       Status = PushBool ((BOOLEAN)(Operator || Operator2));
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         DEBUG ((DEBUG_DISPATCH, "  RESULT = FALSE (Unexpected error)\n"));
         return FALSE;
       }
@@ -309,13 +309,13 @@ SmmIsSchedulable (
     case EFI_DEP_NOT:
       DEBUG ((DEBUG_DISPATCH, "  NOT\n"));
       Status = PopBool (&Operator);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         DEBUG ((DEBUG_DISPATCH, "  RESULT = FALSE (Unexpected error)\n"));
         return FALSE;
       }
 
       Status = PushBool ((BOOLEAN)(!Operator));
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         DEBUG ((DEBUG_DISPATCH, "  RESULT = FALSE (Unexpected error)\n"));
         return FALSE;
       }
@@ -324,7 +324,7 @@ SmmIsSchedulable (
     case EFI_DEP_TRUE:
       DEBUG ((DEBUG_DISPATCH, "  TRUE\n"));
       Status = PushBool (TRUE);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         DEBUG ((DEBUG_DISPATCH, "  RESULT = FALSE (Unexpected error)\n"));
         return FALSE;
       }
@@ -333,7 +333,7 @@ SmmIsSchedulable (
     case EFI_DEP_FALSE:
       DEBUG ((DEBUG_DISPATCH, "  FALSE\n"));
       Status = PushBool (FALSE);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         DEBUG ((DEBUG_DISPATCH, "  RESULT = FALSE (Unexpected error)\n"));
         return FALSE;
       }
@@ -342,7 +342,7 @@ SmmIsSchedulable (
     case EFI_DEP_END:
       DEBUG ((DEBUG_DISPATCH, "  END\n"));
       Status = PopBool (&Operator);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         DEBUG ((DEBUG_DISPATCH, "  RESULT = FALSE (Unexpected error)\n"));
         return FALSE;
       }
@@ -350,10 +350,10 @@ SmmIsSchedulable (
       return Operator;
 
     case EFI_DEP_REPLACE_TRUE:
-      CopyMem (&DriverGuid, Iterator + 1, sizeof (EFI_GUID));
+      CopyMem(&DriverGuid, Iterator + 1, sizeof (EFI_GUID));
       DEBUG ((DEBUG_DISPATCH, "  PUSH GUID(%g) = TRUE\n", &DriverGuid));
       Status = PushBool (TRUE);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         DEBUG ((DEBUG_DISPATCH, "  RESULT = FALSE (Unexpected error)\n"));
         return FALSE;
       }

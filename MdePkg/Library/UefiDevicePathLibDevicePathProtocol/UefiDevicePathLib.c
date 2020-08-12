@@ -64,7 +64,7 @@ DevicePathLibConstructor (
                   NULL,
                   (VOID**) &mDevicePathLibDevicePathUtilities
                   );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
   ASSERT (mDevicePathLibDevicePathUtilities != NULL);
   return Status;
 }
@@ -378,7 +378,7 @@ SetDevicePathEndNode (
   )
 {
   ASSERT (Node != NULL);
-  CopyMem (Node, &mUefiDevicePathLibEndDevicePath, sizeof (mUefiDevicePathLibEndDevicePath));
+  CopyMem(Node, &mUefiDevicePathLibEndDevicePath, sizeof (mUefiDevicePathLibEndDevicePath));
 }
 
 /**
@@ -653,7 +653,7 @@ DevicePathFromHandle (
                   &gEfiDevicePathProtocolGuid,
                   (VOID *) &DevicePath
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DevicePath = NULL;
   }
   return DevicePath;
@@ -701,7 +701,7 @@ FileDevicePath (
     FilePath = (FILEPATH_DEVICE_PATH *) FileDevicePath;
     FilePath->Header.Type    = MEDIA_DEVICE_PATH;
     FilePath->Header.SubType = MEDIA_FILEPATH_DP;
-    CopyMem (&FilePath->PathName, FileName, Size);
+    CopyMem(&FilePath->PathName, FileName, Size);
     SetDevicePathNodeLength (&FilePath->Header, Size + SIZE_OF_FILEPATH_DEVICE_PATH);
     SetDevicePathEndNode (NextDevicePathNode (&FilePath->Header));
 
@@ -710,7 +710,7 @@ FileDevicePath (
     }
 
     DevicePath = AppendDevicePath (DevicePath, FileDevicePath);
-    FreePool (FileDevicePath);
+    FreePool(FileDevicePath);
   }
 
   return DevicePath;
@@ -735,7 +735,7 @@ UefiDevicePathLibLocateProtocol (
                   NULL,
                   (VOID**) &Protocol
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return NULL;
   } else {
     return Protocol;

@@ -59,7 +59,7 @@ SmmLockBoxSave (
     return ;
   }
 
-  CopyMem (&TempLockBoxParameterSave, LockBoxParameterSave, sizeof (EFI_SMM_LOCK_BOX_PARAMETER_SAVE));
+  CopyMem(&TempLockBoxParameterSave, LockBoxParameterSave, sizeof (EFI_SMM_LOCK_BOX_PARAMETER_SAVE));
 
   //
   // Sanity check
@@ -109,7 +109,7 @@ SmmLockBoxSetAttributes (
     return ;
   }
 
-  CopyMem (&TempLockBoxParameterSetAttributes, LockBoxParameterSetAttributes, sizeof (EFI_SMM_LOCK_BOX_PARAMETER_SET_ATTRIBUTES));
+  CopyMem(&TempLockBoxParameterSetAttributes, LockBoxParameterSetAttributes, sizeof (EFI_SMM_LOCK_BOX_PARAMETER_SET_ATTRIBUTES));
 
   //
   // Update data
@@ -148,7 +148,7 @@ SmmLockBoxUpdate (
     return ;
   }
 
-  CopyMem (&TempLockBoxParameterUpdate, LockBoxParameterUpdate, sizeof (EFI_SMM_LOCK_BOX_PARAMETER_UPDATE));
+  CopyMem(&TempLockBoxParameterUpdate, LockBoxParameterUpdate, sizeof (EFI_SMM_LOCK_BOX_PARAMETER_UPDATE));
 
   //
   // Sanity check
@@ -194,7 +194,7 @@ SmmLockBoxRestore (
   EFI_STATUS                     Status;
   EFI_SMM_LOCK_BOX_PARAMETER_RESTORE TempLockBoxParameterRestore;
 
-  CopyMem (&TempLockBoxParameterRestore, LockBoxParameterRestore, sizeof (EFI_SMM_LOCK_BOX_PARAMETER_RESTORE));
+  CopyMem(&TempLockBoxParameterRestore, LockBoxParameterRestore, sizeof (EFI_SMM_LOCK_BOX_PARAMETER_RESTORE));
 
   //
   // Sanity check
@@ -406,7 +406,7 @@ SmmLockBoxEntryPoint (
                     &gEfiSmmLockBoxCommunicationGuid,
                     &DispatchHandle
                     );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   //
   // Register SMM Ready To Lock Protocol notification
@@ -416,7 +416,7 @@ SmmLockBoxEntryPoint (
                     SmmReadyToLockEventNotify,
                     &Registration
                     );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   //
   // Install NULL to DXE data base as notify
@@ -428,7 +428,7 @@ SmmLockBoxEntryPoint (
                   EFI_NATIVE_INTERFACE,
                   NULL
                   );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   return Status;
 }

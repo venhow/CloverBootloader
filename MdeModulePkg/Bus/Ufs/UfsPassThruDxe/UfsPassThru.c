@@ -184,7 +184,7 @@ UfsPassThruPassThru (
   //
   // For UFS 2.0 compatible device, 0 is always used to represent the location of the UFS device.
   //
-  SetMem (mUfsTargetId, TARGET_MAX_BYTES, 0x00);
+  SetMem(mUfsTargetId, TARGET_MAX_BYTES, 0x00);
   if ((Target == NULL) || (CompareMem(Target, mUfsTargetId, TARGET_MAX_BYTES) != 0)) {
     return EFI_INVALID_PARAMETER;
   }
@@ -271,12 +271,12 @@ UfsPassThruGetNextTargetLun (
   }
 
   UfsLun = 0;
-  SetMem (mUfsTargetId, TARGET_MAX_BYTES, 0xFF);
+  SetMem(mUfsTargetId, TARGET_MAX_BYTES, 0xFF);
   if (CompareMem (*Target, mUfsTargetId, TARGET_MAX_BYTES) == 0) {
     //
     // If the array is all 0xFF's, return the first exposed Lun to caller.
     //
-    SetMem (*Target, TARGET_MAX_BYTES, 0x00);
+    SetMem(*Target, TARGET_MAX_BYTES, 0x00);
     for (Index = 0; Index < UFS_MAX_LUNS; Index++) {
       if ((Private->Luns.BitMask & (BIT0 << Index)) != 0) {
         UfsLun = Private->Luns.Lun[Index];
@@ -297,7 +297,7 @@ UfsPassThruGetNextTargetLun (
     }
   }
 
-  SetMem (mUfsTargetId, TARGET_MAX_BYTES, 0x00);
+  SetMem(mUfsTargetId, TARGET_MAX_BYTES, 0x00);
   if (CompareMem (*Target, mUfsTargetId, TARGET_MAX_BYTES) == 0) {
     if (((UINT8*)Lun)[0] == UFS_WLUN_PREFIX) {
       UfsLun = BIT7 | (((UINT8*)Lun)[1] & 0xFF);
@@ -393,7 +393,7 @@ UfsPassThruBuildDevicePath (
   //
   // Validate parameters passed in.
   //
-  SetMem (mUfsTargetId, TARGET_MAX_BYTES, 0x00);
+  SetMem(mUfsTargetId, TARGET_MAX_BYTES, 0x00);
   if (CompareMem (Target, mUfsTargetId, TARGET_MAX_BYTES) != 0) {
     return EFI_INVALID_PARAMETER;
   }
@@ -420,7 +420,7 @@ UfsPassThruBuildDevicePath (
     return EFI_NOT_FOUND;
   }
 
-  DevicePathNode = AllocateCopyPool (sizeof (UFS_DEVICE_PATH), &mUfsDevicePathTemplate);
+  DevicePathNode = AllocateCopyPool(sizeof (UFS_DEVICE_PATH), &mUfsDevicePathTemplate);
   if (DevicePathNode == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
@@ -511,7 +511,7 @@ UfsPassThruGetTargetLun (
     return EFI_NOT_FOUND;
   }
 
-  SetMem (*Target, TARGET_MAX_BYTES, 0x00);
+  SetMem(*Target, TARGET_MAX_BYTES, 0x00);
   *Lun = 0;
   if ((UfsLun & BIT7) == BIT7) {
     ((UINT8*)Lun)[0] = UFS_WLUN_PREFIX;
@@ -611,9 +611,9 @@ UfsPassThruGetNextTarget (
     return EFI_INVALID_PARAMETER;
   }
 
-  SetMem (mUfsTargetId, TARGET_MAX_BYTES, 0xFF);
+  SetMem(mUfsTargetId, TARGET_MAX_BYTES, 0xFF);
   if (CompareMem(*Target, mUfsTargetId, TARGET_MAX_BYTES) == 0) {
-    SetMem (*Target, TARGET_MAX_BYTES, 0x00);
+    SetMem(*Target, TARGET_MAX_BYTES, 0x00);
     return EFI_SUCCESS;
   }
 
@@ -686,7 +686,7 @@ UfsPassThruDriverBindingSupported (
                   Controller,
                   EFI_OPEN_PROTOCOL_BY_DRIVER
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     //
     // EFI_ALREADY_STARTED is also an error
     //
@@ -711,7 +711,7 @@ UfsPassThruDriverBindingSupported (
                   EFI_OPEN_PROTOCOL_BY_DRIVER
                   );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     //
     // EFI_ALREADY_STARTED is also an error
     //
@@ -756,14 +756,14 @@ UfsFinishDeviceInitialization (
   // The host enables the device initialization completion by setting fDeviceInit flag.
   //
   Status = UfsSetFlag (Private, UfsFlagDevInit);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
   Timeout = 5;
   do {
     Status = UfsReadFlag (Private, UfsFlagDevInit, &DeviceInitStatus);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
     MicroSecondDelay (1);
@@ -840,7 +840,7 @@ UfsPassThruDriverBindingStart (
                    EFI_OPEN_PROTOCOL_BY_DRIVER
                    );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG ((DEBUG_ERROR, "Open Ufs Host Controller Protocol Error, Status = %r\n", Status));
     goto Error;
   }
@@ -849,7 +849,7 @@ UfsPassThruDriverBindingStart (
   // Get the UFS Host Controller MMIO Bar Base Address.
   //
   Status = UfsHc->GetUfsHcMmioBar (UfsHc, &UfsHcBase);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG ((DEBUG_ERROR, "Get Ufs Host Controller Mmio Bar Error, Status = %r\n", Status));
     goto Error;
   }
@@ -857,7 +857,7 @@ UfsPassThruDriverBindingStart (
   //
   // Initialize Ufs Pass Thru private data for managed UFS Host Controller.
   //
-  Private = AllocateCopyPool (sizeof (UFS_PASS_THRU_PRIVATE_DATA), &gUfsPassThruTemplate);
+  Private = AllocateCopyPool(sizeof (UFS_PASS_THRU_PRIVATE_DATA), &gUfsPassThruTemplate);
   if (Private == NULL) {
     DEBUG ((DEBUG_ERROR, "Unable to allocate Ufs Pass Thru private data\n"));
     Status = EFI_OUT_OF_RESOURCES;
@@ -877,13 +877,13 @@ UfsPassThruDriverBindingStart (
   //
   if (mUfsHcPlatform == NULL) {
     Status = gBS->LocateProtocol (&gEdkiiUfsHcPlatformProtocolGuid, NULL, (VOID**)&mUfsHcPlatform);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       DEBUG ((DEBUG_INFO, "No UfsHcPlatformProtocol present\n"));
     }
   }
 
   Status = GetUfsHcInfo (Private);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG ((DEBUG_ERROR, "Failed to initialize UfsHcInfo\n"));
     goto Error;
   }
@@ -892,7 +892,7 @@ UfsPassThruDriverBindingStart (
   // Initialize UFS Host Controller H/W.
   //
   Status = UfsControllerInit (Private);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG ((DEBUG_ERROR, "Ufs Host Controller Initialization Error, Status = %r\n", Status));
     goto Error;
   }
@@ -903,13 +903,13 @@ UfsPassThruDriverBindingStart (
   // the host shall send a NOP OUT UPIU to verify that the device UTP Layer is ready.
   //
   Status = UfsExecNopCmds (Private);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG ((DEBUG_ERROR, "Ufs Sending NOP IN command Error, Status = %r\n", Status));
     goto Error;
   }
 
   Status = UfsFinishDeviceInitialization (Private);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG ((DEBUG_ERROR, "Device failed to finish initialization, Status = %r\n", Status));
     goto Error;
   }
@@ -921,7 +921,7 @@ UfsPassThruDriverBindingStart (
   UnitDescriptorSize = sizeof (UFS_UNIT_DESC);
   for (Index = 0; Index < 8; Index++) {
     Status = UfsRwDeviceDesc (Private, TRUE, UfsUnitDesc, (UINT8) Index, 0, &UnitDescriptor, &UnitDescriptorSize);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       DEBUG ((DEBUG_ERROR, "Failed to read unit descriptor, index = %X, status = %r\n", Index, Status));
       continue;
     }
@@ -941,7 +941,7 @@ UfsPassThruDriverBindingStart (
                   Private,
                   &Private->TimerEvent
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG ((DEBUG_ERROR, "Ufs Create Async Tasks Event Error, Status = %r\n", Status));
     goto Error;
   }
@@ -951,7 +951,7 @@ UfsPassThruDriverBindingStart (
                   TimerPeriodic,
                   UFS_HC_ASYNC_TIMER
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG ((DEBUG_ERROR, "Ufs Set Periodic Timer Error, Status = %r\n", Status));
     goto Error;
   }
@@ -964,7 +964,7 @@ UfsPassThruDriverBindingStart (
                   &(Private->UfsDevConfig),
                   NULL
                   );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   return EFI_SUCCESS;
 
@@ -988,7 +988,7 @@ Error:
       gBS->CloseEvent (Private->TimerEvent);
     }
 
-    FreePool (Private);
+    FreePool(Private);
   }
 
   if (UfsHc != NULL) {
@@ -1057,7 +1057,7 @@ UfsPassThruDriverBindingStop (
                   EFI_OPEN_PROTOCOL_GET_PROTOCOL
                   );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return EFI_DEVICE_ERROR;
   }
 
@@ -1091,7 +1091,7 @@ UfsPassThruDriverBindingStop (
                   NULL
                   );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return EFI_DEVICE_ERROR;
   }
 
@@ -1099,7 +1099,7 @@ UfsPassThruDriverBindingStop (
   // Stop Ufs Host Controller
   //
   Status = UfsControllerStop (Private);
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   if (Private->TmrlMapping != NULL) {
     UfsHc->Unmap (UfsHc, Private->TmrlMapping);
@@ -1119,7 +1119,7 @@ UfsPassThruDriverBindingStop (
     gBS->CloseEvent (Private->TimerEvent);
   }
 
-  FreePool (Private);
+  FreePool(Private);
 
   //
   // Close protocols opened by UfsPassThru controller driver
@@ -1165,7 +1165,7 @@ InitializeUfsPassThru (
              &gUfsPassThruComponentName,
              &gUfsPassThruComponentName2
              );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   return Status;
 }

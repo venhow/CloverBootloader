@@ -22,7 +22,7 @@ UefiDevicePathLibStrDuplicate (
   IN CONST CHAR16  *Src
   )
 {
-  return AllocateCopyPool (StrSize (Src), Src);
+  return AllocateCopyPool(StrSize (Src), Src);
 }
 
 /**
@@ -80,7 +80,7 @@ GetParamByNodeName (
     return NULL;
   }
 
-  ParamStr = AllocateCopyPool ((ParameterLength + 1) * sizeof (CHAR16), ParamStr);
+  ParamStr = AllocateCopyPool((ParameterLength + 1) * sizeof (CHAR16), ParamStr);
   if (ParamStr == NULL) {
     return NULL;
   }
@@ -2505,7 +2505,7 @@ DevPathFromTextUsbWwid (
   // There is no memory allocated in UsbWwid for the '\0' in SerialNumberStr.
   // Therefore, the '\0' will not be copied.
   //
-  CopyMem (
+  CopyMem(
     (UINT8 *) UsbWwid + sizeof (USB_WWID_DEVICE_PATH),
     SerialNumberStr,
     SerialNumberStrLen * sizeof (CHAR16)
@@ -2710,7 +2710,7 @@ DevPathFromTextWiFi (
     }
 
     UnicodeStrToAsciiStrS (SSIdStr, AsciiStr, sizeof (AsciiStr));
-    CopyMem (WiFiDp->SSId, AsciiStr, DataLen);
+    CopyMem(WiFiDp->SSId, AsciiStr, DataLen);
   }
 
   return (EFI_DEVICE_PATH_PROTOCOL *) WiFiDp;
@@ -2787,7 +2787,7 @@ DevPathFromTextDns (
     DnsServerIpCount ++;
   }
 
-  FreePool (DeviceNodeStr);
+  FreePool(DeviceNodeStr);
   DeviceNodeStr = NULL;
 
   //
@@ -2931,7 +2931,7 @@ DevPathFromTextHD (
     Hd->MBRType       = 0x01;
 
     Signature32       = (UINT32) Strtoi (SignatureStr);
-    CopyMem (Hd->Signature, &Signature32, sizeof (UINT32));
+    CopyMem(Hd->Signature, &Signature32, sizeof (UINT32));
   } else if (StrCmp (TypeStr, L"GPT") == 0) {
     Hd->SignatureType = SIGNATURE_TYPE_GUID;
     Hd->MBRType       = 0x02;
@@ -3595,10 +3595,10 @@ UefiDevicePathLibConvertTextToDeviceNode (
     DeviceNode = FromText (DeviceNodeStr);
   } else {
     DeviceNode = FromText (ParamStr);
-    FreePool (ParamStr);
+    FreePool(ParamStr);
   }
 
-  FreePool (DeviceNodeStr);
+  FreePool(DeviceNodeStr);
 
   return DeviceNode;
 }
@@ -3644,8 +3644,8 @@ UefiDevicePathLibConvertTextToDevicePath (
     DeviceNode = UefiDevicePathLibConvertTextToDeviceNode (DeviceNodeStr);
 
     NewDevicePath = AppendDevicePathNode (DevicePath, DeviceNode);
-    FreePool (DevicePath);
-    FreePool (DeviceNode);
+    FreePool(DevicePath);
+    FreePool(DeviceNode);
     DevicePath = NewDevicePath;
 
     if (IsInstanceEnd) {
@@ -3655,12 +3655,12 @@ UefiDevicePathLibConvertTextToDevicePath (
       DeviceNode->SubType = END_INSTANCE_DEVICE_PATH_SUBTYPE;
 
       NewDevicePath = AppendDevicePathNode (DevicePath, DeviceNode);
-      FreePool (DevicePath);
-      FreePool (DeviceNode);
+      FreePool(DevicePath);
+      FreePool(DeviceNode);
       DevicePath = NewDevicePath;
     }
   }
 
-  FreePool (DevicePathStr);
+  FreePool(DevicePathStr);
   return DevicePath;
 }

@@ -37,7 +37,7 @@ InternalGetReportStatusCode (
   EFI_STATUS                    Status;
 
   Status = gSmst->SmmLocateProtocol (&gEfiSmmStatusCodeProtocolGuid, NULL, (VOID**)&mStatusCodeProtocol);
-  if (!EFI_ERROR (Status) && mStatusCodeProtocol != NULL) {
+  if (!EFI_ERROR(Status) && mStatusCodeProtocol != NULL) {
     return mStatusCodeProtocol->ReportStatusCode;
   }
   return NULL;
@@ -200,7 +200,7 @@ ReportStatusCodeExtractAssertInfo (
       ((Value    & EFI_STATUS_CODE_OPERATION_MASK) == EFI_SW_EC_ILLEGAL_SOFTWARE_STATE)) {
     AssertData   = (EFI_DEBUG_ASSERT_DATA *)(Data + 1);
     *Filename    = (CHAR8 *)(AssertData + 1);
-    *Description = *Filename + AsciiStrLen (*Filename) + 1;
+    *Description = *Filename + AsciiStrLen(*Filename) + 1;
     *LineNumber  = AssertData->LineNumber;
     return TRUE;
   }
@@ -453,7 +453,7 @@ ReportStatusCodeEx (
   // Fill in the extended data buffer
   //
   if (ExtendedData != NULL) {
-    CopyMem (StatusCodeData + 1, ExtendedData, ExtendedDataSize);
+    CopyMem(StatusCodeData + 1, ExtendedData, ExtendedDataSize);
   }
 
   //
@@ -467,7 +467,7 @@ ReportStatusCodeEx (
   //
   // Free the allocated buffer
   //
-  FreePool (StatusCodeData);
+  FreePool(StatusCodeData);
 
   return Status;
 }

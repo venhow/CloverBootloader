@@ -90,7 +90,7 @@ CatPrint (
   VA_LIST Args;
   UINTN   StringSize;
 
-  AppendStr = AllocateZeroPool (0x1000);
+  AppendStr = AllocateZeroPool(0x1000);
   if (AppendStr == NULL) {
     return Str->Str;
   }
@@ -100,7 +100,7 @@ CatPrint (
   VA_END (Args);
   if (NULL == Str->Str) {
     StringSize   = StrSize (AppendStr);
-    Str->Str  = AllocateZeroPool (StringSize);
+    Str->Str  = AllocateZeroPool(StringSize);
 //    ASSERT (Str->Str != NULL);
   } else {
     StringSize = StrSize (AppendStr);
@@ -120,7 +120,7 @@ CatPrint (
     Str->Len = StringSize - sizeof (UINT16);
   }
 
-  FreePool (AppendStr);
+  FreePool(AppendStr);
   return Str->Str;
 }
 
@@ -1563,7 +1563,7 @@ DevicePathToStr (
                   NULL,
                   (VOID **) &DevPathToText
                   );
-  if (!EFI_ERROR (Status)) {
+  if (!EFI_ERROR(Status)) {
     ToText = DevPathToText->ConvertDevicePathToText (
                               DevPath,
                               FALSE,

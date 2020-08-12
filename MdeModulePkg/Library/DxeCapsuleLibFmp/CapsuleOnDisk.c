@@ -67,7 +67,7 @@ ValidateCapsuleNameCapsuleIntegrity (
   // If strings are not aligned on a 16-bit boundary, reallocate memory for it.
   //
   if (((UINTN) CapsuleNameBufStart & BIT0) != 0) {
-    CapsuleNameBufStart = AllocateCopyPool (CapsuleHeader->CapsuleImageSize - CapsuleHeader->HeaderSize, CapsuleNameBufStart);
+    CapsuleNameBufStart = AllocateCopyPool(CapsuleHeader->CapsuleImageSize - CapsuleHeader->HeaderSize, CapsuleNameBufStart);
     if (CapsuleNameBufStart == NULL) {
       return NULL;
     }
@@ -87,7 +87,7 @@ ValidateCapsuleNameCapsuleIntegrity (
   //
   if (CapsuleNamePtr != CapsuleNameBufEnd) {
     if (CapsuleNameBufStart != (UINT8 *)CapsuleHeader + CapsuleHeader->HeaderSize) {
-      FreePool (CapsuleNameBufStart);
+      FreePool(CapsuleNameBufStart);
     }
     return NULL;
   }
@@ -95,7 +95,7 @@ ValidateCapsuleNameCapsuleIntegrity (
   CapsuleNameBuf = AllocatePool (*CapsuleNameNum * sizeof (EFI_PHYSICAL_ADDRESS));
   if (CapsuleNameBuf == NULL) {
     if (CapsuleNameBufStart != (UINT8 *)CapsuleHeader + CapsuleHeader->HeaderSize) {
-      FreePool (CapsuleNameBufStart);
+      FreePool(CapsuleNameBufStart);
     }
     return NULL;
   }
@@ -348,10 +348,10 @@ GetBootOptionByNumber(
   ZeroMem (&BootOption, sizeof (EFI_BOOT_MANAGER_LOAD_OPTION));
   Status = EfiBootManagerVariableToLoadOption (BootOptionName, &BootOption);
 
-  if (!EFI_ERROR (Status)) {
+  if (!EFI_ERROR(Status)) {
     *OptionBuf = AllocatePool (sizeof (EFI_BOOT_MANAGER_LOAD_OPTION));
     if (*OptionBuf != NULL) {
-      CopyMem (*OptionBuf, &BootOption, sizeof (EFI_BOOT_MANAGER_LOAD_OPTION));
+      CopyMem(*OptionBuf, &BootOption, sizeof (EFI_BOOT_MANAGER_LOAD_OPTION));
       Status = EFI_SUCCESS;
     } else {
       Status = EFI_OUT_OF_RESOURCES;
@@ -510,7 +510,7 @@ GetEfiSysPartitionFromActiveBootOption(
       CurFullPath = EfiBootManagerGetNextLoadOptionDevicePath(DevicePath, CurFullPath);
 
       if (PreFullPath != NULL) {
-        FreePool (PreFullPath);
+        FreePool(PreFullPath);
       }
 
       if (CurFullPath == NULL) {
@@ -574,7 +574,7 @@ GetEfiSysPartitionFromActiveBootOption(
   // Return the OptionNumber of the boot option where EFI system partition is got from
   //
   if (*LoadOptionNumber == NULL) {
-    *LoadOptionNumber = AllocateCopyPool (sizeof(UINT16), (UINT16 *) &BootOptionBuf[Index].OptionNumber);
+    *LoadOptionNumber = AllocateCopyPool(sizeof(UINT16), (UINT16 *) &BootOptionBuf[Index].OptionNumber);
     if (*LoadOptionNumber == NULL) {
       Status = EFI_OUT_OF_RESOURCES;
     }
@@ -1225,7 +1225,7 @@ BuildGatherList (
     //
     // Allocate memory for the descriptors.
     //
-    BlockDescriptors1  = AllocateZeroPool (2 * sizeof (EFI_CAPSULE_BLOCK_DESCRIPTOR));
+    BlockDescriptors1  = AllocateZeroPool(2 * sizeof (EFI_CAPSULE_BLOCK_DESCRIPTOR));
     if (BlockDescriptors1 == NULL) {
       DEBUG ((DEBUG_ERROR, "BuildGatherList: failed to allocate memory for descriptors\n"));
       Status = EFI_OUT_OF_RESOURCES;
@@ -1266,7 +1266,7 @@ BuildGatherList (
 
 ERREXIT:
   if (BlockDescriptors1 != NULL) {
-    FreePool (BlockDescriptors1);
+    FreePool(BlockDescriptors1);
   }
 
   return Status;
@@ -1751,7 +1751,7 @@ RelocateCapsuleToRam (
   // 1. Load all Capsule On Disks into memory
   //
   Status = GetAllCapsuleOnDisk (MaxRetry, &CapsuleOnDiskBuf, &CapsuleOnDiskNum, &Handle, NULL);
-  if (EFI_ERROR (Status) || CapsuleOnDiskNum == 0 || CapsuleOnDiskBuf == NULL) {
+  if (EFI_ERROR(Status) || CapsuleOnDiskNum == 0 || CapsuleOnDiskBuf == NULL) {
     DEBUG ((DEBUG_ERROR, "GetAllCapsuleOnDisk Status - 0x%x\n", Status));
     return EFI_NOT_FOUND;
   }
@@ -1759,16 +1759,16 @@ RelocateCapsuleToRam (
   //
   // 2. Add a capsule for Capsule file name strings
   //
-  CapsuleBuffer = AllocateZeroPool ((CapsuleOnDiskNum + 1) * sizeof (VOID *));
+  CapsuleBuffer = AllocateZeroPool((CapsuleOnDiskNum + 1) * sizeof (VOID *));
   if (CapsuleBuffer == NULL) {
     DEBUG ((DEBUG_ERROR, "Fail to allocate memory for capsules.\n"));
     return EFI_OUT_OF_RESOURCES;
   }
 
-  CapsuleSize = AllocateZeroPool ((CapsuleOnDiskNum + 1) * sizeof (UINTN));
+  CapsuleSize = AllocateZeroPool((CapsuleOnDiskNum + 1) * sizeof (UINTN));
   if (CapsuleSize == NULL) {
     DEBUG ((DEBUG_ERROR, "Fail to allocate memory for capsules.\n"));
-    FreePool (CapsuleBuffer);
+    FreePool(CapsuleBuffer);
     return EFI_OUT_OF_RESOURCES;
   }
 
@@ -1778,11 +1778,11 @@ RelocateCapsuleToRam (
     TotalStringSize += StrSize (CapsuleOnDiskBuf[Index].FileInfo->FileName);
   }
 
-  FileNameCapsule = AllocateZeroPool (sizeof (EFI_CAPSULE_HEADER) + TotalStringSize);
+  FileNameCapsule = AllocateZeroPool(sizeof (EFI_CAPSULE_HEADER) + TotalStringSize);
   if (FileNameCapsule == NULL) {
     DEBUG ((DEBUG_ERROR, "Fail to allocate memory for name capsule.\n"));
-    FreePool (CapsuleBuffer);
-    FreePool (CapsuleSize);
+    FreePool(CapsuleBuffer);
+    FreePool(CapsuleSize);
     return EFI_OUT_OF_RESOURCES;
   }
 
@@ -1794,7 +1794,7 @@ RelocateCapsuleToRam (
   StringBuf = (UINT8 *)FileNameCapsule + FileNameCapsule->HeaderSize;
   for (Index = 0; Index < CapsuleOnDiskNum; Index ++) {
     StringSize = StrSize (CapsuleOnDiskBuf[Index].FileInfo->FileName);
-    CopyMem (StringBuf, CapsuleOnDiskBuf[Index].FileInfo->FileName, StringSize);
+    CopyMem(StringBuf, CapsuleOnDiskBuf[Index].FileInfo->FileName, StringSize);
     StringBuf += StringSize;
   }
 
@@ -1805,10 +1805,10 @@ RelocateCapsuleToRam (
   // 3. Build Gather list for the capsules
   //
   Status = BuildGatherList (CapsuleBuffer, CapsuleSize, CapsuleOnDiskNum + 1, &BlockDescriptors);
-  if (EFI_ERROR (Status) || BlockDescriptors == NULL) {
-    FreePool (CapsuleBuffer);
-    FreePool (CapsuleSize);
-    FreePool (FileNameCapsule);
+  if (EFI_ERROR(Status) || BlockDescriptors == NULL) {
+    FreePool(CapsuleBuffer);
+    FreePool(CapsuleSize);
+    FreePool(FileNameCapsule);
     return EFI_OUT_OF_RESOURCES;
   }
 
@@ -1964,7 +1964,7 @@ CoDRemoveTempFile (
 
 EXIT:
   if (LoadOptionNumber != NULL) {
-    FreePool (LoadOptionNumber);
+    FreePool(LoadOptionNumber);
   }
 
   if (RootDir != NULL) {

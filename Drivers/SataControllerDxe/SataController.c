@@ -325,7 +325,7 @@ InitializeSataControllerDriver (
              &gSataControllerComponentName,
              &gSataControllerComponentName2
              );
-//  ASSERT_EFI_ERROR (Status);
+//  ASSERT_EFI_ERROR(Status);
 
   return Status;
 }
@@ -367,7 +367,7 @@ SataControllerSupported (
                   Controller,
                   EFI_OPEN_PROTOCOL_GET_PROTOCOL
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -382,7 +382,7 @@ SataControllerSupported (
                         sizeof (PciData.Hdr.ClassCode),
                         PciData.Hdr.ClassCode
                         );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return EFI_UNSUPPORTED;
   }
 
@@ -438,7 +438,7 @@ SataControllerStart (
                   Controller,
                   EFI_OPEN_PROTOCOL_BY_DRIVER
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DBG(L"SataControllerStart error return status = %r\n", Status);
     return Status;
   }
@@ -446,7 +446,7 @@ SataControllerStart (
   //
   // Allocate Sata Private Data structure
   //
-  SataPrivateData = AllocateZeroPool (sizeof (EFI_SATA_CONTROLLER_PRIVATE_DATA));
+  SataPrivateData = AllocateZeroPool(sizeof (EFI_SATA_CONTROLLER_PRIVATE_DATA));
   if (SataPrivateData == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Done;
@@ -472,8 +472,8 @@ SataControllerStart (
                         sizeof (PciData.Hdr.ClassCode),
                         PciData.Hdr.ClassCode
                         );
-//  ASSERT_EFI_ERROR (Status);
-  if (EFI_ERROR (Status)) {
+//  ASSERT_EFI_ERROR(Status);
+  if (EFI_ERROR(Status)) {
     goto Done;
   }
 
@@ -519,19 +519,19 @@ SataControllerStart (
   }
 
   ChannelDeviceCount = (UINTN) (SataPrivateData->IdeInit.ChannelCount) * (UINTN) (SataPrivateData->DeviceCount);
-  SataPrivateData->DisqulifiedModes = AllocateZeroPool ((sizeof (EFI_ATA_COLLECTIVE_MODE)) * ChannelDeviceCount);
+  SataPrivateData->DisqulifiedModes = AllocateZeroPool((sizeof (EFI_ATA_COLLECTIVE_MODE)) * ChannelDeviceCount);
   if (SataPrivateData->DisqulifiedModes == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Done;
   }
 
-  SataPrivateData->IdentifyData = AllocateZeroPool ((sizeof (EFI_IDENTIFY_DATA)) * ChannelDeviceCount);
+  SataPrivateData->IdentifyData = AllocateZeroPool((sizeof (EFI_IDENTIFY_DATA)) * ChannelDeviceCount);
   if (SataPrivateData->IdentifyData == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Done;
   }
 
-  SataPrivateData->IdentifyValid = AllocateZeroPool ((sizeof (BOOLEAN)) * ChannelDeviceCount);
+  SataPrivateData->IdentifyValid = AllocateZeroPool((sizeof (BOOLEAN)) * ChannelDeviceCount);
   if (SataPrivateData->IdentifyValid == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Done;
@@ -549,7 +549,7 @@ SataControllerStart (
                   );
 
 Done:
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
 
     gBS->CloseProtocol (
           Controller,
@@ -560,16 +560,16 @@ Done:
     if (SataPrivateData != NULL) {
 /*
       if (SataPrivateData->DisqulifiedModes != NULL) {
-        FreePool (SataPrivateData->DisqulifiedModes);
+        FreePool(SataPrivateData->DisqulifiedModes);
       }
       if (SataPrivateData->IdentifyData != NULL) {
-        FreePool (SataPrivateData->IdentifyData);
+        FreePool(SataPrivateData->IdentifyData);
       }
       if (SataPrivateData->IdentifyValid != NULL) {
-        FreePool (SataPrivateData->IdentifyValid);
+        FreePool(SataPrivateData->IdentifyValid);
       }
 */
-      FreePool (SataPrivateData);
+      FreePool(SataPrivateData);
     }
   }
 
@@ -614,7 +614,7 @@ SataControllerStop (
                   Controller,
                   EFI_OPEN_PROTOCOL_GET_PROTOCOL
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return EFI_UNSUPPORTED;
   }
 
@@ -631,20 +631,20 @@ SataControllerStop (
                   &(SataPrivateData->IdeInit),
                   NULL
                   );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
 
     if (SataPrivateData->DisqulifiedModes != NULL) {
-      FreePool (SataPrivateData->DisqulifiedModes);
+      FreePool(SataPrivateData->DisqulifiedModes);
     }
     if (SataPrivateData->IdentifyData != NULL) {
-      FreePool (SataPrivateData->IdentifyData);
+      FreePool(SataPrivateData->IdentifyData);
     }
     if (SataPrivateData->IdentifyValid != NULL) {
-      FreePool (SataPrivateData->IdentifyValid);
+      FreePool(SataPrivateData->IdentifyValid);
     }
-    FreePool (SataPrivateData);    
+    FreePool(SataPrivateData);    
   }
 
   //
@@ -791,7 +791,7 @@ IdeInitNotifyPhase (
                             sizeof (PciData.Hdr.ClassCode),
                             PciData.Hdr.ClassCode
                             );
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         goto Done;
       }
 
@@ -826,19 +826,19 @@ IdeInitNotifyPhase (
       }
 
       ChannelDeviceCount = (UINTN) (SataPrivateData->IdeInit.ChannelCount) * (UINTN) (SataPrivateData->DeviceCount);
-      SataPrivateData->DisqulifiedModes = AllocateZeroPool ((sizeof (EFI_ATA_COLLECTIVE_MODE)) * ChannelDeviceCount);
+      SataPrivateData->DisqulifiedModes = AllocateZeroPool((sizeof (EFI_ATA_COLLECTIVE_MODE)) * ChannelDeviceCount);
       if (SataPrivateData->DisqulifiedModes == NULL) {
         Status = EFI_OUT_OF_RESOURCES;
         goto Done;
       }
 
-      SataPrivateData->IdentifyData = AllocateZeroPool ((sizeof (EFI_IDENTIFY_DATA)) * ChannelDeviceCount);
+      SataPrivateData->IdentifyData = AllocateZeroPool((sizeof (EFI_IDENTIFY_DATA)) * ChannelDeviceCount);
       if (SataPrivateData->IdentifyData == NULL) {
         Status = EFI_OUT_OF_RESOURCES;
         goto Done;
       }
 
-      SataPrivateData->IdentifyValid = AllocateZeroPool ((sizeof (BOOLEAN)) * ChannelDeviceCount);
+      SataPrivateData->IdentifyValid = AllocateZeroPool((sizeof (BOOLEAN)) * ChannelDeviceCount);
       if (SataPrivateData->IdentifyValid == NULL) {
         Status = EFI_OUT_OF_RESOURCES;
         goto Done;
@@ -846,15 +846,15 @@ IdeInitNotifyPhase (
     }
 
 Done:
-    if (EFI_ERROR (Status) && SataPrivateData != NULL) {
+    if (EFI_ERROR(Status) && SataPrivateData != NULL) {
       if (SataPrivateData->DisqulifiedModes != NULL) {
-        FreePool (SataPrivateData->DisqulifiedModes);
+        FreePool(SataPrivateData->DisqulifiedModes);
       }
       if (SataPrivateData->IdentifyData != NULL) {
-        FreePool (SataPrivateData->IdentifyData);
+        FreePool(SataPrivateData->IdentifyData);
       }
       if (SataPrivateData->IdentifyValid != NULL) {
-        FreePool (SataPrivateData->IdentifyValid);
+        FreePool(SataPrivateData->IdentifyValid);
       }
     }
   }
@@ -927,7 +927,7 @@ IdeInitSubmitData (
   // Make a local copy of device's IdentifyData and mark the valid flag
   //
   if (IdentifyData != NULL) {
-    CopyMem (
+    CopyMem(
       &(SataPrivateData->IdentifyData[Index]),
       IdentifyData,
       sizeof (EFI_IDENTIFY_DATA)
@@ -1005,7 +1005,7 @@ IdeInitDisqualifyMode (
   // Record the disqualified modes per channel per device. From ATA/ATAPI spec,
   // if a mode is not supported, the modes higher than it is also not supported.
   //
-  CopyMem (
+  CopyMem(
     &(SataPrivateData->DisqulifiedModes[(UINTN) Channel * (UINTN) SataPrivateData->DeviceCount + (UINTN) Device]),
     BadModes,
     sizeof (EFI_ATA_COLLECTIVE_MODE)
@@ -1095,7 +1095,7 @@ IdeInitCalculateMode (
     return EFI_INVALID_PARAMETER;
   }
 
-  *SupportedModes = AllocateZeroPool (sizeof (EFI_ATA_COLLECTIVE_MODE));
+  *SupportedModes = AllocateZeroPool(sizeof (EFI_ATA_COLLECTIVE_MODE));
   if (*SupportedModes == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
@@ -1109,7 +1109,7 @@ IdeInitCalculateMode (
   // Make sure we've got the valid identify data of the device from SubmitData()
   //
   if (!IdentifyValid) {
-    FreePool (*SupportedModes);
+    FreePool(*SupportedModes);
     return EFI_NOT_READY;
   }
 
@@ -1118,7 +1118,7 @@ IdeInitCalculateMode (
             (DisqulifiedModes->PioMode.Valid ? ((UINT16 *) &(DisqulifiedModes->PioMode.Mode)) : NULL),
             &SelectedMode
             );
-  if (!EFI_ERROR (Status)) {
+  if (!EFI_ERROR(Status)) {
     (*SupportedModes)->PioMode.Valid = TRUE;
     (*SupportedModes)->PioMode.Mode = SelectedMode; //Slice -> 3
 
@@ -1135,7 +1135,7 @@ IdeInitCalculateMode (
             (DisqulifiedModes->UdmaMode.Valid ? ((UINT16 *) &(DisqulifiedModes->UdmaMode.Mode)) : NULL),
             &SelectedMode
             );
-  if (!EFI_ERROR (Status)) {
+  if (!EFI_ERROR(Status)) {
     (*SupportedModes)->UdmaMode.Valid = TRUE;
     (*SupportedModes)->UdmaMode.Mode = SelectedMode;
   } else {

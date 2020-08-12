@@ -20,13 +20,26 @@ driver_name="@DRIVER_NAME@"
 
 if [[ -d "$EFI_ROOT_DIR/EFI/CLOVER/drivers/$driver_dir" ]]; then
   cd "$EFI_ROOT_DIR/EFI/CLOVER/drivers/$driver_dir"
-  for driver in *.efi
-  do
-    low=$(echo "${driver}" | tr '[:upper:]' '[:lower:]')
-    if [[ "$driver" != $driver_name ]] && \
-       [[ "$low" == *aptiofix* || "$low" == *memfix*  || "$low" == *memoryfix* ]]; then
-      echo "Removing ${driver_dir}/${driver} because $driver_name is installed" >> "$install_log"
-      rm -f "${driver}"
-    fi
-  done
+  if [[ "$driver_name" == OcQuirks.efi ]]; then
+    for driver in *.efi
+    do
+      low=$(echo "${driver}" | tr '[:upper:]' '[:lower:]')
+      if [[ "$driver" != $driver_name ]] && \
+      [[ "$low" == *aptiofix* || "$low" == *memfix*  || "$low" == *memoryfix* ]]; then
+        echo "Removing ${driver_dir}/${driver} because $driver_name is installed" >> "$install_log"
+        rm -f "${driver}"
+      fi
+    done
+  else
+    for driver in *.efi
+    do
+      low=$(echo "${driver}" | tr '[:upper:]' '[:lower:]')
+      if [[ "$driver" != $driver_name ]] && \
+      [[ "$low" == *aptiofix* || "$low" == *memfix*  || "$low" == *memoryfix* \
+      || "$low" == *ocquirks* || "$low" == *openruntime* ]]; then
+        echo "Removing ${driver_dir}/${driver} because $driver_name is installed" >> "$install_log"
+        rm -f "${driver}"
+      fi
+    done
+  fi
 fi

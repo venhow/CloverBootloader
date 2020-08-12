@@ -1316,9 +1316,9 @@ ScsiLibNotify (
   }
 
   if (CommandPacket->Cdb != NULL) {
-    FreePool (CommandPacket->Cdb);
+    FreePool(CommandPacket->Cdb);
   }
-  FreePool (Context);
+  FreePool(Context);
 
   gBS->CloseEvent (Event);
   gBS->SignalEvent (CallerEvent);
@@ -1441,12 +1441,12 @@ ScsiRead10CommandEx (
   ASSERT (DataLength != NULL);
   ASSERT (ScsiIo != NULL);
 
-  Context = AllocateZeroPool (sizeof (EFI_SCSI_LIB_ASYNC_CONTEXT));
+  Context = AllocateZeroPool(sizeof (EFI_SCSI_LIB_ASYNC_CONTEXT));
   if (Context == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
 
-  Cdb = AllocateZeroPool (EFI_SCSI_OP_LENGTH_TEN);
+  Cdb = AllocateZeroPool(EFI_SCSI_OP_LENGTH_TEN);
   if (Cdb == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto ErrorExit;
@@ -1502,7 +1502,7 @@ ScsiRead10CommandEx (
 
 ErrorExit:
   if (Context != NULL) {
-    FreePool (Context);
+    FreePool(Context);
   }
 
   return Status;
@@ -1625,12 +1625,12 @@ ScsiWrite10CommandEx (
   ASSERT (DataLength != NULL);
   ASSERT (ScsiIo != NULL);
 
-  Context = AllocateZeroPool (sizeof (EFI_SCSI_LIB_ASYNC_CONTEXT));
+  Context = AllocateZeroPool(sizeof (EFI_SCSI_LIB_ASYNC_CONTEXT));
   if (Context == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
 
-  Cdb = AllocateZeroPool (EFI_SCSI_OP_LENGTH_TEN);
+  Cdb = AllocateZeroPool(EFI_SCSI_OP_LENGTH_TEN);
   if (Cdb == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto ErrorExit;
@@ -1686,7 +1686,7 @@ ScsiWrite10CommandEx (
 
 ErrorExit:
   if (Context != NULL) {
-    FreePool (Context);
+    FreePool(Context);
   }
 
   return Status;
@@ -1809,12 +1809,12 @@ ScsiRead16CommandEx (
   ASSERT (DataLength != NULL);
   ASSERT (ScsiIo != NULL);
 
-  Context = AllocateZeroPool (sizeof (EFI_SCSI_LIB_ASYNC_CONTEXT));
+  Context = AllocateZeroPool(sizeof (EFI_SCSI_LIB_ASYNC_CONTEXT));
   if (Context == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
 
-  Cdb = AllocateZeroPool (EFI_SCSI_OP_LENGTH_SIXTEEN);
+  Cdb = AllocateZeroPool(EFI_SCSI_OP_LENGTH_SIXTEEN);
   if (Cdb == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto ErrorExit;
@@ -1870,7 +1870,7 @@ ScsiRead16CommandEx (
 
 ErrorExit:
   if (Context != NULL) {
-    FreePool (Context);
+    FreePool(Context);
   }
 
   return Status;
@@ -1993,12 +1993,12 @@ ScsiWrite16CommandEx (
   ASSERT (DataLength != NULL);
   ASSERT (ScsiIo != NULL);
 
-  Context = AllocateZeroPool (sizeof (EFI_SCSI_LIB_ASYNC_CONTEXT));
+  Context = AllocateZeroPool(sizeof (EFI_SCSI_LIB_ASYNC_CONTEXT));
   if (Context == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
 
-  Cdb = AllocateZeroPool (EFI_SCSI_OP_LENGTH_SIXTEEN);
+  Cdb = AllocateZeroPool(EFI_SCSI_OP_LENGTH_SIXTEEN);
   if (Cdb == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto ErrorExit;
@@ -2054,7 +2054,7 @@ ScsiWrite16CommandEx (
 
 ErrorExit:
   if (Context != NULL) {
-    FreePool (Context);
+    FreePool(Context);
   }
 
   return Status;

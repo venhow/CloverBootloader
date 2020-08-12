@@ -121,13 +121,13 @@ GetPcdName (
     //
     // Only need to get the TokenSpaceCName.
     //
-    Name = AllocateCopyPool (AsciiStrSize (TokenSpaceName), TokenSpaceName);
+    Name = AllocateCopyPool(AsciiStrSize (TokenSpaceName), TokenSpaceName);
   } else {
     //
     // Need to get the full PCD name.
     //
     NameSize = AsciiStrSize (TokenSpaceName) + AsciiStrSize (PcdName);
-    Name = AllocateZeroPool (NameSize);
+    Name = AllocateZeroPool(NameSize);
     ASSERT (Name != NULL);
     //
     // Catenate TokenSpaceCName and PcdCName with a '.' to form the full PCD name.
@@ -397,7 +397,7 @@ LocateExPcdBinary (
   ASSERT (FileHandle != NULL);
 
   Status = PeiServicesFfsFindSectionData (EFI_SECTION_RAW, FileHandle, &PcdDb);
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   //
   // Check the first bytes (Header Signature Guid) and build version.
@@ -441,7 +441,7 @@ BuildPcdDatabase (
   //
   // PeiPcdDbBinary is smaller than Database
   //
-  CopyMem (Database, PeiPcdDbBinary, PeiPcdDbBinary->Length);
+  CopyMem(Database, PeiPcdDbBinary, PeiPcdDbBinary->Length);
 
   SizeOfCallbackFnTable = Database->LocalTokenCount * sizeof (PCD_PPI_CALLBACK) * PcdGet32 (PcdMaxPeiPcdCallBackNumberPerPcdEntry);
 
@@ -478,7 +478,7 @@ GetHiiVariable (
   EFI_PEI_READ_ONLY_VARIABLE2_PPI *VariablePpi;
 
   Status = PeiServicesLocatePpi (&gEfiPeiReadOnlyVariable2PpiGuid, 0, NULL, (VOID **) &VariablePpi);
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   Size = 0;
   Status = VariablePpi->GetVariable (
@@ -492,7 +492,7 @@ GetHiiVariable (
 
   if (Status == EFI_BUFFER_TOO_SMALL) {
     Status = PeiServicesAllocatePool (Size, &Buffer);
-    ASSERT_EFI_ERROR (Status);
+    ASSERT_EFI_ERROR(Status);
 
     Status = VariablePpi->GetVariable (
                               VariablePpi,
@@ -502,7 +502,7 @@ GetHiiVariable (
                               &Size,
                               Buffer
                               );
-    ASSERT_EFI_ERROR (Status);
+    ASSERT_EFI_ERROR(Status);
 
     *VariableSize = Size;
     *VariableData = Buffer;
@@ -689,7 +689,7 @@ SetWorker (
     case PCD_TYPE_STRING:
       if (SetPtrTypeSize (TokenNumber, Size, PeiPcdDb)) {
         StringTableIdx = *((STRING_HEAD *)InternalData);
-        CopyMem ((UINT8 *)PeiPcdDb + PeiPcdDb->StringTableOffset + StringTableIdx, Data, *Size);
+        CopyMem((UINT8 *)PeiPcdDb + PeiPcdDb->StringTableOffset + StringTableIdx, Data, *Size);
         return EFI_SUCCESS;
       } else {
         return EFI_INVALID_PARAMETER;
@@ -699,7 +699,7 @@ SetWorker (
     {
       if (PtrType) {
         if (SetPtrTypeSize (TokenNumber, Size, PeiPcdDb)) {
-          CopyMem (InternalData, Data, *Size);
+          CopyMem(InternalData, Data, *Size);
           return EFI_SUCCESS;
         } else {
           return EFI_INVALID_PARAMETER;
@@ -935,7 +935,7 @@ GetWorker (
         // If the operation is successful, we copy the data
         // to the default value buffer in the PCD Database.
         //
-        CopyMem (VaraiableDefaultBuffer, (UINT8 *) Data + VariableHead->Offset, GetSize);
+        CopyMem(VaraiableDefaultBuffer, (UINT8 *) Data + VariableHead->Offset, GetSize);
       }
       return (VOID *) VaraiableDefaultBuffer;
     }

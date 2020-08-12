@@ -18,8 +18,8 @@ Abstract:
 #ifndef _LEGACY_BIOS_THUNK_H_
 #define _LEGACY_BIOS_THUNK_H_
 
+extern "C" {
 #include <Uefi.h>
-
 //
 // Driver Consumed Protocol Prototypes
 //
@@ -38,7 +38,7 @@ Abstract:
 
 #include <Library/UefiLib.h>
 #include <Library/DebugLib.h>
-#include <Library/PrintLib.h>
+//#include <Library/PrintLib.h>
 #include <Library/BaseLib.h>
 #include <Library/UefiBootServicesTableLib.h>
 #include <Library/BaseMemoryLib.h>
@@ -48,6 +48,8 @@ Abstract:
 #include <Library/IoLib.h>
 
 #include <IndustryStandard/Pci.h>
+
+} // extern "C"
 
 #define EFI_SEGMENT(_Adr)     (UINT16) ((UINT16) (((UINTN) (_Adr)) >> 4) & 0xf000)
 #define EFI_OFFSET(_Adr)      (UINT16) (((UINT16) ((UINTN) (_Adr))) & 0xffff)
