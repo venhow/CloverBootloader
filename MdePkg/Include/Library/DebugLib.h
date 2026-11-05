@@ -16,6 +16,7 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 #ifndef __DEBUG_LIB_H__
 #define __DEBUG_LIB_H__
 
+#include <Library/BaseLib.h> // jief : for CpuBreakpoint() definition
 //
 // Declare bits for PcdDebugPropertyMask
 //
@@ -289,7 +290,39 @@ DebugPrintLevelEnabled (
   @param  Expression  Boolean expression that evaluated to FALSE
 
 **/
-#define _ASSERT(Expression)  DebugAssert (__FILE__, __LINE__, #Expression)
+//#define _ASSERT(Expression)  DebugAssert (__FILE__, __LINE__, #Expression)
+#if defined (EDKII_UNIT_TEST_FRAMEWORK_ENABLED)
+ /**
+   Unit test library replacement for DebugAssert() in DebugLib.
+
+   If FileName is NULL, then a <FileName> string of "(NULL) Filename" is printed.
+   If Description is NULL, then a <Description> string of "(NULL) Description" is printed.
+
+   @param  FileName     The pointer to the name of the source file that generated the assert condition.
+   @param  LineNumber   The line number in the source file that generated the assert condition
+   @param  Description  The pointer to the description of the assert condition.
+
+ **/
+ VOID
+ EFIAPI
+ UnitTestDebugAssert (
+   IN CONST CHAR8  *FileName,
+   IN UINTN        LineNumber,
+   IN CONST CHAR8  *Description
+   );
+
+ #if defined(__clang__) && defined(__FILE_NAME__)
+ #define _ASSERT(Expression)  UnitTestDebugAssert (__FILE_NAME__, __LINE__, #Expression)
+ #else
+ #define _ASSERT(Expression)  UnitTestDebugAssert (__FILE__, __LINE__, #Expression)
+ #endif
+ #else
+ #if defined(__clang__) && defined(__FILE_NAME__)
+ #define _ASSERT(Expression)  DebugAssert (__FILE_NAME__, __LINE__, #Expression)
+ #else
+ #define _ASSERT(Expression)  DebugAssert (__FILE__, __LINE__, #Expression)
+ #endif
+ #endif
 
 
 /**
@@ -318,6 +351,26 @@ DebugPrintLevelEnabled (
 #endif
 
 /**
+ *
+  */
+#ifdef _MSC_VER
+#define DONT_EVALUATE(expression)                                    \
+   do {                                                                 \
+      TRUE ? (void)(0) : (void)((expression)); \
+   } while (FALSE)
+#else
+#define DONT_EVALUATE(expression)                                    \
+   do {                                                                 \
+      _Pragma("GCC diagnostic push") \
+      _Pragma("GCC diagnostic ignored \"-Wtautological-compare\"") \
+      _Pragma("GCC diagnostic ignored \"-Wunused\"") \
+      _Pragma("GCC diagnostic ignored \"-Wunused-value\"") \
+      TRUE ? (void)(0) : (void)((expression)); \
+      _Pragma("GCC diagnostic pop") \
+   } while (FALSE)
+#endif
+
+/**
   Macro that calls DebugAssert() if an expression evaluates to FALSE.
 
   If MDEPKG_NDEBUG is not defined and the DEBUG_PROPERTY_DEBUG_ASSERT_ENABLED
@@ -340,7 +393,10 @@ DebugPrintLevelEnabled (
       }                             \
     } while (FALSE)
 #else
-  #define ASSERT(Expression)
+  #define ASSERT(Expression)        \
+    do {                            \
+      DONT_EVALUATE(Expression);    \
+    } while (FALSE)
 #endif
 
 /**
@@ -363,7 +419,10 @@ DebugPrintLevelEnabled (
       }                            \
     } while (FALSE)
 #else
-  #define DEBUG(Expression)
+  #define DEBUG(Expression)        \
+    do {                           \
+      DONT_EVALUATE(Expression);    \
+    } while (FALSE)
 #endif
 
 /**
@@ -382,14 +441,17 @@ DebugPrintLevelEnabled (
   #define ASSERT_EFI_ERROR(StatusParameter)                                              \
     do {                                                                                 \
       if (DebugAssertEnabled ()) {                                                       \
-        if (EFI_ERROR (StatusParameter)) {                                               \
-          DEBUG ((EFI_D_ERROR, "\nASSERT_EFI_ERROR (Status = %r)\n", StatusParameter));  \
-          _ASSERT (!EFI_ERROR (StatusParameter));                                        \
+        if (EFI_ERROR(StatusParameter)) {                                               \
+          DEBUG ((EFI_D_ERROR, "\nASSERT_EFI_ERROR(Status = %r)\n", StatusParameter));  \
+          _ASSERT (!EFI_ERROR(StatusParameter));                                        \
         }                                                                                \
       }                                                                                  \
     } while (FALSE)
 #else
-  #define ASSERT_EFI_ERROR(StatusParameter)
+  #define ASSERT_EFI_ERROR(StatusParameter)    \
+    do {                                         \
+      DONT_EVALUATE(StatusParameter);    \
+    } while (FALSE)
 #endif
 
 /**
@@ -416,7 +478,10 @@ DebugPrintLevelEnabled (
       }                                                                 \
     } while (FALSE)
 #else
-  #define ASSERT_RETURN_ERROR(StatusParameter)
+  #define ASSERT_RETURN_ERROR(StatusParameter)   \
+    do {                                         \
+      DONT_EVALUATE(StatusParameter);    \
+    } while (FALSE)
 #endif
 
 /**
@@ -448,18 +513,22 @@ DebugPrintLevelEnabled (
         VOID  *Instance;                                                                \
         ASSERT (Guid != NULL);                                                          \
         if (Handle == NULL) {                                                           \
-          if (!EFI_ERROR (gBS->LocateProtocol ((EFI_GUID *)Guid, NULL, &Instance))) {   \
+          if (!EFI_ERROR(gBS->LocateProtocol ((EFI_GUID *)Guid, NULL, &Instance))) {   \
             _ASSERT (Guid already installed in database);                               \
           }                                                                             \
         } else {                                                                        \
-          if (!EFI_ERROR (gBS->HandleProtocol (Handle, (EFI_GUID *)Guid, &Instance))) { \
+          if (!EFI_ERROR(gBS->HandleProtocol (Handle, (EFI_GUID *)Guid, &Instance))) { \
             _ASSERT (Guid already installed on Handle);                                 \
           }                                                                             \
         }                                                                               \
       }                                                                                 \
     } while (FALSE)
 #else
-  #define ASSERT_PROTOCOL_ALREADY_INSTALLED(Handle, Guid)
+  #define ASSERT_PROTOCOL_ALREADY_INSTALLED(Handle, Guid)   \
+    do {                                                    \
+      DONT_EVALUATE(Handle);    \
+      DONT_EVALUATE(Guid);    \
+    } while (FALSE)
 #endif
 
 /**
@@ -483,7 +552,7 @@ DebugPrintLevelEnabled (
   are not included in a module.
 
 **/
-#define DEBUG_CODE_END()    __DebugCodeLocal = 0; __DebugCodeLocal++; } } while (FALSE)
+#define DEBUG_CODE_END()    __DebugCodeLocal = 0; __DebugCodeLocal++; (void)__DebugCodeLocal; } } while (FALSE)
 
 
 /**
@@ -517,6 +586,20 @@ DebugPrintLevelEnabled (
     }                                        \
   } while (FALSE)
 
+#define DEBUG_RAISE()                                                                                         \
+    do {                                                                                                      \
+      if ((PcdGet8 (PcdDebugRaisePropertyMask) & DEBUG_PROPERTY_DEBUG_PRINT_ENABLED) != 0) {                  \
+        DEBUG ((DEBUG_WARN, "DEBUG RAISE: Constraint violation in %a:%a:%u\n", __FILE__, __func__, __LINE__));\
+      }                                                                                                       \
+                                                                                                              \
+      if ((PcdGet8 (PcdDebugRaisePropertyMask) & DEBUG_PROPERTY_DEBUG_ASSERT_ENABLED) != 0) {                 \
+        ASSERT (FALSE);                                                                                       \
+      }                                                                                                       \
+                                                                                                              \
+      if ((PcdGet8 (PcdDebugRaisePropertyMask) & DEBUG_PROPERTY_ASSERT_BREAKPOINT_ENABLED) != 0) {            \
+        CpuBreakpoint ();                                                                                     \
+      }                                                                                                       \
+    } while (FALSE)
 
 /**
   Macro that calls DebugAssert() if the containing record does not have a

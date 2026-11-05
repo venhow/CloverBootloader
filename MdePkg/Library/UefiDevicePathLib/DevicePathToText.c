@@ -424,8 +424,8 @@ DevPathToTextAcpiEx (
 
   AcpiEx = DevPath;
   HIDStr = (CHAR8 *) (((UINT8 *) AcpiEx) + sizeof (ACPI_EXTENDED_HID_DEVICE_PATH));
-  UIDStr = HIDStr + AsciiStrLen (HIDStr) + 1;
-  CIDStr = UIDStr + AsciiStrLen (UIDStr) + 1;
+  UIDStr = HIDStr + AsciiStrLen(HIDStr) + 1;
+  CIDStr = UIDStr + AsciiStrLen(UIDStr) + 1;
 
   if (DisplayOnly) {
     if ((EISA_ID_TO_NUM (AcpiEx->HID) == 0x0A03) ||
@@ -970,7 +970,7 @@ DevPathToTextUsbWWID (
     //
     // In case no NULL terminator in SerialNumber, create a new one with NULL terminator
     //
-    NewStr = AllocateCopyPool ((Length + 1) * sizeof (CHAR16), SerialNumberStr);
+    NewStr = AllocateCopyPool((Length + 1) * sizeof (CHAR16), SerialNumberStr);
     ASSERT (NewStr != NULL);
     NewStr [Length] = 0;
     SerialNumberStr = NewStr;
@@ -1680,7 +1680,7 @@ DevPathToTextWiFi (
   WiFi = DevPath;
 
   SSId[32] = '\0';
-  CopyMem (SSId, WiFi->SSId, 32);
+  CopyMem(SSId, WiFi->SSId, 32);
 
   UefiDevicePathLibCatPrint (Str, L"Wi-Fi(%a)", SSId);
 }
@@ -1800,10 +1800,10 @@ DevPathToTextUri (
   UriStr = AllocatePool (UriLength + 1);
   ASSERT (UriStr != NULL);
 
-  CopyMem (UriStr, Uri->Uri, UriLength);
+  CopyMem(UriStr, Uri->Uri, UriLength);
   UriStr[UriLength] = '\0';
   UefiDevicePathLibCatPrint (Str, L"Uri(%a)", UriStr);
-  FreePool (UriStr);
+  FreePool(UriStr);
 }
 
 /**
@@ -2434,12 +2434,12 @@ UefiDevicePathLibConvertDevicePathToText (
       }
     }
 
-    AlignedNode = AllocateCopyPool (DevicePathNodeLength (Node), Node);
+    AlignedNode = AllocateCopyPool(DevicePathNodeLength (Node), Node);
     //
     // Print this node of the device path
     //
     ToText (&Str, AlignedNode, DisplayOnly, AllowShortcuts);
-    FreePool (AlignedNode);
+    FreePool(AlignedNode);
 
     //
     // Next device path node
@@ -2448,7 +2448,7 @@ UefiDevicePathLibConvertDevicePathToText (
   }
 
   if (Str.Str == NULL) {
-    return AllocateZeroPool (sizeof (CHAR16));
+    return AllocateZeroPool(sizeof (CHAR16));
   } else {
     return Str.Str;
   }

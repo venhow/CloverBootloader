@@ -65,7 +65,7 @@ EnumerateNvmeDevNamespace (
   UINT32                       Flbas;
   UINT32                       LbaFmtIdx;
 
-  NamespaceData = (NVME_ADMIN_NAMESPACE_DATA *) AllocateZeroPool (sizeof (NVME_ADMIN_NAMESPACE_DATA));
+  NamespaceData = (NVME_ADMIN_NAMESPACE_DATA *) AllocateZeroPool(sizeof (NVME_ADMIN_NAMESPACE_DATA));
   if (NamespaceData == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
@@ -78,7 +78,7 @@ EnumerateNvmeDevNamespace (
              NamespaceId,
              NamespaceData
              );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG ((DEBUG_ERROR, "%a: NvmeIdentifyNamespace fail, Status - %r\n", __FUNCTION__, Status));
     goto Exit;
   }
@@ -123,7 +123,7 @@ EnumerateNvmeDevNamespace (
 
 Exit:
   if (NamespaceData != NULL) {
-    FreePool (NamespaceData);
+    FreePool(NamespaceData);
   }
 
   return Status;
@@ -146,7 +146,7 @@ NvmeDiscoverNamespaces (
   UINT32    NamespaceId;
 
   Private->ActiveNamespaceNum = 0;
-  Private->NamespaceInfo      = AllocateZeroPool (Private->ControllerData->Nn * sizeof (PEI_NVME_NAMESPACE_INFO));
+  Private->NamespaceInfo      = AllocateZeroPool(Private->ControllerData->Nn * sizeof (PEI_NVME_NAMESPACE_INFO));
 
   //
   // According to Nvm Express 1.1 spec Figure 82, the field 'Nn' of the identify
@@ -227,7 +227,7 @@ NvmExpressPeimEntry (
   // Get the current boot mode.
   //
   Status = PeiServicesGetBootMode (&BootMode);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG ((DEBUG_ERROR, "%a: Fail to get the current boot mode.\n", __FUNCTION__));
     return Status;
   }
@@ -241,7 +241,7 @@ NvmExpressPeimEntry (
              NULL,
              (VOID **) &NvmeHcPpi
              );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG ((DEBUG_ERROR, "%a: Fail to locate NvmeHostControllerPpi.\n", __FUNCTION__));
     return EFI_UNSUPPORTED;
   }
@@ -257,7 +257,7 @@ NvmExpressPeimEntry (
     //
     // When status is error, meant no controller is found
     //
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       break;
     }
 
@@ -267,7 +267,7 @@ NvmExpressPeimEntry (
                           &DevicePathLength,
                           &DevicePath
                           );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       DEBUG ((
         DEBUG_ERROR, "%a: Fail to allocate get the device path for Controller %d.\n",
         __FUNCTION__, Controller
@@ -279,7 +279,7 @@ NvmExpressPeimEntry (
     // Check validity of the device path of the NVM Express controller.
     //
     Status = NvmeIsHcDevicePathValid (DevicePath, DevicePathLength);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       DEBUG ((
         DEBUG_ERROR, "%a: The device path is invalid for Controller %d.\n",
         __FUNCTION__, Controller
@@ -307,7 +307,7 @@ NvmExpressPeimEntry (
     //
     // Memory allocation for controller private data
     //
-    Private = AllocateZeroPool (sizeof (PEI_NVME_CONTROLLER_PRIVATE_DATA));
+    Private = AllocateZeroPool(sizeof (PEI_NVME_CONTROLLER_PRIVATE_DATA));
     if (Private == NULL) {
       DEBUG ((
         DEBUG_ERROR, "%a: Fail to allocate private data for Controller %d.\n",
@@ -325,7 +325,7 @@ NvmExpressPeimEntry (
                &DeviceAddress,
                &Private->BufferMapping
                );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       DEBUG ((
         DEBUG_ERROR, "%a: Fail to allocate DMA buffers for Controller %d.\n",
         __FUNCTION__, Controller
@@ -347,7 +347,7 @@ NvmExpressPeimEntry (
     // Initialize the NVME controller
     //
     Status = NvmeControllerInit (Private);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       DEBUG ((
         DEBUG_ERROR,
         "%a: Controller initialization fail for Controller %d with Status - %r.\n",
@@ -362,7 +362,7 @@ NvmExpressPeimEntry (
     // Enumerate the NVME namespaces on the controller
     //
     Status = NvmeDiscoverNamespaces (Private);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       //
       // No active namespace was found on the controller
       //
@@ -379,7 +379,7 @@ NvmExpressPeimEntry (
     Private->BlkIoPpi.GetNumberOfBlockDevices  = NvmeBlockIoPeimGetDeviceNo;
     Private->BlkIoPpi.GetBlockDeviceMediaInfo  = NvmeBlockIoPeimGetMediaInfo;
     Private->BlkIoPpi.ReadBlocks               = NvmeBlockIoPeimReadBlocks;
-    CopyMem (
+    CopyMem(
       &Private->BlkIoPpiList,
       &mNvmeBlkIoPpiListTemplate,
       sizeof (EFI_PEI_PPI_DESCRIPTOR)
@@ -390,7 +390,7 @@ NvmExpressPeimEntry (
     Private->BlkIo2Ppi.GetNumberOfBlockDevices = NvmeBlockIoPeimGetDeviceNo2;
     Private->BlkIo2Ppi.GetBlockDeviceMediaInfo = NvmeBlockIoPeimGetMediaInfo2;
     Private->BlkIo2Ppi.ReadBlocks              = NvmeBlockIoPeimReadBlocks2;
-    CopyMem (
+    CopyMem(
       &Private->BlkIo2PpiList,
       &mNvmeBlkIo2PpiListTemplate,
       sizeof (EFI_PEI_PPI_DESCRIPTOR)
@@ -410,7 +410,7 @@ NvmExpressPeimEntry (
     Private->NvmePassThruPpi.GetDevicePath      = NvmePassThruGetDevicePath;
     Private->NvmePassThruPpi.GetNextNameSpace   = NvmePassThruGetNextNameSpace;
     Private->NvmePassThruPpi.PassThru           = NvmePassThru;
-    CopyMem (
+    CopyMem(
       &Private->NvmePassThruPpiList,
       &mNvmePassThruPpiListTemplate,
       sizeof (EFI_PEI_PPI_DESCRIPTOR)
@@ -432,7 +432,7 @@ NvmExpressPeimEntry (
       Private->StorageSecurityPpi.GetDevicePath      = NvmeStorageSecurityGetDevicePath;
       Private->StorageSecurityPpi.ReceiveData        = NvmeStorageSecurityReceiveData;
       Private->StorageSecurityPpi.SendData           = NvmeStorageSecuritySendData;
-      CopyMem (
+      CopyMem(
         &Private->StorageSecurityPpiList,
         &mNvmeStorageSecurityPpiListTemplate,
         sizeof (EFI_PEI_PPI_DESCRIPTOR)
@@ -441,7 +441,7 @@ NvmExpressPeimEntry (
       PeiServicesInstallPpi (&Private->StorageSecurityPpiList);
     }
 
-    CopyMem (
+    CopyMem(
       &Private->EndOfPeiNotifyList,
       &mNvmeEndOfPeiNotifyListTemplate,
       sizeof (EFI_PEI_NOTIFY_DESCRIPTOR)

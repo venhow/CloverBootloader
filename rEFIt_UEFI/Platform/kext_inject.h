@@ -5,14 +5,19 @@ kext injection
 #ifndef __KEXT_INJECT_H__
 #define __KEXT_INJECT_H__
 
-#include "LoaderUefi.h"
-#include "device_tree.h"
+//#include <IndustryStardard/MachO-loader.h>
+//#include "LoaderUefi.h"
+//#include "device_tree.h"
+#include <UefiLoader.h>
 #include "kernel_patcher.h"
 
 ////////////////////
 // defines
 ////////////////////
 #define RoundPage(x)  ((((UINTN)(x)) + EFI_PAGE_SIZE - 1) & ~(EFI_PAGE_SIZE - 1))
+
+
+#define KERNEL_MAX_SIZE 80000000
 
 #define KEXT_SIGNATURE SIGNATURE_32('M','O','S','X')
 
@@ -78,20 +83,23 @@ typedef struct
 
 } FAT_ARCH;
 
-typedef struct
+class KEXT_ENTRY
 {
-	UINT32				Signature;
-	LIST_ENTRY			Link;
-	_DeviceTreeBuffer	kext;
-} KEXT_ENTRY;
+  public:
+    UINT32				Signature = 0;
+    _DeviceTreeBuffer	kext = _DeviceTreeBuffer();
+
+    KEXT_ENTRY() { }
+    KEXT_ENTRY(const KEXT_ENTRY& other) = default; // default is fine if there is only native type and objects that have copy ctor
+    KEXT_ENTRY& operator = ( const KEXT_ENTRY & ) = default; // default is fine if there is only native type and objects that have copy ctor
+    ~KEXT_ENTRY() {}
+
+};
 
 
 ////////////////////
 // functions
 ////////////////////
-EFI_STATUS LoadKexts(IN LOADER_ENTRY *Entry);
-EFI_STATUS InjectKexts(IN UINT32 deviceTreeP, IN UINT32* deviceTreeLength, LOADER_ENTRY *Entry);
-
-VOID EFIAPI KernelBooterExtensionsPatch(IN UINT8 *KernelData, LOADER_ENTRY *Entry);
+class LOADER_ENTRY;
 
 #endif

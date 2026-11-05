@@ -15,6 +15,7 @@
 [Defines]
   INF_VERSION                    = 0x00010017
   BASE_NAME                      = OpensslLib
+  MODULE_UNI_FILE                = OpensslLib.uni
   FILE_GUID                      = C873A7D0-9824-409f-9B42-2C158B992E69
   MODULE_TYPE                    = BASE
   VERSION_STRING                 = 1.0
@@ -22,11 +23,8 @@
 
 [Packages]
   MdePkg/MdePkg.dec
-  CloverPkg.dec
+  #CloverPkg.dec
 
 [Sources]
   OpensslLibNull.c
 
-[BuildOptions]
-  XCODE:*_*_*_CC_FLAGS = -Os -fno-lto -UUSING_LTO -DMDEPKG_NDEBUG
-  GCC:*_*_*_CC_FLAGS = -Os -DMDEPKG_NDEBUG

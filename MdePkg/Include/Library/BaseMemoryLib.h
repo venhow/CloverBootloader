@@ -32,7 +32,7 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 **/
 VOID *
 EFIAPI
-CopyMem (
+CopyMem(
   OUT VOID       *DestinationBuffer,
   IN CONST VOID  *SourceBuffer,
   IN UINTN       Length
@@ -54,7 +54,7 @@ CopyMem (
 **/
 VOID *
 EFIAPI
-SetMem (
+SetMem(
   OUT VOID  *Buffer,
   IN UINTN  Length,
   IN UINT8  Value
@@ -362,6 +362,7 @@ ScanMemN (
   IN UINTN       Value
   );
 
+#ifndef GUID_PLUSPLUS_DEFINED
 /**
   Copies a source GUID to a destination GUID.
 
@@ -406,6 +407,7 @@ CompareGuid (
   IN CONST GUID  *Guid1,
   IN CONST GUID  *Guid2
   );
+#endif
 
 /**
   Scans a target buffer for a GUID, and returns a pointer to the matching GUID

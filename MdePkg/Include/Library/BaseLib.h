@@ -2,8 +2,12 @@
   Provides string functions, linked list functions, math functions, synchronization
   functions, file path functions, and CPU architecture-specific functions.
 
-Copyright (c) 2006 - 2019, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2006 - 2021, Intel Corporation. All rights reserved.<BR>
 Portions copyright (c) 2008 - 2009, Apple Inc. All rights reserved.<BR>
+Copyright (c) Microsoft Corporation.<BR>
+Portions Copyright (c) 2020, Hewlett Packard Enterprise Development LP. All rights reserved.<BR>
+Portions Copyright (c) 2022, Loongson Technology Corporation Limited. All rights reserved.<BR>
+
 SPDX-License-Identifier: BSD-2-Clause-Patent
 
 **/
@@ -124,6 +128,53 @@ typedef struct {
 
 #endif  // defined (MDE_CPU_AARCH64)
 
+#if defined (MDE_CPU_RISCV64)
+///
+/// The RISC-V architecture context buffer used by SetJump() and LongJump().
+///
+typedef struct {
+  UINT64    RA;
+  UINT64    S0;
+  UINT64    S1;
+  UINT64    S2;
+  UINT64    S3;
+  UINT64    S4;
+  UINT64    S5;
+  UINT64    S6;
+  UINT64    S7;
+  UINT64    S8;
+  UINT64    S9;
+  UINT64    S10;
+  UINT64    S11;
+  UINT64    SP;
+} BASE_LIBRARY_JUMP_BUFFER;
+
+#define BASE_LIBRARY_JUMP_BUFFER_ALIGNMENT  8
+
+#endif // defined (MDE_CPU_RISCV64)
+
+#if defined (MDE_CPU_LOONGARCH64)
+///
+/// The LoongArch architecture context buffer used by SetJump() and LongJump()
+///
+typedef struct {
+  UINT64    S0;
+  UINT64    S1;
+  UINT64    S2;
+  UINT64    S3;
+  UINT64    S4;
+  UINT64    S5;
+  UINT64    S6;
+  UINT64    S7;
+  UINT64    S8;
+  UINT64    SP;
+  UINT64    FP;
+  UINT64    RA;
+} BASE_LIBRARY_JUMP_BUFFER;
+
+#define BASE_LIBRARY_JUMP_BUFFER_ALIGNMENT  8
+
+#endif // defined (MDE_CPU_LOONGARCH64)
 
 //
 // String Services
@@ -1609,6 +1660,7 @@ StrToIpv4Address (
 
 #define GUID_STRING_LENGTH  36
 
+#ifndef GUID_PLUSPLUS_DEFINED
 /**
   Convert a Null-terminated Unicode GUID string to a value of type
   EFI_GUID.
@@ -1659,6 +1711,7 @@ StrToGuid (
   IN  CONST CHAR16       *String,
   OUT GUID               *Guid
   );
+#endif
 
 /**
   Convert a Null-terminated Unicode hexadecimal string to a byte array.
@@ -1952,7 +2005,7 @@ AsciiStrnCpy (
 **/
 UINTN
 EFIAPI
-AsciiStrLen (
+AsciiStrLen(
   IN      CONST CHAR8               *String
   );
 
@@ -2009,7 +2062,7 @@ AsciiStrSize (
 **/
 INTN
 EFIAPI
-AsciiStrCmp (
+AsciiStrCmp(
   IN      CONST CHAR8               *FirstString,
   IN      CONST CHAR8               *SecondString
   );
@@ -2477,6 +2530,7 @@ AsciiStrToIpv4Address (
   OUT UINT8              *PrefixLength OPTIONAL
   );
 
+#ifndef GUID_PLUSPLUS_DEFINED
 /**
   Convert a Null-terminated ASCII GUID string to a value of type
   EFI_GUID.
@@ -2526,6 +2580,7 @@ AsciiStrToGuid (
   IN  CONST CHAR8        *String,
   OUT GUID               *Guid
   );
+#endif
 
 /**
   Convert a Null-terminated ASCII hexadecimal string to a byte array.
@@ -2590,7 +2645,7 @@ AsciiStrHexToBytes (
   string Destination, and returns Destination.  The function terminates the
   Unicode string Destination by appending a Null-terminator character at the end.
   The caller is responsible to make sure Destination points to a buffer with size
-  equal or greater than ((AsciiStrLen (Source) + 1) * sizeof (CHAR16)) in bytes.
+  equal or greater than ((AsciiStrLen(Source) + 1) * sizeof (CHAR16)) in bytes.
 
   If Destination is NULL, then ASSERT().
   If Destination is not aligned on a 16-bit boundary, then ASSERT().
@@ -2629,7 +2684,7 @@ AsciiStrToUnicodeStr (
   appending a Null-terminator character at the end.
 
   The caller is responsible to make sure Destination points to a buffer with size
-  equal or greater than ((AsciiStrLen (Source) + 1) * sizeof (CHAR16)) in bytes.
+  equal or greater than ((AsciiStrLen(Source) + 1) * sizeof (CHAR16)) in bytes.
 
   If Destination is not aligned on a 16-bit boundary, then ASSERT().
   If an error would be returned, then the function will also ASSERT().
@@ -2971,6 +3026,34 @@ PathCleanUpDirectories(
 
 **/
 #define INITIALIZE_LIST_HEAD_VARIABLE(ListHead)  {&(ListHead), &(ListHead)}
+
+
+/**
+  Iterates over each node in a doubly linked list using each node's forward link.
+
+  @param  Entry     A pointer to a list node used as a loop cursor during iteration
+  @param  ListHead  The head node of the doubly linked list
+
+**/
+#define BASE_LIST_FOR_EACH(Entry, ListHead)    \
+  for(Entry = (ListHead)->ForwardLink; Entry != (ListHead); Entry = Entry->ForwardLink)
+
+/**
+  Iterates over each node in a doubly linked list using each node's forward link
+  with safety against node removal.
+
+  This macro uses NextEntry to temporarily store the next list node so the node
+  pointed to by Entry may be deleted in the current loop iteration step and
+  iteration can continue from the node pointed to by NextEntry.
+
+  @param  Entry     A pointer to a list node used as a loop cursor during iteration
+  @param  NextEntry A pointer to a list node used to temporarily store the next node
+  @param  ListHead  The head node of the doubly linked list
+
+**/
+#define BASE_LIST_FOR_EACH_SAFE(Entry, NextEntry, ListHead)            \
+  for(Entry = (ListHead)->ForwardLink, NextEntry = Entry->ForwardLink;\
+      Entry != (ListHead); Entry = NextEntry, NextEntry = Entry->ForwardLink)
 
 
 /**
@@ -5010,6 +5093,40 @@ CalculateCrc32(
   IN  UINTN                        Length
   );
 
+/**
+   Calculates the CRC16-ANSI checksum of the given buffer.
+
+   @param[in]      Buffer        Pointer to the buffer.
+   @param[in]      Length        Length of the buffer, in bytes.
+   @param[in]      InitialValue  Initial value of the CRC.
+
+   @return The CRC16-ANSI checksum.
+**/
+UINT16
+EFIAPI
+CalculateCrc16Ansi (
+  IN  CONST VOID  *Buffer,
+  IN  UINTN       Length,
+  IN  UINT16      InitialValue
+  );
+
+/**
+   Calculates the CRC32c checksum of the given buffer.
+
+   @param[in]      Buffer        Pointer to the buffer.
+   @param[in]      Length        Length of the buffer, in bytes.
+   @param[in]      InitialValue  Initial value of the CRC.
+
+   @return The CRC32c checksum.
+**/
+UINT32
+EFIAPI
+CalculateCrc32c (
+  IN CONST VOID  *Buffer,
+  IN UINTN       Length,
+  IN UINT32      InitialValue
+  );
+
 //
 // Base Library CPU Functions
 //
@@ -5387,10 +5504,19 @@ typedef union {
     UINT32  OSXMMEXCPT:1;   ///< Operating System Support for
                             ///< Unmasked SIMD Floating Point
                             ///< Exceptions.
-    UINT32  Reserved_2:1;   ///< Reserved.
+    UINT32  UMIP:1;         ///< User-Mode Instruction Prevention.
     UINT32  LA57:1;         ///< Linear Address 57bit.
-    UINT32  VMXE:1;         ///< VMX Enable
-    UINT32  Reserved_1:18;  ///< Reserved.
+    UINT32  VMXE:1;         ///< VMX Enable.
+    UINT32  SMXE:1;         ///< SMX Enable.
+    UINT32  Reserved_3:1;   ///< Reserved.
+    UINT32  FSGSBASE:1;     ///< FSGSBASE Enable.
+    UINT32  PCIDE:1;        ///< PCID Enable.
+    UINT32  OSXSAVE:1;      ///< XSAVE and Processor Extended States Enable.
+    UINT32  Reserved_4:1;   ///< Reserved.
+    UINT32  SMEP:1;         ///< SMEP Enable.
+    UINT32  SMAP:1;         ///< SMAP Enable.
+    UINT32  PKE:1;          ///< Protection-Key Enable.
+    UINT32  Reserved_5:9;   ///< Reserved.
   } Bits;
   UINTN     UintN;
 } IA32_CR4;
@@ -7879,6 +8005,37 @@ EFIAPI
 AsmLfence (
   VOID
   );
+
+/**
+   Executes a XGETBV instruction
+
+   Executes a XGETBV instruction. This function is only available on IA-32 and
+   x64.
+
+   @param[in] Index        Extended control register index
+
+   @return                 The current value of the extended control register
+ **/
+ UINT64
+ EFIAPI
+ AsmXGetBv (
+   IN UINT32  Index
+   );
+
+
+ /**
+   Executes a VMGEXIT instruction (VMMCALL with a REP prefix)
+
+   Executes a VMGEXIT instruction. This function is only available on IA-32 and
+   x64.
+
+ **/
+ VOID
+ EFIAPI
+ AsmVmgExit (
+   VOID
+   );
+
 
 /**
   Patch the immediate operand of an IA32 or X64 instruction such that the byte,

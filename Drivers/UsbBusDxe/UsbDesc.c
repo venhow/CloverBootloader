@@ -2,14 +2,8 @@
 
     Manage Usb Descriptor List
 
-Copyright (c) 2007 - 2016, Intel Corporation. All rights reserved.<BR>
-This program and the accompanying materials
-are licensed and made available under the terms and conditions of the BSD License
-which accompanies this distribution.  The full text of the license may be found at
-http://opensource.org/licenses/bsd-license.php
-
-THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
-WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+Copyright (c) 2007 - 2018, Intel Corporation. All rights reserved.<BR>
+SPDX-License-Identifier: BSD-2-Clause-Patent
 
 **/
 
@@ -38,7 +32,7 @@ UsbFreeInterfaceDesc (
       Ep = Setting->Endpoints[Index];
 
       if (Ep != NULL) {
-        FreePool (Ep);
+        FreePool(Ep);
       }
     }
 
@@ -46,11 +40,11 @@ UsbFreeInterfaceDesc (
     // Only call FreePool() if NumEndpoints > 0.
     //
     if (Setting->Desc.NumEndpoints > 0) {
-      FreePool (Setting->Endpoints);
+      FreePool(Setting->Endpoints);
     }
   }
 
-  FreePool (Setting);
+  FreePool(Setting);
 }
 
 
@@ -90,13 +84,13 @@ UsbFreeConfigDesc (
         }
       }
 
-      FreePool (Interface);
+      FreePool(Interface);
     }
 
-    FreePool (Config->Interfaces);
+    FreePool(Config->Interfaces);
   }
 
-  FreePool (Config);
+  FreePool(Config);
 
 }
 
@@ -121,10 +115,10 @@ UsbFreeDevDesc (
       }
     }
 
-    FreePool (DevDesc->Configs);
+    FreePool(DevDesc->Configs);
   }
 
-  FreePool (DevDesc);
+  FreePool(DevDesc);
 }
 
 
@@ -177,6 +171,18 @@ UsbCreateDesc (
     DescLen = sizeof (EFI_USB_ENDPOINT_DESCRIPTOR);
     CtrlLen = sizeof (USB_ENDPOINT_DESC);
     break;
+
+  default:
+ //   ASSERT (FALSE);
+    return NULL;
+  }
+
+  //
+  // Total length is too small that cannot hold the single descriptor header plus data.
+  //
+  if (Len <= sizeof (USB_DESC_HEAD)) {
+    DEBUG ((DEBUG_ERROR, "UsbCreateDesc: met mal-format descriptor, total length = %d!\n", Len));
+    return NULL;
   }
 
   //
@@ -184,35 +190,55 @@ UsbCreateDesc (
   // format. Skip the descriptor that isn't of this Type
   //
   Offset = 0;
-  Head   = (USB_DESC_HEAD*)DescBuf;
+  Head   = (USB_DESC_HEAD *)DescBuf;
+  while (Offset < Len - sizeof (USB_DESC_HEAD)) {
+    //
+    // Above condition make sure Head->Len and Head->Type are safe to access
+    //
+    Head = (USB_DESC_HEAD *)&DescBuf[Offset];
 
-  while ((Offset < Len) && (Head->Type != Type)) {
-    Offset += Head->Len;
-    if (Len <= Offset) {
-      DEBUG (( EFI_D_ERROR, "UsbCreateDesc: met mal-format descriptor, Beyond boundary!\n"));
+    if (Head->Len == 0) {
+      DEBUG ((DEBUG_ERROR, "UsbCreateDesc: met mal-format descriptor, Head->Len = 0!\n"));
       return NULL;
     }
-    Head    = (USB_DESC_HEAD*)(DescBuf + Offset);
-    if (Head->Len == 0) {
-      DEBUG (( EFI_D_ERROR, "UsbCreateDesc: met mal-format descriptor, Head->Len = 0!\n"));
+
+    //
+    // Make sure no overflow when adding Head->Len to Offset.
+    //
+    if (Head->Len > MAX_UINTN - Offset) {
+      DEBUG ((DEBUG_ERROR, "UsbCreateDesc: met mal-format descriptor, Head->Len = %d!\n", Head->Len));
       return NULL;
+    }
+
+    Offset += Head->Len;
+
+    if (Head->Type == Type) {
+      break;
     }
   }
 
-  if ((Len <= Offset)      || (Len < Offset + Head->Len) ||
-      (Head->Type != Type) || (Head->Len < DescLen)) {
-    DEBUG (( EFI_D_ERROR, "UsbCreateDesc: met mal-format descriptor\n"));
+  //
+  // Head->Len is invalid resulting data beyond boundary, or
+  // Descriptor cannot be found: No such type.
+  //
+  if (Len < Offset) {
+    DEBUG ((DEBUG_ERROR, "UsbCreateDesc: met mal-format descriptor, Offset/Len = %d/%d!\n", Offset, Len));
     return NULL;
   }
 
-  Desc = AllocateZeroPool ((UINTN) CtrlLen);
+  if ((Head->Type != Type) || (Head->Len < DescLen)) {
+    DEBUG ((DEBUG_ERROR, "UsbCreateDesc: descriptor cannot be found, Header(T/L) = %d/%d!\n", Head->Type, Head->Len));
+    return NULL;
+  }
+
+  Desc = AllocateZeroPool((UINTN) CtrlLen);
   if (Desc == NULL) {
     return NULL;
   }
 
-  CopyMem (Desc, Head, (UINTN) DescLen);
+  CopyMem(Desc, Head, (UINTN) DescLen);
 
-  *Consumed = Offset + Head->Len;
+  *Consumed = Offset;
 
   return Desc;
 }
@@ -264,7 +290,7 @@ UsbParseInterfaceDesc (
     goto ON_EXIT;
   }
 
-  Setting->Endpoints  = AllocateZeroPool (sizeof (USB_ENDPOINT_DESC *) * NumEp);
+  Setting->Endpoints  = AllocateZeroPool(sizeof (USB_ENDPOINT_DESC *) * NumEp);
 
   if (Setting->Endpoints == NULL) {
     goto ON_ERROR;
@@ -330,7 +356,7 @@ UsbParseConfigDesc (
   // Initialize an array of setting for the configuration's interfaces.
   //
   NumIf               = Config->Desc.NumInterfaces;
-  Config->Interfaces  = AllocateZeroPool (sizeof (USB_INTERFACE_DESC *) * NumIf);
+  Config->Interfaces  = AllocateZeroPool(sizeof (USB_INTERFACE_DESC *) * NumIf);
 
   if (Config->Interfaces == NULL) {
     goto ON_ERROR;
@@ -340,7 +366,7 @@ UsbParseConfigDesc (
                 Config->Desc.ConfigurationValue, (UINT32)NumIf));
 
   for (Index = 0; Index < NumIf; Index++) {
-    Interface = AllocateZeroPool (sizeof (USB_INTERFACE_DESC));
+    Interface = AllocateZeroPool(sizeof (USB_INTERFACE_DESC));
 
     if (Interface == NULL) {
       goto ON_ERROR;
@@ -541,7 +567,7 @@ UsbGetMaxPacketSize0 (
   for (Index = 0; Index < 3; Index++) {
     Status = UsbCtrlGetDesc (UsbDev, USB_DESC_TYPE_DEVICE, 0, 0, &DevDesc, 8);
 
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       if ((DevDesc.BcdUSB >= 0x0300) && (DevDesc.MaxPacketSize0 == 9)) {
         UsbDev->MaxPacket0 = 1 << 9;
         return EFI_SUCCESS;
@@ -574,7 +600,7 @@ UsbGetDevDesc (
   USB_DEVICE_DESC         *DevDesc;
   EFI_STATUS              Status;
 
-  DevDesc = AllocateZeroPool (sizeof (USB_DEVICE_DESC));
+  DevDesc = AllocateZeroPool(sizeof (USB_DEVICE_DESC));
 
   if (DevDesc == NULL) {
     return EFI_OUT_OF_RESOURCES;
@@ -589,8 +615,8 @@ UsbGetDevDesc (
               sizeof (EFI_USB_DEVICE_DESCRIPTOR)
               );
 
-  if (EFI_ERROR (Status)) {
-    gBS->FreePool (DevDesc);
+  if (EFI_ERROR(Status)) {
+    gBS->FreePool(DevDesc);
   } else {
     UsbDev->DevDesc = DevDesc;
   }
@@ -627,11 +653,17 @@ UsbGetOneString (
   //
   Status = UsbCtrlGetDesc (UsbDev, USB_DESC_TYPE_STRING, Index, LangId, &Desc, 2);
 
-  if (EFI_ERROR (Status)) {
+  //
+  // Reject if Length even cannot cover itself, or odd because Unicode string byte length should be even.
+  //
+  if (EFI_ERROR(Status) ||
+      (Desc.Length < OFFSET_OF (EFI_USB_STRING_DESCRIPTOR, Length) + sizeof (Desc.Length)) ||
+      (Desc.Length % 2 != 0)
+    ) {
     return NULL;
   }
 
-  Buf = AllocateZeroPool (Desc.Length);
+  Buf = AllocateZeroPool(Desc.Length);
 
   if (Buf == NULL) {
     return NULL;
@@ -646,8 +678,8 @@ UsbGetOneString (
              Desc.Length
              );
 
-  if (EFI_ERROR (Status)) {
-    FreePool (Buf);
+  if (EFI_ERROR(Status)) {
+    FreePool(Buf);
     return NULL;
   }
 
@@ -702,7 +734,7 @@ UsbBuildLangTable (
   UsbDev->TotalLangId = (UINT16)Max;
 
 ON_EXIT:
-  gBS->FreePool (Desc);
+  gBS->FreePool(Desc);
   return Status;
 }
 
@@ -735,7 +767,7 @@ UsbGetOneConfig (
   //
   Status = UsbCtrlGetDesc (UsbDev, USB_DESC_TYPE_CONFIG, Index, 0, &Desc, 8);
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG (( EFI_D_ERROR, "UsbGetOneConfig: failed to get descript length(%d) %r\n",
                 Desc.TotalLength, Status));
 
@@ -744,7 +776,14 @@ UsbGetOneConfig (
 
   DEBUG (( EFI_D_INFO, "UsbGetOneConfig: total length is %d\n", Desc.TotalLength));
 
-  Buf = AllocateZeroPool (Desc.TotalLength);
+  //
+  // Reject if TotalLength even cannot cover itself.
+  //
+  if (Desc.TotalLength < OFFSET_OF (EFI_USB_CONFIG_DESCRIPTOR, TotalLength) + sizeof (Desc.TotalLength)) {
+    return NULL;
+  }
+
+  Buf = AllocateZeroPool(Desc.TotalLength);
 
   if (Buf == NULL) {
     return NULL;
@@ -752,10 +791,10 @@ UsbGetOneConfig (
 
   Status = UsbCtrlGetDesc (UsbDev, USB_DESC_TYPE_CONFIG, Index, 0, Buf, Desc.TotalLength);
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG (( EFI_D_ERROR, "UsbGetOneConfig: failed to get full descript %r\n", Status));
 
-    FreePool (Buf);
+    FreePool(Buf);
     return NULL;
   }
 
@@ -792,7 +831,7 @@ UsbBuildDescTable (
   //
   Status = UsbGetDevDesc (UsbDev);
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG (( EFI_D_ERROR, "UsbBuildDescTable: failed to get device descriptor - %r\n", Status));
     return Status;
   }
@@ -803,7 +842,7 @@ UsbBuildDescTable (
     return EFI_DEVICE_ERROR;
   }
 
-  DevDesc->Configs = AllocateZeroPool (NumConfig * sizeof (USB_CONFIG_DESC *));
+  DevDesc->Configs = AllocateZeroPool(NumConfig * sizeof (USB_CONFIG_DESC *));
   if (DevDesc->Configs == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
@@ -832,7 +871,7 @@ UsbBuildDescTable (
 
     ConfigDesc = UsbParseConfigDesc ((UINT8 *) Config, Config->TotalLength);
 
-    FreePool (Config);
+    FreePool(Config);
 
     if (ConfigDesc == NULL) {
       DEBUG (( EFI_D_ERROR, "UsbBuildDescTable: failed to parse configure (index %d)\n", Index));
@@ -857,7 +896,7 @@ UsbBuildDescTable (
   //
   Status = UsbBuildLangTable (UsbDev);
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG (( EFI_D_INFO, "UsbBuildDescTable: get language ID table %r\n", Status));
   }
 

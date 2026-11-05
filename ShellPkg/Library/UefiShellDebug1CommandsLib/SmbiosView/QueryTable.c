@@ -49,6 +49,10 @@ TABLE_ITEM  SystemWakeupTypeTable[] = {
   },
   {
     0x7,
+    L" PCI Pme"
+  },
+  {
+    0x8,
     L" AC Power Restored"
   }
 };
@@ -579,7 +583,72 @@ TABLE_ITEM  ProcessorUpgradeTable[] = {
   {
     0x38,
     L"Socket SP3r2"
-  }
+  },
+  {
+    0x39,
+    L"Socket LGA2066"
+  },
+  {
+    0x3A,
+    L"Socket BGA1392"
+  },
+  {
+    0x3B,
+    L"Socket BGA1510"
+  },
+  {
+    0x3C,
+    L"Socket BGA1528"
+  },
+  {
+    0x3D,
+    L"Socket LGA4189"
+  },
+  {
+    0x3E,
+    L"Socket LGA1200"
+  },
+  {
+    0x3F,
+    L"Socket LGA4677"
+  },
+  {
+    0x3C,
+    L"Socket BGA1528"
+  },
+  {
+    0x3D,
+    L"Socket LGA4189"
+  },
+  {
+    0x3E,
+    L"Socket LGA1200"
+  },
+  {
+    0x3F,
+    L"Socket LGA4677"
+  },
+  {
+    0x40,
+    L"Socket LGA1700"
+  },
+  {
+    0x45,
+    L"Socket LGA1211"
+  },
+  {
+    0x46,
+    L"Socket LGA2422"
+  },
+  {
+    0x47,
+    L"Socket LGA5773"
+  },
+  {
+    0x49,
+    L"Socket AM5"
+  },
+
 };
 
 TABLE_ITEM  ProcessorCharacteristicsTable[] = {
@@ -610,6 +679,10 @@ TABLE_ITEM  ProcessorCharacteristicsTable[] = {
   {
     7,
     L" Power/Performance Control"
+  },
+  {
+    8,
+    L" 128 bit Capable"
   }
 };
 
@@ -1597,6 +1670,30 @@ TABLE_ITEM  SystemSlotLengthTable[] = {
   },
 };
 
+TABLE_ITEM  SystemSlotHeightTable[] = {
+  {
+    0x00,
+    L" Not applicable"
+  },
+  {
+    0x01,
+    L" Other"
+  },
+  {
+    0x02,
+    L" Unkown"
+  },
+  {
+    0x03,
+    L" Full height"
+  },
+  {
+    0x04,
+    L" Low-Profile"
+  },
+};
+
+
 TABLE_ITEM  SlotCharacteristics1Table[] = {
   {
     0,
@@ -1647,6 +1744,98 @@ TABLE_ITEM  SlotCharacteristics2Table[] = {
     L" PCI slot supports SMBus signal"
   }
 };
+
+TABLE_ITEM  SystemSlotPhysicalWidthTable[] = {
+  {
+    0x01,
+    L" Other"
+  },
+  {
+    0x02,
+    L" Unknown"
+  },
+  {
+    0x03,
+    L" 8 bit"
+  },
+  {
+    0x04,
+    L" 16 bit"
+  },
+  {
+    0x05,
+    L" 32 bit"
+  },
+  {
+    0x06,
+    L" 64 bit"
+  },
+  {
+    0x07,
+    L" 128 bit"
+  },
+  {
+    0x08,
+    L" 1x or x1"
+  },
+  {
+    0x09,
+    L" 2x or x2"
+  },
+  {
+    0x0A,
+    L" 4x or x4"
+  },
+  {
+    0x0B,
+    L" 8x or x8"
+  },
+  {
+    0x0C,
+    L" 12x or x12"
+  },
+  {
+    0x0D,
+    L" 16x or x16"
+  },
+  {
+    0x0E,
+    L" 32x or x32"
+  }
+};
+
+
+TABLE_ITEM  SystemSlotInformationTable[] = {
+  {
+    0x00,
+    L" Others"
+  },
+  {
+    0x01,
+    L" Gen 1"
+  },
+  {
+    0x02,
+    L" Gen 2"
+  },
+  {
+    0x03,
+    L" Gen 3"
+  },
+  {
+    0x04,
+    L" Gen 4"
+  },
+  {
+    0x05,
+    L" Gen 5"
+  },
+  {
+    0x06,
+    L" Gen 6"
+  }
+};
+
 
 TABLE_ITEM  OnboardDeviceTypesTable[] = {
   {
@@ -2466,9 +2655,29 @@ TABLE_ITEM  MemoryDeviceTypeTable[] = {
     L"  LPDDR3"
   },
   {
-    0x1E,
-    L"  LPDDR4"
-  }
+     0x1E,
+     L"  LPDDR4"
+   },
+   {
+       0x1F,
+       L"  NON-VOLATILE"
+    },
+    {
+       0x20,
+       L"  HBM"
+    },
+    {
+       0x21,
+       L"  HBM2"
+    },
+    {
+       0x22,
+       L"  DDR5"
+    },
+    {
+       0x23,
+       L"  LPDDR5"
+    }
 };
 
 TABLE_ITEM  MemoryDeviceTypeDetailTable[] = {
@@ -2527,6 +2736,10 @@ TABLE_ITEM  MemoryDeviceTypeDetailTable[] = {
   {
     14,
     L" Unbuffered(Unregistered)"
+  },
+  {
+    15,
+    L"LrDIMM"
   }
 };
 
@@ -3896,6 +4109,8 @@ DisplayPortType (
   PRINT_TABLE_ITEM (PortTypeTable, Type);
 }
 
+
+
 /**
   Display System Slots (Type 9) slot type.
 
@@ -3997,6 +4212,56 @@ DisplaySlotCharacteristics2 (
   PRINT_INFO_OPTION (Chara2, Option);
   PRINT_BITS_INFO (SlotCharacteristics2Table, Chara2);
 }
+
+/**
+  Display System Slots (Type 9) Information.
+  @param[in] Width      The key of the structure.
+  @param[in] Option     The optional information.
+**/
+VOID
+DisplaySystemSlotInformation (
+  IN UINT8  Width,
+  IN UINT8  Option
+  )
+{
+  ShellPrintHiiEx (-1, -1, NULL, STRING_TOKEN (STR_SMBIOSVIEW_QUERYTABLE_SYSTEM_SLOT_INFORMATION), gShellDebug1HiiHandle);
+  PRINT_INFO_OPTION (Width, Option);
+  PRINT_TABLE_ITEM (SystemSlotInformationTable, Width);
+}
+
+/**
+  Display System Slots (Type 9) Physical Width.
+  @param[in] Width      The key of the structure.
+  @param[in] Option     The optional information.
+**/
+VOID
+DisplaySystemSlotPhysicalWidth (
+  IN UINT8  Width,
+  IN UINT8  Option
+  )
+{
+  ShellPrintHiiEx (-1, -1, NULL, STRING_TOKEN (STR_SMBIOSVIEW_QUERYTABLE_SYSTEM_SLOT_PHYSICAL_WIDTH), gShellDebug1HiiHandle);
+  PRINT_INFO_OPTION (Width, Option);
+  PRINT_TABLE_ITEM (SystemSlotPhysicalWidthTable, Width);
+}
+
+/**
+  Display System Slots (Type 9) slot height.
+  @param[in] Length     The key of the structure.
+  @param[in] Option     The optional information.
+**/
+VOID
+DisplaySystemSlotHeight (
+  IN UINT8  Length,
+  IN UINT8  Option
+  )
+{
+  ShellPrintHiiEx (-1, -1, NULL, STRING_TOKEN (STR_SMBIOSVIEW_QUERYTABLE_SYSTEM_SLOT_HEIGHT), gShellDebug1HiiHandle);
+  PRINT_INFO_OPTION (Length, Option);
+  PRINT_TABLE_ITEM (SystemSlotHeightTable, Length);
+}
+
+
 
 /**
   Display On Board Devices Information (Type 10) types.

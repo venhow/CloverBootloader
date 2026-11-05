@@ -11,9 +11,11 @@
   Set of Search & replace bytes for VideoBiosPatchBytes().
 **/
 typedef struct _VBIOS_PATCH_BYTES {
-  VOID    *Find;
-  VOID    *Replace;
+  JCONST VOID    *Find;
+  JCONST VOID    *Replace;
   UINTN   NumberOfBytes;
+  
+
 } VBIOS_PATCH_BYTES;
 
 
@@ -58,7 +60,7 @@ VideoBiosLock (
 EFI_STATUS
 EFIAPI
 VideoBiosPatchBytes (
-  IN  VBIOS_PATCH_BYTES   *FindAndReplace,
+  IN  JCONST VBIOS_PATCH_BYTES   *FindAndReplace,
   IN  UINTN               FindAndReplaceCount
   );
 

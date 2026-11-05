@@ -56,8 +56,8 @@ CreateStatement (
   Statement->QuestionReferToBitField = FALSE;
 
   StatementHdr = (EFI_IFR_STATEMENT_HEADER *) (OpCodeData + sizeof (EFI_IFR_OP_HEADER));
-  CopyMem (&Statement->Prompt, &StatementHdr->Prompt, sizeof (EFI_STRING_ID));
-  CopyMem (&Statement->Help, &StatementHdr->Help, sizeof (EFI_STRING_ID));
+  CopyMem(&Statement->Prompt, &StatementHdr->Prompt, sizeof (EFI_STRING_ID));
+  CopyMem(&Statement->Help, &StatementHdr->Help, sizeof (EFI_STRING_ID));
 
   ConditionalExprCount = GetConditionalExpressionCount(ExpressStatement);
   if (ConditionalExprCount > 0) {
@@ -70,7 +70,7 @@ CreateStatement (
     ASSERT (Statement->Expression != NULL);
     Statement->Expression->Count     = (UINTN) ConditionalExprCount;
     Statement->Expression->Signature = FORM_EXPRESSION_LIST_SIGNATURE;
-    CopyMem (Statement->Expression->Expression, GetConditionalExpressionList(ExpressStatement), (UINTN) (sizeof (FORM_EXPRESSION *) * ConditionalExprCount));
+    CopyMem(Statement->Expression->Expression, GetConditionalExpressionList(ExpressStatement), (UINTN) (sizeof (FORM_EXPRESSION *) * ConditionalExprCount));
   }
 
   //
@@ -114,9 +114,9 @@ CreateQuestion (
   }
 
   QuestionHdr = (EFI_IFR_QUESTION_HEADER *) (OpCodeData + sizeof (EFI_IFR_OP_HEADER));
-  CopyMem (&Statement->QuestionId, &QuestionHdr->QuestionId, sizeof (EFI_QUESTION_ID));
-  CopyMem (&Statement->VarStoreId, &QuestionHdr->VarStoreId, sizeof (EFI_VARSTORE_ID));
-  CopyMem (&Statement->VarStoreInfo.VarOffset, &QuestionHdr->VarStoreInfo.VarOffset, sizeof (UINT16));
+  CopyMem(&Statement->QuestionId, &QuestionHdr->QuestionId, sizeof (EFI_QUESTION_ID));
+  CopyMem(&Statement->VarStoreId, &QuestionHdr->VarStoreId, sizeof (EFI_VARSTORE_ID));
+  CopyMem(&Statement->VarStoreInfo.VarOffset, &QuestionHdr->VarStoreInfo.VarOffset, sizeof (UINT16));
 
   Statement->QuestionFlags = QuestionHdr->Flags;
 
@@ -174,14 +174,14 @@ CreateQuestion (
         //
         // Insert to Name/Value varstore list
         //
-        NameValueNode = AllocateZeroPool (sizeof (NAME_VALUE_NODE));
+        NameValueNode = AllocateZeroPool(sizeof (NAME_VALUE_NODE));
         ASSERT (NameValueNode != NULL);
         NameValueNode->Signature = NAME_VALUE_NODE_SIGNATURE;
-        NameValueNode->Name = AllocateCopyPool (StrSize (Statement->VariableName), Statement->VariableName);
+        NameValueNode->Name = AllocateCopyPool(StrSize (Statement->VariableName), Statement->VariableName);
         ASSERT (NameValueNode->Name != NULL);
-        NameValueNode->Value = AllocateZeroPool (0x10);
+        NameValueNode->Value = AllocateZeroPool(0x10);
         ASSERT (NameValueNode->Value != NULL);
-        NameValueNode->EditValue = AllocateZeroPool (0x10);
+        NameValueNode->EditValue = AllocateZeroPool(0x10);
         ASSERT (NameValueNode->EditValue != NULL);
 
         InsertTailList (&Statement->Storage->NameValueListHead, &NameValueNode->Link);
@@ -210,7 +210,7 @@ CreateExpression (
 {
   FORM_EXPRESSION  *Expression;
 
-  Expression = AllocateZeroPool (sizeof (FORM_EXPRESSION));
+  Expression = AllocateZeroPool(sizeof (FORM_EXPRESSION));
   ASSERT (Expression != NULL);
   Expression->Signature = FORM_EXPRESSION_SIGNATURE;
   InitializeListHead (&Expression->OpCodeListHead);
@@ -332,27 +332,27 @@ IntializeBrowserStorage (
 {
   switch (StorageType) {
     case EFI_HII_VARSTORE_BUFFER:
-      CopyMem (&BrowserStorage->Guid, &((EFI_IFR_VARSTORE *) OpCodeData)->Guid, sizeof (EFI_GUID));
-      CopyMem (&BrowserStorage->Size, &((EFI_IFR_VARSTORE *) OpCodeData)->Size, sizeof (UINT16));
+      CopyMem(&BrowserStorage->Guid, &((EFI_IFR_VARSTORE *) OpCodeData)->Guid, sizeof (EFI_GUID));
+      CopyMem(&BrowserStorage->Size, &((EFI_IFR_VARSTORE *) OpCodeData)->Size, sizeof (UINT16));
 
-      BrowserStorage->Buffer     = AllocateZeroPool (BrowserStorage->Size);
-      BrowserStorage->EditBuffer = AllocateZeroPool (BrowserStorage->Size);
+      BrowserStorage->Buffer     = AllocateZeroPool(BrowserStorage->Size);
+      BrowserStorage->EditBuffer = AllocateZeroPool(BrowserStorage->Size);
       break;
 
     case EFI_HII_VARSTORE_EFI_VARIABLE:
     case EFI_HII_VARSTORE_EFI_VARIABLE_BUFFER:
-      CopyMem (&BrowserStorage->Guid,       &((EFI_IFR_VARSTORE_EFI *) OpCodeData)->Guid,       sizeof (EFI_GUID));
-      CopyMem (&BrowserStorage->Attributes, &((EFI_IFR_VARSTORE_EFI *) OpCodeData)->Attributes, sizeof (UINT32));
-      CopyMem (&BrowserStorage->Size,       &((EFI_IFR_VARSTORE_EFI *) OpCodeData)->Size,       sizeof (UINT16));
+      CopyMem(&BrowserStorage->Guid,       &((EFI_IFR_VARSTORE_EFI *) OpCodeData)->Guid,       sizeof (EFI_GUID));
+      CopyMem(&BrowserStorage->Attributes, &((EFI_IFR_VARSTORE_EFI *) OpCodeData)->Attributes, sizeof (UINT32));
+      CopyMem(&BrowserStorage->Size,       &((EFI_IFR_VARSTORE_EFI *) OpCodeData)->Size,       sizeof (UINT16));
 
       if (StorageType ==  EFI_HII_VARSTORE_EFI_VARIABLE_BUFFER) {
-        BrowserStorage->Buffer     = AllocateZeroPool (BrowserStorage->Size);
-        BrowserStorage->EditBuffer = AllocateZeroPool (BrowserStorage->Size);
+        BrowserStorage->Buffer     = AllocateZeroPool(BrowserStorage->Size);
+        BrowserStorage->EditBuffer = AllocateZeroPool(BrowserStorage->Size);
       }
       break;
 
     case EFI_HII_VARSTORE_NAME_VALUE:
-      CopyMem (&BrowserStorage->Guid, &((EFI_IFR_VARSTORE_NAME_VALUE *) OpCodeData)->Guid, sizeof (EFI_GUID));
+      CopyMem(&BrowserStorage->Guid, &((EFI_IFR_VARSTORE_NAME_VALUE *) OpCodeData)->Guid, sizeof (EFI_GUID));
 
       InitializeListHead (&BrowserStorage->NameValueListHead);
       break;
@@ -410,21 +410,21 @@ CreateStorage (
   if (StorageType != EFI_HII_VARSTORE_NAME_VALUE) {
     ASSERT (StorageName != NULL);
 
-    UnicodeString = AllocateZeroPool (AsciiStrSize (StorageName) * 2);
+    UnicodeString = AllocateZeroPool(AsciiStrSize (StorageName) * 2);
     ASSERT (UnicodeString != NULL);
     for (Index = 0; StorageName[Index] != 0; Index++) {
       UnicodeString[Index] = (CHAR16) StorageName[Index];
     }
   }
 
-  Storage = AllocateZeroPool (sizeof (FORMSET_STORAGE));
+  Storage = AllocateZeroPool(sizeof (FORMSET_STORAGE));
   ASSERT (Storage != NULL);
   Storage->Signature = FORMSET_STORAGE_SIGNATURE;
   InsertTailList (&FormSet->StorageListHead, &Storage->Link);
 
   BrowserStorage = FindStorageInList(StorageType, StorageGuid, UnicodeString, FormSet->HiiHandle);
   if (BrowserStorage == NULL) {
-    BrowserStorage = AllocateZeroPool (sizeof (BROWSER_STORAGE));
+    BrowserStorage = AllocateZeroPool(sizeof (BROWSER_STORAGE));
     ASSERT (BrowserStorage != NULL);
 
     BrowserStorage->Signature = BROWSER_STORAGE_SIGNATURE;
@@ -443,7 +443,7 @@ CreateStorage (
 
   Storage->BrowserStorage = BrowserStorage;
   InitializeConfigHdr (FormSet, Storage);
-  Storage->ConfigRequest = AllocateCopyPool (StrSize (Storage->ConfigHdr), Storage->ConfigHdr);
+  Storage->ConfigRequest = AllocateCopyPool(StrSize (Storage->ConfigHdr), Storage->ConfigHdr);
   Storage->SpareStrLen = 0;
 
   return Storage;
@@ -594,7 +594,7 @@ InitializeRequestElement (
                Question->StorageWidth
                );
     HiiToLower(RequestElement);
-    Question->BlockName = AllocateCopyPool ((StrLen + 1) * sizeof (CHAR16), RequestElement);
+    Question->BlockName = AllocateCopyPool((StrLen + 1) * sizeof (CHAR16), RequestElement);
   } else {
     StrLen = UnicodeSPrint (RequestElement, 30 * sizeof (CHAR16), L"&%s", Question->VariableName);
   }
@@ -623,11 +623,11 @@ InitializeRequestElement (
     // Old String buffer is not sufficient for RequestElement, allocate a new one
     //
     MaxLen = StringSize / sizeof (CHAR16) + CONFIG_REQUEST_STRING_INCREMENTAL;
-    NewStr = AllocateZeroPool (MaxLen * sizeof (CHAR16));
+    NewStr = AllocateZeroPool(MaxLen * sizeof (CHAR16));
     ASSERT (NewStr != NULL);
     if (FormsetStorage->ConfigRequest != NULL) {
-      CopyMem (NewStr, FormsetStorage->ConfigRequest, StringSize);
-      FreePool (FormsetStorage->ConfigRequest);
+      CopyMem(NewStr, FormsetStorage->ConfigRequest, StringSize);
+      FreePool(FormsetStorage->ConfigRequest);
     }
     FormsetStorage->ConfigRequest = NewStr;
     FormsetStorage->SpareStrLen   = CONFIG_REQUEST_STRING_INCREMENTAL;
@@ -658,7 +658,7 @@ InitializeRequestElement (
     ConfigInfo = AllocateZeroPool(sizeof (FORM_BROWSER_CONFIG_REQUEST));
     ASSERT (ConfigInfo != NULL);
     ConfigInfo->Signature     = FORM_BROWSER_CONFIG_REQUEST_SIGNATURE;
-    ConfigInfo->ConfigRequest = AllocateCopyPool (StrSize (FormsetStorage->ConfigHdr), FormsetStorage->ConfigHdr);
+    ConfigInfo->ConfigRequest = AllocateCopyPool(StrSize (FormsetStorage->ConfigHdr), FormsetStorage->ConfigHdr);
     ASSERT (ConfigInfo->ConfigRequest != NULL);
     ConfigInfo->SpareStrLen   = 0;
     ConfigInfo->Storage       = FormsetStorage->BrowserStorage;
@@ -675,11 +675,11 @@ InitializeRequestElement (
     // Old String buffer is not sufficient for RequestElement, allocate a new one
     //
     MaxLen = StringSize / sizeof (CHAR16) + CONFIG_REQUEST_STRING_INCREMENTAL;
-    NewStr = AllocateZeroPool (MaxLen * sizeof (CHAR16));
+    NewStr = AllocateZeroPool(MaxLen * sizeof (CHAR16));
     ASSERT (NewStr != NULL);
     if (ConfigInfo->ConfigRequest != NULL) {
-      CopyMem (NewStr, ConfigInfo->ConfigRequest, StringSize);
-      FreePool (ConfigInfo->ConfigRequest);
+      CopyMem(NewStr, ConfigInfo->ConfigRequest, StringSize);
+      FreePool(ConfigInfo->ConfigRequest);
     }
     ConfigInfo->ConfigRequest = NewStr;
     ConfigInfo->SpareStrLen   = CONFIG_REQUEST_STRING_INCREMENTAL;
@@ -714,11 +714,11 @@ DestroyExpression (
     RemoveEntryList (&OpCode->Link);
 
     if (OpCode->ValueList != NULL) {
-      FreePool (OpCode->ValueList);
+      FreePool(OpCode->ValueList);
     }
 
     if (OpCode->ValueName != NULL) {
-      FreePool (OpCode->ValueName);
+      FreePool(OpCode->ValueName);
     }
 
     if (OpCode->MapExpressionList.ForwardLink != NULL) {
@@ -734,7 +734,7 @@ DestroyExpression (
   //
   // Free this Expression
   //
-  FreePool (Expression);
+  FreePool(Expression);
 }
 
 /**
@@ -753,10 +753,10 @@ DestroyStorage (
   }
 
   if (Storage->ConfigRequest != NULL) {
-    FreePool (Storage->ConfigRequest);
+    FreePool(Storage->ConfigRequest);
   }
 
-  FreePool (Storage);
+  FreePool(Storage);
 }
 
 
@@ -787,9 +787,9 @@ DestroyStatement (
     RemoveEntryList (&Default->Link);
 
     if (Default->Value.Buffer != NULL) {
-      FreePool (Default->Value.Buffer);
+      FreePool(Default->Value.Buffer);
     }
-    FreePool (Default);
+    FreePool(Default);
   }
 
   //
@@ -799,11 +799,11 @@ DestroyStatement (
     Link = GetFirstNode (&Statement->OptionListHead);
     Option = QUESTION_OPTION_FROM_LINK (Link);
     if (Option->SuppressExpression != NULL) {
-      FreePool (Option->SuppressExpression);
+      FreePool(Option->SuppressExpression);
     }
     RemoveEntryList (&Option->Link);
 
-    FreePool (Option);
+    FreePool(Option);
   }
 
   //
@@ -840,17 +840,17 @@ DestroyStatement (
   }
 
   if (Statement->Expression != NULL) {
-    FreePool (Statement->Expression);
+    FreePool(Statement->Expression);
   }
 
   if (Statement->VariableName != NULL) {
-    FreePool (Statement->VariableName);
+    FreePool(Statement->VariableName);
   }
   if (Statement->BlockName != NULL) {
-    FreePool (Statement->BlockName);
+    FreePool(Statement->BlockName);
   }
   if (Statement->BufferValue != NULL) {
-    FreePool (Statement->BufferValue);
+    FreePool(Statement->BufferValue);
   }
   if (Statement->Operand == EFI_IFR_STRING_OP || Statement->Operand == EFI_IFR_PASSWORD_OP) {
     DeleteString(Statement->HiiValue.Value.string, FormSet->HiiHandle);
@@ -906,12 +906,12 @@ DestroyForm (
     ConfigInfo = FORM_BROWSER_CONFIG_REQUEST_FROM_LINK (Link);
     RemoveEntryList (&ConfigInfo->Link);
 
-    FreePool (ConfigInfo->ConfigRequest);
-    FreePool (ConfigInfo);
+    FreePool(ConfigInfo->ConfigRequest);
+    FreePool(ConfigInfo);
   }
 
   if (Form->SuppressExpression != NULL) {
-    FreePool (Form->SuppressExpression);
+    FreePool(Form->SuppressExpression);
   }
 
   UiFreeMenuList (&Form->FormViewListHead);
@@ -919,7 +919,7 @@ DestroyForm (
   //
   // Free this Form
   //
-  FreePool (Form);
+  FreePool(Form);
 }
 
 
@@ -944,14 +944,14 @@ DestroyFormSet (
     //
     // Uninitialized FormSet
     //
-    FreePool (FormSet);
+    FreePool(FormSet);
     return;
   }
 
   //
   // Free IFR binary buffer
   //
-  FreePool (FormSet->IfrBinaryData);
+  FreePool(FormSet->IfrBinaryData);
 
   //
   // Free FormSet Storage
@@ -975,7 +975,7 @@ DestroyFormSet (
       DefaultStore = FORMSET_DEFAULTSTORE_FROM_LINK (Link);
       RemoveEntryList (&DefaultStore->Link);
 
-      FreePool (DefaultStore);
+      FreePool(DefaultStore);
     }
   }
 
@@ -1004,13 +1004,13 @@ DestroyFormSet (
   }
 
   if (FormSet->StatementBuffer != NULL) {
-    FreePool (FormSet->StatementBuffer);
+    FreePool(FormSet->StatementBuffer);
   }
   if (FormSet->ExpressionBuffer != NULL) {
-    FreePool (FormSet->ExpressionBuffer);
+    FreePool(FormSet->ExpressionBuffer);
   }
 
-  FreePool (FormSet);
+  FreePool(FormSet);
 }
 
 
@@ -1224,13 +1224,13 @@ ParseOpCodes (
 
   mStatementIndex = 0;
   mUsedQuestionId = 1;
-  FormSet->StatementBuffer = AllocateZeroPool (NumberOfStatement * sizeof (FORM_BROWSER_STATEMENT));
+  FormSet->StatementBuffer = AllocateZeroPool(NumberOfStatement * sizeof (FORM_BROWSER_STATEMENT));
   if (FormSet->StatementBuffer == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
 
   mExpressionOpCodeIndex = 0;
-  FormSet->ExpressionBuffer = AllocateZeroPool (NumberOfExpression * sizeof (EXPRESSION_OPCODE));
+  FormSet->ExpressionBuffer = AllocateZeroPool(NumberOfExpression * sizeof (EXPRESSION_OPCODE));
   if (FormSet->ExpressionBuffer == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
@@ -1300,7 +1300,7 @@ ParseOpCodes (
         DepthOfDisable++;
       } else if (Operand == EFI_IFR_END_OP) {
         Status = PopScope (&ScopeOpCode);
-        if (EFI_ERROR (Status)) {
+        if (EFI_ERROR(Status)) {
           return Status;
         }
 
@@ -1326,21 +1326,21 @@ ParseOpCodes (
 
       switch (Operand) {
       case EFI_IFR_EQ_ID_VAL_OP:
-        CopyMem (&ExpressionOpCode->QuestionId, &((EFI_IFR_EQ_ID_VAL *) OpCodeData)->QuestionId, sizeof (EFI_QUESTION_ID));
+        CopyMem(&ExpressionOpCode->QuestionId, &((EFI_IFR_EQ_ID_VAL *) OpCodeData)->QuestionId, sizeof (EFI_QUESTION_ID));
 
         Value->Type = EFI_IFR_TYPE_NUM_SIZE_16;
-        CopyMem (&Value->Value.u16, &((EFI_IFR_EQ_ID_VAL *) OpCodeData)->Value, sizeof (UINT16));
+        CopyMem(&Value->Value.u16, &((EFI_IFR_EQ_ID_VAL *) OpCodeData)->Value, sizeof (UINT16));
         break;
 
       case EFI_IFR_EQ_ID_ID_OP:
-        CopyMem (&ExpressionOpCode->QuestionId, &((EFI_IFR_EQ_ID_ID *) OpCodeData)->QuestionId1, sizeof (EFI_QUESTION_ID));
-        CopyMem (&ExpressionOpCode->QuestionId2, &((EFI_IFR_EQ_ID_ID *) OpCodeData)->QuestionId2, sizeof (EFI_QUESTION_ID));
+        CopyMem(&ExpressionOpCode->QuestionId, &((EFI_IFR_EQ_ID_ID *) OpCodeData)->QuestionId1, sizeof (EFI_QUESTION_ID));
+        CopyMem(&ExpressionOpCode->QuestionId2, &((EFI_IFR_EQ_ID_ID *) OpCodeData)->QuestionId2, sizeof (EFI_QUESTION_ID));
         break;
 
       case EFI_IFR_EQ_ID_VAL_LIST_OP:
-        CopyMem (&ExpressionOpCode->QuestionId, &((EFI_IFR_EQ_ID_VAL_LIST *) OpCodeData)->QuestionId, sizeof (EFI_QUESTION_ID));
-        CopyMem (&ExpressionOpCode->ListLength, &((EFI_IFR_EQ_ID_VAL_LIST *) OpCodeData)->ListLength, sizeof (UINT16));
-        ExpressionOpCode->ValueList = AllocateCopyPool (ExpressionOpCode->ListLength * sizeof (UINT16), &((EFI_IFR_EQ_ID_VAL_LIST *) OpCodeData)->ValueList);
+        CopyMem(&ExpressionOpCode->QuestionId, &((EFI_IFR_EQ_ID_VAL_LIST *) OpCodeData)->QuestionId, sizeof (EFI_QUESTION_ID));
+        CopyMem(&ExpressionOpCode->ListLength, &((EFI_IFR_EQ_ID_VAL_LIST *) OpCodeData)->ListLength, sizeof (UINT16));
+        ExpressionOpCode->ValueList = AllocateCopyPool(ExpressionOpCode->ListLength * sizeof (UINT16), &((EFI_IFR_EQ_ID_VAL_LIST *) OpCodeData)->ValueList);
         break;
 
       case EFI_IFR_TO_STRING_OP:
@@ -1350,7 +1350,7 @@ ParseOpCodes (
 
       case EFI_IFR_STRING_REF1_OP:
         Value->Type = EFI_IFR_TYPE_STRING;
-        CopyMem (&Value->Value.string, &(( EFI_IFR_STRING_REF1 *) OpCodeData)->StringId, sizeof (EFI_STRING_ID));
+        CopyMem(&Value->Value.string, &(( EFI_IFR_STRING_REF1 *) OpCodeData)->StringId, sizeof (EFI_STRING_ID));
         break;
 
       case EFI_IFR_RULE_REF_OP:
@@ -1367,16 +1367,16 @@ ParseOpCodes (
         break;
 
       case EFI_IFR_SECURITY_OP:
-        CopyMem (&ExpressionOpCode->Guid, &((EFI_IFR_SECURITY *) OpCodeData)->Permissions, sizeof (EFI_GUID));
+        CopyMem(&ExpressionOpCode->Guid, &((EFI_IFR_SECURITY *) OpCodeData)->Permissions, sizeof (EFI_GUID));
         break;
 
       case EFI_IFR_MATCH2_OP:
-        CopyMem (&ExpressionOpCode->Guid, &((EFI_IFR_MATCH2 *) OpCodeData)->SyntaxType, sizeof (EFI_GUID));
+        CopyMem(&ExpressionOpCode->Guid, &((EFI_IFR_MATCH2 *) OpCodeData)->SyntaxType, sizeof (EFI_GUID));
         break;
 
       case EFI_IFR_GET_OP:
       case EFI_IFR_SET_OP:
-        CopyMem (&TempVarstoreId, &((EFI_IFR_GET *) OpCodeData)->VarStoreId, sizeof (TempVarstoreId));
+        CopyMem(&TempVarstoreId, &((EFI_IFR_GET *) OpCodeData)->VarStoreId, sizeof (TempVarstoreId));
         if (TempVarstoreId != 0) {
           if (FormSet->StorageListHead.ForwardLink != NULL) {
             Link = GetFirstNode (&FormSet->StorageListHead);
@@ -1438,8 +1438,8 @@ ParseOpCodes (
           //
           return EFI_INVALID_PARAMETER;
         }
-        CopyMem (&ExpressionOpCode->VarStoreInfo.VarName,   &((EFI_IFR_GET *) OpCodeData)->VarStoreInfo.VarName,   sizeof (EFI_STRING_ID));
-        CopyMem (&ExpressionOpCode->VarStoreInfo.VarOffset, &((EFI_IFR_GET *) OpCodeData)->VarStoreInfo.VarOffset, sizeof (UINT16));
+        CopyMem(&ExpressionOpCode->VarStoreInfo.VarName,   &((EFI_IFR_GET *) OpCodeData)->VarStoreInfo.VarName,   sizeof (EFI_STRING_ID));
+        CopyMem(&ExpressionOpCode->VarStoreInfo.VarOffset, &((EFI_IFR_GET *) OpCodeData)->VarStoreInfo.VarOffset, sizeof (UINT16));
         if ((ExpressionOpCode->VarStorage != NULL) &&
             (ExpressionOpCode->VarStorage->Type == EFI_HII_VARSTORE_NAME_VALUE ||
              ExpressionOpCode->VarStorage->Type == EFI_HII_VARSTORE_EFI_VARIABLE)) {
@@ -1454,15 +1454,15 @@ ParseOpCodes (
         break;
 
       case EFI_IFR_QUESTION_REF1_OP:
-        CopyMem (&ExpressionOpCode->QuestionId, &((EFI_IFR_EQ_ID_VAL_LIST *) OpCodeData)->QuestionId, sizeof (EFI_QUESTION_ID));
+        CopyMem(&ExpressionOpCode->QuestionId, &((EFI_IFR_EQ_ID_VAL_LIST *) OpCodeData)->QuestionId, sizeof (EFI_QUESTION_ID));
         break;
 
       case EFI_IFR_QUESTION_REF3_OP:
         if (OpCodeLength >= sizeof (EFI_IFR_QUESTION_REF3_2)) {
-          CopyMem (&ExpressionOpCode->DevicePath, &(( EFI_IFR_QUESTION_REF3_2 *) OpCodeData)->DevicePath, sizeof (EFI_STRING_ID));
+          CopyMem(&ExpressionOpCode->DevicePath, &(( EFI_IFR_QUESTION_REF3_2 *) OpCodeData)->DevicePath, sizeof (EFI_STRING_ID));
 
           if (OpCodeLength >= sizeof (EFI_IFR_QUESTION_REF3_3)) {
-            CopyMem (&ExpressionOpCode->Guid, &(( EFI_IFR_QUESTION_REF3_3 *) OpCodeData)->Guid, sizeof (EFI_GUID));
+            CopyMem(&ExpressionOpCode->Guid, &(( EFI_IFR_QUESTION_REF3_3 *) OpCodeData)->Guid, sizeof (EFI_GUID));
           }
         }
         break;
@@ -1502,17 +1502,17 @@ ParseOpCodes (
 
       case EFI_IFR_UINT16_OP:
         Value->Type = EFI_IFR_TYPE_NUM_SIZE_16;
-        CopyMem (&Value->Value.u16, &(( EFI_IFR_UINT16 *) OpCodeData)->Value, sizeof (UINT16));
+        CopyMem(&Value->Value.u16, &(( EFI_IFR_UINT16 *) OpCodeData)->Value, sizeof (UINT16));
         break;
 
       case EFI_IFR_UINT32_OP:
         Value->Type = EFI_IFR_TYPE_NUM_SIZE_32;
-        CopyMem (&Value->Value.u32, &(( EFI_IFR_UINT32 *) OpCodeData)->Value, sizeof (UINT32));
+        CopyMem(&Value->Value.u32, &(( EFI_IFR_UINT32 *) OpCodeData)->Value, sizeof (UINT32));
         break;
 
       case EFI_IFR_UINT64_OP:
         Value->Type = EFI_IFR_TYPE_NUM_SIZE_64;
-        CopyMem (&Value->Value.u64, &(( EFI_IFR_UINT64 *) OpCodeData)->Value, sizeof (UINT64));
+        CopyMem(&Value->Value.u64, &(( EFI_IFR_UINT64 *) OpCodeData)->Value, sizeof (UINT64));
         break;
 
       case EFI_IFR_UNDEFINED_OP:
@@ -1571,7 +1571,7 @@ ParseOpCodes (
           // This is DisableIf expression for Form, it should be a constant expression
           //
           Status = EvaluateExpression (FormSet, CurrentForm, CurrentExpression);
-          if (EFI_ERROR (Status)) {
+          if (EFI_ERROR(Status)) {
             return Status;
           }
 
@@ -1597,8 +1597,8 @@ ParseOpCodes (
         return EFI_INVALID_PARAMETER;
       }
 
-      CopyMem (&FormSet->FormSetTitle, &((EFI_IFR_FORM_SET *) OpCodeData)->FormSetTitle, sizeof (EFI_STRING_ID));
-      CopyMem (&FormSet->Help,         &((EFI_IFR_FORM_SET *) OpCodeData)->Help,         sizeof (EFI_STRING_ID));
+      CopyMem(&FormSet->FormSetTitle, &((EFI_IFR_FORM_SET *) OpCodeData)->FormSetTitle, sizeof (EFI_STRING_ID));
+      CopyMem(&FormSet->Help,         &((EFI_IFR_FORM_SET *) OpCodeData)->Help,         sizeof (EFI_STRING_ID));
       FormSet->OpCode = (EFI_IFR_OP_HEADER *) OpCodeData;//save the opcode address of formset
 
       if (OpCodeLength > OFFSET_OF (EFI_IFR_FORM_SET, Flags)) {
@@ -1606,7 +1606,7 @@ ParseOpCodes (
         // The formset OpCode contains ClassGuid
         //
         FormSet->NumberOfClassGuid = (UINT8) (((EFI_IFR_FORM_SET *) OpCodeData)->Flags & 0x3);
-        CopyMem (FormSet->ClassGuid, OpCodeData + sizeof (EFI_IFR_FORM_SET), FormSet->NumberOfClassGuid * sizeof (EFI_GUID));
+        CopyMem(FormSet->ClassGuid, OpCodeData + sizeof (EFI_IFR_FORM_SET), FormSet->NumberOfClassGuid * sizeof (EFI_GUID));
       }
       break;
 
@@ -1614,7 +1614,7 @@ ParseOpCodes (
       //
       // Create a new Form for this FormSet
       //
-      CurrentForm = AllocateZeroPool (sizeof (FORM_BROWSER_FORM));
+      CurrentForm = AllocateZeroPool(sizeof (FORM_BROWSER_FORM));
       ASSERT (CurrentForm != NULL);
       CurrentForm->Signature = FORM_BROWSER_FORM_SIGNATURE;
       InitializeListHead (&CurrentForm->ExpressionListHead);
@@ -1623,8 +1623,8 @@ ParseOpCodes (
       InitializeListHead (&CurrentForm->FormViewListHead);
 
       CurrentForm->FormType = STANDARD_MAP_FORM_TYPE;
-      CopyMem (&CurrentForm->FormId,    &((EFI_IFR_FORM *) OpCodeData)->FormId,    sizeof (UINT16));
-      CopyMem (&CurrentForm->FormTitle, &((EFI_IFR_FORM *) OpCodeData)->FormTitle, sizeof (EFI_STRING_ID));
+      CopyMem(&CurrentForm->FormId,    &((EFI_IFR_FORM *) OpCodeData)->FormId,    sizeof (UINT16));
+      CopyMem(&CurrentForm->FormTitle, &((EFI_IFR_FORM *) OpCodeData)->FormTitle, sizeof (EFI_STRING_ID));
 
       ConditionalExprCount = GetConditionalExpressionCount(ExpressForm);
       if ( ConditionalExprCount > 0) {
@@ -1636,7 +1636,7 @@ ParseOpCodes (
         ASSERT (CurrentForm->SuppressExpression != NULL);
         CurrentForm->SuppressExpression->Count     = (UINTN) ConditionalExprCount;
         CurrentForm->SuppressExpression->Signature = FORM_EXPRESSION_LIST_SIGNATURE;
-        CopyMem (CurrentForm->SuppressExpression->Expression, GetConditionalExpressionList(ExpressForm), (UINTN) (sizeof (FORM_EXPRESSION *) * ConditionalExprCount));
+        CopyMem(CurrentForm->SuppressExpression->Expression, GetConditionalExpressionList(ExpressForm), (UINTN) (sizeof (FORM_EXPRESSION *) * ConditionalExprCount));
       }
 
       if (Scope != 0) {
@@ -1656,7 +1656,7 @@ ParseOpCodes (
       //
       // Create a new Form for this FormSet
       //
-      CurrentForm = AllocateZeroPool (sizeof (FORM_BROWSER_FORM));
+      CurrentForm = AllocateZeroPool(sizeof (FORM_BROWSER_FORM));
       ASSERT (CurrentForm != NULL);
       CurrentForm->Signature = FORM_BROWSER_FORM_SIGNATURE;
       InitializeListHead (&CurrentForm->ExpressionListHead);
@@ -1664,7 +1664,7 @@ ParseOpCodes (
       InitializeListHead (&CurrentForm->ConfigRequestHead);
       InitializeListHead (&CurrentForm->FormViewListHead);
 
-      CopyMem (&CurrentForm->FormId, &((EFI_IFR_FORM *) OpCodeData)->FormId, sizeof (UINT16));
+      CopyMem(&CurrentForm->FormId, &((EFI_IFR_FORM *) OpCodeData)->FormId, sizeof (UINT16));
 
       MapMethod = (EFI_IFR_FORM_MAP_METHOD *) (OpCodeData + sizeof (EFI_IFR_FORM_MAP));
       //
@@ -1678,7 +1678,7 @@ ParseOpCodes (
       //
       while (((UINTN) (UINT8 *) MapMethod - (UINTN) OpCodeData) < ((EFI_IFR_OP_HEADER *) OpCodeData)->Length) {
         if (CompareGuid ((EFI_GUID *) (VOID *) &MapMethod->MethodIdentifier, &gEfiHiiStandardFormGuid)) {
-          CopyMem (&CurrentForm->FormTitle, &MapMethod->MethodTitle, sizeof (EFI_STRING_ID));
+          CopyMem(&CurrentForm->FormTitle, &MapMethod->MethodTitle, sizeof (EFI_STRING_ID));
           CurrentForm->FormType = STANDARD_MAP_FORM_TYPE;
           break;
         }
@@ -1689,7 +1689,7 @@ ParseOpCodes (
       //
       if (CurrentForm->FormTitle == 0) {
         MapMethod = (EFI_IFR_FORM_MAP_METHOD *) (OpCodeData + sizeof (EFI_IFR_FORM_MAP));
-        CopyMem (&CurrentForm->FormTitle, &MapMethod->MethodTitle, sizeof (EFI_STRING_ID));
+        CopyMem(&CurrentForm->FormTitle, &MapMethod->MethodTitle, sizeof (EFI_STRING_ID));
       }
 
       ConditionalExprCount = GetConditionalExpressionCount(ExpressForm);
@@ -1702,7 +1702,7 @@ ParseOpCodes (
         ASSERT (CurrentForm->SuppressExpression != NULL);
         CurrentForm->SuppressExpression->Count     = (UINTN) ConditionalExprCount;
         CurrentForm->SuppressExpression->Signature = FORM_EXPRESSION_LIST_SIGNATURE;
-        CopyMem (CurrentForm->SuppressExpression->Expression, GetConditionalExpressionList(ExpressForm), (UINTN) (sizeof (FORM_EXPRESSION *) * ConditionalExprCount));
+        CopyMem(CurrentForm->SuppressExpression->Expression, GetConditionalExpressionList(ExpressForm), (UINTN) (sizeof (FORM_EXPRESSION *) * ConditionalExprCount));
       }
 
       if (Scope != 0) {
@@ -1726,7 +1726,7 @@ ParseOpCodes (
       // Create a buffer Storage for this FormSet
       //
       Storage = CreateStorage (FormSet, EFI_HII_VARSTORE_BUFFER, OpCodeData);
-      CopyMem (&Storage->VarStoreId, &((EFI_IFR_VARSTORE *) OpCodeData)->VarStoreId, sizeof (EFI_VARSTORE_ID));
+      CopyMem(&Storage->VarStoreId, &((EFI_IFR_VARSTORE *) OpCodeData)->VarStoreId, sizeof (EFI_VARSTORE_ID));
       break;
 
     case EFI_IFR_VARSTORE_NAME_VALUE_OP:
@@ -1734,7 +1734,7 @@ ParseOpCodes (
       // Create a name/value Storage for this FormSet
       //
       Storage = CreateStorage (FormSet, EFI_HII_VARSTORE_NAME_VALUE, OpCodeData);
-      CopyMem (&Storage->VarStoreId, &((EFI_IFR_VARSTORE_NAME_VALUE *) OpCodeData)->VarStoreId, sizeof (EFI_VARSTORE_ID));
+      CopyMem(&Storage->VarStoreId, &((EFI_IFR_VARSTORE_NAME_VALUE *) OpCodeData)->VarStoreId, sizeof (EFI_VARSTORE_ID));
       break;
 
     case EFI_IFR_VARSTORE_EFI_OP:
@@ -1752,7 +1752,7 @@ ParseOpCodes (
         //
         Storage = CreateStorage (FormSet, EFI_HII_VARSTORE_EFI_VARIABLE_BUFFER, OpCodeData);
       }
-      CopyMem (&Storage->VarStoreId, &((EFI_IFR_VARSTORE_EFI *) OpCodeData)->VarStoreId, sizeof (EFI_VARSTORE_ID));
+      CopyMem(&Storage->VarStoreId, &((EFI_IFR_VARSTORE_EFI *) OpCodeData)->VarStoreId, sizeof (EFI_VARSTORE_ID));
       break;
 
     //
@@ -1760,12 +1760,12 @@ ParseOpCodes (
     //
     case EFI_IFR_DEFAULTSTORE_OP:
       HaveInserted = FALSE;
-      DefaultStore = AllocateZeroPool (sizeof (FORMSET_DEFAULTSTORE));
+      DefaultStore = AllocateZeroPool(sizeof (FORMSET_DEFAULTSTORE));
       ASSERT (DefaultStore != NULL);
       DefaultStore->Signature = FORMSET_DEFAULTSTORE_SIGNATURE;
 
-      CopyMem (&DefaultStore->DefaultId,   &((EFI_IFR_DEFAULTSTORE *) OpCodeData)->DefaultId,   sizeof (UINT16));
-      CopyMem (&DefaultStore->DefaultName, &((EFI_IFR_DEFAULTSTORE *) OpCodeData)->DefaultName, sizeof (EFI_STRING_ID));
+      CopyMem(&DefaultStore->DefaultId,   &((EFI_IFR_DEFAULTSTORE *) OpCodeData)->DefaultId,   sizeof (UINT16));
+      CopyMem(&DefaultStore->DefaultName, &((EFI_IFR_DEFAULTSTORE *) OpCodeData)->DefaultName, sizeof (EFI_STRING_ID));
       //
       // Insert it to the DefaultStore list of this Formset with ascending order.
       //
@@ -1801,14 +1801,14 @@ ParseOpCodes (
       CurrentStatement = CreateStatement (OpCodeData, FormSet, CurrentForm);
       ASSERT (CurrentStatement != NULL);
       CurrentStatement->FakeQuestionId = mUsedQuestionId++;
-      CopyMem (&CurrentStatement->TextTwo, &((EFI_IFR_TEXT *) OpCodeData)->TextTwo, sizeof (EFI_STRING_ID));
+      CopyMem(&CurrentStatement->TextTwo, &((EFI_IFR_TEXT *) OpCodeData)->TextTwo, sizeof (EFI_STRING_ID));
       break;
 
     case EFI_IFR_RESET_BUTTON_OP:
       CurrentStatement = CreateStatement (OpCodeData, FormSet, CurrentForm);
       ASSERT (CurrentStatement != NULL);
       CurrentStatement->FakeQuestionId = mUsedQuestionId++;
-      CopyMem (&CurrentStatement->DefaultId, &((EFI_IFR_RESET_BUTTON *) OpCodeData)->DefaultId, sizeof (EFI_DEFAULT_ID));
+      CopyMem(&CurrentStatement->DefaultId, &((EFI_IFR_RESET_BUTTON *) OpCodeData)->DefaultId, sizeof (EFI_DEFAULT_ID));
       break;
 
     //
@@ -1825,7 +1825,7 @@ ParseOpCodes (
         //
         CurrentStatement->QuestionConfig = 0;
       } else {
-        CopyMem (&CurrentStatement->QuestionConfig, &((EFI_IFR_ACTION *) OpCodeData)->QuestionConfig, sizeof (EFI_STRING_ID));
+        CopyMem(&CurrentStatement->QuestionConfig, &((EFI_IFR_ACTION *) OpCodeData)->QuestionConfig, sizeof (EFI_STRING_ID));
       }
       break;
 
@@ -1835,16 +1835,16 @@ ParseOpCodes (
       Value = &CurrentStatement->HiiValue;
       Value->Type = EFI_IFR_TYPE_REF;
       if (OpCodeLength >= sizeof (EFI_IFR_REF)) {
-        CopyMem (&Value->Value.ref.FormId, &((EFI_IFR_REF *) OpCodeData)->FormId, sizeof (EFI_FORM_ID));
+        CopyMem(&Value->Value.ref.FormId, &((EFI_IFR_REF *) OpCodeData)->FormId, sizeof (EFI_FORM_ID));
 
         if (OpCodeLength >= sizeof (EFI_IFR_REF2)) {
-          CopyMem (&Value->Value.ref.QuestionId, &((EFI_IFR_REF2 *) OpCodeData)->QuestionId, sizeof (EFI_QUESTION_ID));
+          CopyMem(&Value->Value.ref.QuestionId, &((EFI_IFR_REF2 *) OpCodeData)->QuestionId, sizeof (EFI_QUESTION_ID));
 
           if (OpCodeLength >= sizeof (EFI_IFR_REF3)) {
-            CopyMem (&Value->Value.ref.FormSetGuid, &((EFI_IFR_REF3 *) OpCodeData)->FormSetId, sizeof (EFI_GUID));
+            CopyMem(&Value->Value.ref.FormSetGuid, &((EFI_IFR_REF3 *) OpCodeData)->FormSetId, sizeof (EFI_GUID));
 
             if (OpCodeLength >= sizeof (EFI_IFR_REF4)) {
-              CopyMem (&Value->Value.ref.DevicePath, &((EFI_IFR_REF4 *) OpCodeData)->DevicePath, sizeof (EFI_STRING_ID));
+              CopyMem(&Value->Value.ref.DevicePath, &((EFI_IFR_REF4 *) OpCodeData)->DevicePath, sizeof (EFI_STRING_ID));
             }
           }
         }
@@ -1922,25 +1922,25 @@ ParseOpCodes (
           break;
 
         case EFI_IFR_NUMERIC_SIZE_2:
-          CopyMem (&CurrentStatement->Minimum, &((EFI_IFR_NUMERIC *) OpCodeData)->data.u16.MinValue, sizeof (UINT16));
-          CopyMem (&CurrentStatement->Maximum, &((EFI_IFR_NUMERIC *) OpCodeData)->data.u16.MaxValue, sizeof (UINT16));
-          CopyMem (&CurrentStatement->Step,    &((EFI_IFR_NUMERIC *) OpCodeData)->data.u16.Step,     sizeof (UINT16));
+          CopyMem(&CurrentStatement->Minimum, &((EFI_IFR_NUMERIC *) OpCodeData)->data.u16.MinValue, sizeof (UINT16));
+          CopyMem(&CurrentStatement->Maximum, &((EFI_IFR_NUMERIC *) OpCodeData)->data.u16.MaxValue, sizeof (UINT16));
+          CopyMem(&CurrentStatement->Step,    &((EFI_IFR_NUMERIC *) OpCodeData)->data.u16.Step,     sizeof (UINT16));
           CurrentStatement->StorageWidth = (UINT16) sizeof (UINT16);
           Value->Type = EFI_IFR_TYPE_NUM_SIZE_16;
           break;
 
         case EFI_IFR_NUMERIC_SIZE_4:
-          CopyMem (&CurrentStatement->Minimum, &((EFI_IFR_NUMERIC *) OpCodeData)->data.u32.MinValue, sizeof (UINT32));
-          CopyMem (&CurrentStatement->Maximum, &((EFI_IFR_NUMERIC *) OpCodeData)->data.u32.MaxValue, sizeof (UINT32));
-          CopyMem (&CurrentStatement->Step,    &((EFI_IFR_NUMERIC *) OpCodeData)->data.u32.Step,     sizeof (UINT32));
+          CopyMem(&CurrentStatement->Minimum, &((EFI_IFR_NUMERIC *) OpCodeData)->data.u32.MinValue, sizeof (UINT32));
+          CopyMem(&CurrentStatement->Maximum, &((EFI_IFR_NUMERIC *) OpCodeData)->data.u32.MaxValue, sizeof (UINT32));
+          CopyMem(&CurrentStatement->Step,    &((EFI_IFR_NUMERIC *) OpCodeData)->data.u32.Step,     sizeof (UINT32));
           CurrentStatement->StorageWidth = (UINT16) sizeof (UINT32);
           Value->Type = EFI_IFR_TYPE_NUM_SIZE_32;
           break;
 
         case EFI_IFR_NUMERIC_SIZE_8:
-          CopyMem (&CurrentStatement->Minimum, &((EFI_IFR_NUMERIC *) OpCodeData)->data.u64.MinValue, sizeof (UINT64));
-          CopyMem (&CurrentStatement->Maximum, &((EFI_IFR_NUMERIC *) OpCodeData)->data.u64.MaxValue, sizeof (UINT64));
-          CopyMem (&CurrentStatement->Step,    &((EFI_IFR_NUMERIC *) OpCodeData)->data.u64.Step,     sizeof (UINT64));
+          CopyMem(&CurrentStatement->Minimum, &((EFI_IFR_NUMERIC *) OpCodeData)->data.u64.MinValue, sizeof (UINT64));
+          CopyMem(&CurrentStatement->Maximum, &((EFI_IFR_NUMERIC *) OpCodeData)->data.u64.MaxValue, sizeof (UINT64));
+          CopyMem(&CurrentStatement->Step,    &((EFI_IFR_NUMERIC *) OpCodeData)->data.u64.Step,     sizeof (UINT64));
           CurrentStatement->StorageWidth = (UINT16) sizeof (UINT64);
           Value->Type = EFI_IFR_TYPE_NUM_SIZE_64;
           break;
@@ -2009,7 +2009,7 @@ ParseOpCodes (
       CurrentStatement->Flags = ((EFI_IFR_STRING *) OpCodeData)->Flags;
 
       CurrentStatement->HiiValue.Type = EFI_IFR_TYPE_STRING;
-      CurrentStatement->BufferValue = AllocateZeroPool (CurrentStatement->StorageWidth + sizeof (CHAR16));
+      CurrentStatement->BufferValue = AllocateZeroPool(CurrentStatement->StorageWidth + sizeof (CHAR16));
       CurrentStatement->HiiValue.Value.string = NewString ((CHAR16*) CurrentStatement->BufferValue, FormSet->HiiHandle);
 
       InitializeRequestElement (FormSet, CurrentStatement, CurrentForm);
@@ -2023,12 +2023,12 @@ ParseOpCodes (
       // MaxSize is the maximum number of characters that can be accepted for this opcode.
       // The characters are stored as Unicode, so the storage width should multiply 2.
       //
-      CopyMem (&CurrentStatement->Minimum, &((EFI_IFR_PASSWORD *) OpCodeData)->MinSize, sizeof (UINT16));
-      CopyMem (&CurrentStatement->Maximum, &((EFI_IFR_PASSWORD *) OpCodeData)->MaxSize, sizeof (UINT16));
+      CopyMem(&CurrentStatement->Minimum, &((EFI_IFR_PASSWORD *) OpCodeData)->MinSize, sizeof (UINT16));
+      CopyMem(&CurrentStatement->Maximum, &((EFI_IFR_PASSWORD *) OpCodeData)->MaxSize, sizeof (UINT16));
       CurrentStatement->StorageWidth = (UINT16)((UINTN) CurrentStatement->Maximum * sizeof (CHAR16));
 
       CurrentStatement->HiiValue.Type = EFI_IFR_TYPE_STRING;
-      CurrentStatement->BufferValue = AllocateZeroPool ((CurrentStatement->StorageWidth + sizeof (CHAR16)));
+      CurrentStatement->BufferValue = AllocateZeroPool((CurrentStatement->StorageWidth + sizeof (CHAR16)));
       CurrentStatement->HiiValue.Value.string = NewString ((CHAR16*) CurrentStatement->BufferValue, FormSet->HiiHandle);
 
       InitializeRequestElement (FormSet, CurrentStatement, CurrentForm);
@@ -2083,18 +2083,18 @@ ParseOpCodes (
       // It creates a default value for the current question.
       // A Question may have more than one Default value which have different default types.
       //
-      CurrentDefault = AllocateZeroPool (sizeof (QUESTION_DEFAULT));
+      CurrentDefault = AllocateZeroPool(sizeof (QUESTION_DEFAULT));
       ASSERT (CurrentDefault != NULL);
       CurrentDefault->Signature = QUESTION_DEFAULT_SIGNATURE;
 
       CurrentDefault->Value.Type = ((EFI_IFR_DEFAULT *) OpCodeData)->Type;
-      CopyMem (&CurrentDefault->DefaultId, &((EFI_IFR_DEFAULT *) OpCodeData)->DefaultId, sizeof (UINT16));
+      CopyMem(&CurrentDefault->DefaultId, &((EFI_IFR_DEFAULT *) OpCodeData)->DefaultId, sizeof (UINT16));
       if (CurrentDefault->Value.Type == EFI_IFR_TYPE_BUFFER) {
         CurrentDefault->Value.BufferLen = (UINT16) (OpCodeLength - OFFSET_OF (EFI_IFR_DEFAULT, Value));
-        CurrentDefault->Value.Buffer = AllocateCopyPool (CurrentDefault->Value.BufferLen, &((EFI_IFR_DEFAULT *) OpCodeData)->Value);
+        CurrentDefault->Value.Buffer = AllocateCopyPool(CurrentDefault->Value.BufferLen, &((EFI_IFR_DEFAULT *) OpCodeData)->Value);
         ASSERT (CurrentDefault->Value.Buffer != NULL);
       } else {
-        CopyMem (&CurrentDefault->Value.Value, &((EFI_IFR_DEFAULT *) OpCodeData)->Value, OpCodeLength - OFFSET_OF (EFI_IFR_DEFAULT, Value));
+        CopyMem(&CurrentDefault->Value.Value, &((EFI_IFR_DEFAULT *) OpCodeData)->Value, OpCodeLength - OFFSET_OF (EFI_IFR_DEFAULT, Value));
         ExtendValueToU64 (&CurrentDefault->Value);
       }
 
@@ -2117,7 +2117,7 @@ ParseOpCodes (
         //
         // It's keep the default value for ordered list opcode.
         //
-        CurrentDefault = AllocateZeroPool (sizeof (QUESTION_DEFAULT));
+        CurrentDefault = AllocateZeroPool(sizeof (QUESTION_DEFAULT));
         ASSERT (CurrentDefault != NULL);
         CurrentDefault->Signature = QUESTION_DEFAULT_SIGNATURE;
 
@@ -2129,7 +2129,7 @@ ParseOpCodes (
         }
 
         CurrentDefault->Value.BufferLen = (UINT16) (OpCodeLength - OFFSET_OF (EFI_IFR_ONE_OF_OPTION, Value));
-        CurrentDefault->Value.Buffer = AllocateCopyPool (CurrentDefault->Value.BufferLen, &((EFI_IFR_ONE_OF_OPTION *) OpCodeData)->Value);
+        CurrentDefault->Value.Buffer = AllocateCopyPool(CurrentDefault->Value.BufferLen, &((EFI_IFR_ONE_OF_OPTION *) OpCodeData)->Value);
         ASSERT (CurrentDefault->Value.Buffer != NULL);
 
         //
@@ -2143,15 +2143,15 @@ ParseOpCodes (
       // EFI_IFR_ONE_OF_OPTION appear in scope of a Question.
       // It create a selection for use in current Question.
       //
-      CurrentOption = AllocateZeroPool (sizeof (QUESTION_OPTION));
+      CurrentOption = AllocateZeroPool(sizeof (QUESTION_OPTION));
       ASSERT (CurrentOption != NULL);
       CurrentOption->Signature = QUESTION_OPTION_SIGNATURE;
       CurrentOption->OpCode    = (EFI_IFR_ONE_OF_OPTION *) OpCodeData;
 
       CurrentOption->Flags = ((EFI_IFR_ONE_OF_OPTION *) OpCodeData)->Flags;
       CurrentOption->Value.Type = ((EFI_IFR_ONE_OF_OPTION *) OpCodeData)->Type;
-      CopyMem (&CurrentOption->Text, &((EFI_IFR_ONE_OF_OPTION *) OpCodeData)->Option, sizeof (EFI_STRING_ID));
-      CopyMem (&CurrentOption->Value.Value, &((EFI_IFR_ONE_OF_OPTION *) OpCodeData)->Value, OpCodeLength - OFFSET_OF (EFI_IFR_ONE_OF_OPTION, Value));
+      CopyMem(&CurrentOption->Text, &((EFI_IFR_ONE_OF_OPTION *) OpCodeData)->Option, sizeof (EFI_STRING_ID));
+      CopyMem(&CurrentOption->Value.Value, &((EFI_IFR_ONE_OF_OPTION *) OpCodeData)->Value, OpCodeLength - OFFSET_OF (EFI_IFR_ONE_OF_OPTION, Value));
       ExtendValueToU64 (&CurrentOption->Value);
 
       ConditionalExprCount = GetConditionalExpressionCount(ExpressOption);
@@ -2164,7 +2164,7 @@ ParseOpCodes (
         ASSERT (CurrentOption->SuppressExpression != NULL);
         CurrentOption->SuppressExpression->Count     = (UINTN) ConditionalExprCount;
         CurrentOption->SuppressExpression->Signature = FORM_EXPRESSION_LIST_SIGNATURE;
-        CopyMem (CurrentOption->SuppressExpression->Expression, GetConditionalExpressionList(ExpressOption), (UINTN) (sizeof (FORM_EXPRESSION *) * ConditionalExprCount));
+        CopyMem(CurrentOption->SuppressExpression->Expression, GetConditionalExpressionList(ExpressOption), (UINTN) (sizeof (FORM_EXPRESSION *) * ConditionalExprCount));
       }
 
       //
@@ -2201,7 +2201,7 @@ ParseOpCodes (
         }
 
         ParentStatement->StorageWidth = (UINT16) (ParentStatement->MaxContainers * Width);
-        ParentStatement->BufferValue = AllocateZeroPool (ParentStatement->StorageWidth);
+        ParentStatement->BufferValue = AllocateZeroPool(ParentStatement->StorageWidth);
         ParentStatement->ValueType = CurrentOption->Value.Type;
         if (ParentStatement->HiiValue.Type == EFI_IFR_TYPE_BUFFER) {
           ParentStatement->HiiValue.Buffer = ParentStatement->BufferValue;
@@ -2221,7 +2221,7 @@ ParseOpCodes (
       // Create an Expression node
       //
       CurrentExpression = CreateExpression (CurrentForm, OpCodeData);
-      CopyMem (&CurrentExpression->Error, &((EFI_IFR_INCONSISTENT_IF *) OpCodeData)->Error, sizeof (EFI_STRING_ID));
+      CopyMem(&CurrentExpression->Error, &((EFI_IFR_INCONSISTENT_IF *) OpCodeData)->Error, sizeof (EFI_STRING_ID));
 
       if (Operand == EFI_IFR_NO_SUBMIT_IF_OP) {
         CurrentExpression->Type = EFI_HII_EXPRESSION_NO_SUBMIT_IF;
@@ -2245,7 +2245,7 @@ ParseOpCodes (
       // Create an Expression node
       //
       CurrentExpression = CreateExpression (CurrentForm, OpCodeData);
-      CopyMem (&CurrentExpression->Error, &((EFI_IFR_WARNING_IF *) OpCodeData)->Warning, sizeof (EFI_STRING_ID));
+      CopyMem(&CurrentExpression->Error, &((EFI_IFR_WARNING_IF *) OpCodeData)->Warning, sizeof (EFI_STRING_ID));
       CurrentExpression->TimeOut = ((EFI_IFR_WARNING_IF *) OpCodeData)->TimeOut;
       CurrentExpression->Type    = EFI_HII_EXPRESSION_WARNING_IF;
       InsertTailList (&ParentStatement->WarningListHead, &CurrentExpression->Link);
@@ -2312,7 +2312,7 @@ ParseOpCodes (
       // The DisableIf expression should only rely on constant, so it could be
       // evaluated at initialization and it will not be queued
       //
-      CurrentExpression = AllocateZeroPool (sizeof (FORM_EXPRESSION));
+      CurrentExpression = AllocateZeroPool(sizeof (FORM_EXPRESSION));
       ASSERT (CurrentExpression != NULL);
       CurrentExpression->Signature = FORM_EXPRESSION_SIGNATURE;
       CurrentExpression->Type = EFI_HII_EXPRESSION_DISABLE_IF;
@@ -2470,7 +2470,7 @@ ParseOpCodes (
       }
 
       ASSERT (ImageId != NULL);
-      CopyMem (ImageId, &((EFI_IFR_IMAGE *) OpCodeData)->Id, sizeof (EFI_IMAGE_ID));
+      CopyMem(ImageId, &((EFI_IFR_IMAGE *) OpCodeData)->Id, sizeof (EFI_IMAGE_ID));
       break;
 
     //
@@ -2495,12 +2495,12 @@ ParseOpCodes (
       case EFI_IFR_FORM_OP:
       case EFI_IFR_FORM_MAP_OP:
         ASSERT (CurrentForm != NULL);
-        CopyMem (&CurrentForm->RefreshGuid, &((EFI_IFR_REFRESH_ID *) OpCodeData)->RefreshEventGroupId, sizeof (EFI_GUID));
+        CopyMem(&CurrentForm->RefreshGuid, &((EFI_IFR_REFRESH_ID *) OpCodeData)->RefreshEventGroupId, sizeof (EFI_GUID));
         break;
 
       default:
         ASSERT (ParentStatement != NULL);
-        CopyMem (&ParentStatement->RefreshGuid, &((EFI_IFR_REFRESH_ID *) OpCodeData)->RefreshEventGroupId, sizeof (EFI_GUID));
+        CopyMem(&ParentStatement->RefreshGuid, &((EFI_IFR_REFRESH_ID *) OpCodeData)->RefreshEventGroupId, sizeof (EFI_GUID));
         break;
       }
       break;
@@ -2552,7 +2552,7 @@ ParseOpCodes (
     case EFI_IFR_END_OP:
       QuestionReferBitField = FALSE;
       Status = PopScope (&ScopeOpCode);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         ResetScopeStack ();
         return Status;
       }
@@ -2640,7 +2640,7 @@ ParseOpCodes (
         // Get current expression.
         //
         Status = PopCurrentExpression ((VOID **) &CurrentExpression);
-        ASSERT_EFI_ERROR (Status);
+        ASSERT_EFI_ERROR(Status);
         ASSERT (MapScopeDepth > 0);
         MapScopeDepth --;
         break;
@@ -2653,7 +2653,7 @@ ParseOpCodes (
             //
             ASSERT (CurrentExpression != NULL);
             Status = EvaluateExpression (FormSet, CurrentForm, CurrentExpression);
-            if (EFI_ERROR (Status)) {
+            if (EFI_ERROR(Status)) {
               return Status;
             }
 

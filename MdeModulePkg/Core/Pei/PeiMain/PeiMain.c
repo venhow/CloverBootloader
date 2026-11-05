@@ -96,7 +96,7 @@ ShadowPeiCore (
              NULL,
              (VOID **) &PeiCoreFvLocationPpi
              );
-  if (!EFI_ERROR (Status) && (PeiCoreFvLocationPpi->PeiCoreFvLocation != NULL)) {
+  if (!EFI_ERROR(Status) && (PeiCoreFvLocationPpi->PeiCoreFvLocation != NULL)) {
     //
     // If PeiCoreFvLocation present, the PEI Core should be found from indicated FV
     //
@@ -117,7 +117,7 @@ ShadowPeiCore (
                                                     PrivateData->Fv[PeiCoreFvIndex].FvHandle,
                                                     &PeiCoreFileHandle
                                                     );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   //
   // Shadow PEI Core into memory so it will run faster
@@ -129,7 +129,7 @@ ShadowPeiCore (
               &EntryPoint,
               &AuthenticationState
               );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   //
   // Compute the PeiCore's function address after shaowed PeiCore.
@@ -192,7 +192,7 @@ PeiCore (
     //
     ZeroMem (&PrivateData, sizeof (PEI_CORE_INSTANCE));
     PrivateData.Signature = PEI_CORE_HANDLE_SIGNATURE;
-    CopyMem (&PrivateData.ServiceTableShadow, &gPs, sizeof (gPs));
+    CopyMem(&PrivateData.ServiceTableShadow, &gPs, sizeof (gPs));
   } else {
     //
     // Memory is available to the PEI Core.  See if the PEI Core has been shadowed to memory yet.
@@ -311,7 +311,7 @@ PeiCore (
         // if Loading Module at Fixed Address is enabled, allocate the PEI code memory range usage bit map array.
         // Every bit in the array indicate the status of the corresponding memory page available or not
         //
-        OldCoreData->PeiCodeMemoryRangeUsageBitMap = AllocateZeroPool (((PcdGet32(PcdLoadFixAddressPeiCodePageNumber)>>6) + 1)*sizeof(UINT64));
+        OldCoreData->PeiCodeMemoryRangeUsageBitMap = AllocateZeroPool(((PcdGet32(PcdLoadFixAddressPeiCodePageNumber)>>6) + 1)*sizeof(UINT64));
       }
 
       //
@@ -341,15 +341,15 @@ PeiCore (
     //
     // Memory is available to the PEI Core and the PEI Core has been shadowed to memory.
     //
-    CopyMem (&NewSecCoreData, SecCoreDataPtr, sizeof (NewSecCoreData));
+    CopyMem(&NewSecCoreData, SecCoreDataPtr, sizeof (NewSecCoreData));
     SecCoreData = &NewSecCoreData;
 
-    CopyMem (&PrivateData, OldCoreData, sizeof (PrivateData));
+    CopyMem(&PrivateData, OldCoreData, sizeof (PrivateData));
 
     CpuIo = (VOID*)PrivateData.ServiceTableShadow.CpuIo;
     PciCfg = (VOID*)PrivateData.ServiceTableShadow.PciCfg;
 
-    CopyMem (&PrivateData.ServiceTableShadow, &gPs, sizeof (gPs));
+    CopyMem(&PrivateData.ServiceTableShadow, &gPs, sizeof (gPs));
 
     PrivateData.ServiceTableShadow.CpuIo  = CpuIo;
     PrivateData.ServiceTableShadow.PciCfg = PciCfg;
@@ -427,7 +427,7 @@ PeiCore (
                NULL,
                (VOID**)&TemporaryRamDonePpi
                );
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       //
       // Disable the use of Temporary RAM after the transition from Temporary RAM to Permanent RAM is complete.
       //
@@ -474,9 +474,9 @@ PeiCore (
              NULL,
              (VOID **)&TempPtr.DxeIpl
              );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     //
     // Report status code to indicate DXE IPL PPI could not be found.
     //
@@ -499,7 +499,7 @@ PeiCore (
   //
   // Should never reach here.
   //
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
   CpuDeadLoop();
 
   UNREACHABLE ();

@@ -447,11 +447,11 @@ NvmeBlockIoPeimGetMediaInfo2 (
               DeviceIndex,
               &Media
               );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
-  CopyMem (
+  CopyMem(
     MediaInfo,
     &(Private->NamespaceInfo[DeviceIndex - 1].Media),
     sizeof (EFI_PEI_BLOCK_IO2_MEDIA)

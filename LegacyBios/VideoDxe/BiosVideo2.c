@@ -156,7 +156,7 @@ BiosVideoDriverBindingSupported (
   // See if the Legacy BIOS Protocol is available
   //
   Status = gBS->LocateProtocol (&gEfiLegacyBiosProtocolGuid, NULL, (VOID **) &LegacyBios);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
 //    DBG("LegacyBios not found\n");
     return Status;
   }
@@ -172,7 +172,7 @@ BiosVideoDriverBindingSupported (
                   Controller,
                   EFI_OPEN_PROTOCOL_BY_DRIVER
                   );
-  if (EFI_ERROR (Status) /* && (Status != EFI_ALREADY_STARTED) */) {
+  if (EFI_ERROR(Status) /* && (Status != EFI_ALREADY_STARTED) */) {
 //    DBG("PciIo not found\n");
     return Status;
   }
@@ -191,7 +191,7 @@ BiosVideoDriverBindingSupported (
                     NULL,
                     EFI_OPEN_PROTOCOL_TEST_PROTOCOL
                     );
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       return EFI_ALREADY_STARTED;
     }
   }
@@ -206,7 +206,7 @@ BiosVideoDriverBindingSupported (
                         sizeof (Pci) / sizeof (UINT32),
                         &Pci
                         );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DBG("PciIo->Pci.Read status=%r\n", Status);
     Status = EFI_UNSUPPORTED;
     goto Done;
@@ -295,7 +295,7 @@ BiosVideoDriverBindingStart (
   //
   Status = gBS->LocateProtocol (&gEfiLegacyBiosProtocolGuid, NULL, (VOID **) &LegacyBios);
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
      DBG("Legacy BIOS Protocol  status=%r\n", Status); 
      return Status;
   }
@@ -308,7 +308,7 @@ BiosVideoDriverBindingStart (
                   &gEfiDevicePathProtocolGuid,
                   (VOID **) &ParentDevicePath
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DBG("ParentDevicePath status=%r\n", Status);
     return Status;
   }
@@ -324,7 +324,7 @@ BiosVideoDriverBindingStart (
                   Controller,
                   EFI_OPEN_PROTOCOL_BY_DRIVER
                   );
-  if (EFI_ERROR (Status) /* && (Status != EFI_ALREADY_STARTED) */) {
+  if (EFI_ERROR(Status) /* && (Status != EFI_ALREADY_STARTED) */) {
     DBG("OpenProtocol PCI status=%r\n", Status);
     return Status;
   }
@@ -340,7 +340,7 @@ BiosVideoDriverBindingStart (
                     0,
                       &mOriginalPciAttributes
                     );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DBG("Save original PCI attributes status=%r\n", Status);
     goto Done;
   }
@@ -357,7 +357,7 @@ BiosVideoDriverBindingStart (
                     &Supports
                     );
  // Status = EFI_UNSUPPORTED; //temporary - remove it
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DBG("PCI attribute=%x Status=%r\n", Supports, Status);
     goto Done;
   }
@@ -386,7 +386,7 @@ BiosVideoDriverBindingStart (
              NULL
              );
   */
-  if (EFI_ERROR (Status)) { 
+  if (EFI_ERROR(Status)) { 
     DBG("Enable the device status=%r\n", Status);
     REPORT_STATUS_CODE_WITH_DEVICE_PATH (
       EFI_ERROR_CODE | EFI_ERROR_MINOR,
@@ -406,7 +406,7 @@ BiosVideoDriverBindingStart (
                          &Flags
                          );
   
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DBG("Check PCI ROM status=%r\n", Status);
     goto Done;
   } 
@@ -429,7 +429,7 @@ BiosVideoDriverBindingStart (
                          NULL
                          );
   
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DBG("InstallPciRom status=%r\n", Status);
       REPORT_STATUS_CODE_WITH_DEVICE_PATH (
       EFI_ERROR_CODE | EFI_ERROR_MINOR,
@@ -451,7 +451,7 @@ BiosVideoDriverBindingStart (
     }
   }
 //  Status = EFI_UNSUPPORTED; //temporary - remove it
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto Done;
   }
 
@@ -469,7 +469,7 @@ BiosVideoDriverBindingStart (
 //  DBG("Child installed\n");
 Done:
 //    Status = EFI_UNSUPPORTED; //temporary - remove it
-  if ((EFI_ERROR (Status)) && (Status != EFI_ALREADY_STARTED)) {
+  if ((EFI_ERROR(Status)) && (Status != EFI_ALREADY_STARTED)) {
 /*    REPORT_STATUS_CODE_WITH_DEVICE_PATH (
       EFI_PROGRESS_CODE,
       EFI_PERIPHERAL_LOCAL_CONSOLE | EFI_P_PC_DISABLE,
@@ -566,7 +566,7 @@ BiosVideoDriverBindingStop (
   for (Index = 0; Index < NumberOfChildren; Index++) {
     Status = BiosVideoChildHandleUninstall (This, Controller, ChildHandleBuffer[Index]);
 
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       AllChildrenStopped = FALSE;
     }
   }
@@ -582,8 +582,8 @@ BiosVideoDriverBindingStop (
                       &gEfiPciIoProtocolGuid,
                       (VOID **) &PciIo
                       );
-//      ASSERT_EFI_ERROR (Status);  //Slice - I hate ASSERT
-      if (!EFI_ERROR (Status)){
+//      ASSERT_EFI_ERROR(Status);  //Slice - I hate ASSERT
+      if (!EFI_ERROR(Status)){
       //
       // Restore original PCI attributes
       //
@@ -637,7 +637,7 @@ BiosVideoChildHandleInstall (
   //
   // Allocate the private device structure for video device
   //
-  BiosVideoPrivate = (BIOS_VIDEO_DEV *) AllocateZeroPool (sizeof (BIOS_VIDEO_DEV));
+  BiosVideoPrivate = (BIOS_VIDEO_DEV *) AllocateZeroPool(sizeof (BIOS_VIDEO_DEV));
   if (NULL == BiosVideoPrivate) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Done;
@@ -653,7 +653,7 @@ BiosVideoChildHandleInstall (
                           sizeof (Pci) / sizeof (UINT32),
                           &Pci
                           );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DBG("ParentPciIo->Pci.Read=%r\n", Status);
     goto Done;
   }
@@ -678,7 +678,7 @@ BiosVideoChildHandleInstall (
                     &gEfiEventExitBootServicesGuid,
                     &BiosVideoPrivate->ExitBootServicesEvent
                     );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       goto Done;
     }
   }
@@ -733,7 +733,7 @@ BiosVideoChildHandleInstall (
   if ((RemainingDevicePath == NULL) || (!IsDevicePathEnd (RemainingDevicePath))) {
     if (RemainingDevicePath == NULL) {
 //      DBG("null RemainingDevicePath\n");
-      gBS->SetMem (&AcpiDeviceNode, sizeof (ACPI_ADR_DEVICE_PATH), 0);
+      SetMem(&AcpiDeviceNode, sizeof (ACPI_ADR_DEVICE_PATH), 0);
       AcpiDeviceNode.Header.Type = ACPI_DEVICE_PATH;
       AcpiDeviceNode.Header.SubType = ACPI_ADR_DP;
       AcpiDeviceNode.ADR = ACPI_DISPLAY_ADR (1, 0, 0, 1, 0, ACPI_ADR_DISPLAY_TYPE_VGA, 0, 0);
@@ -747,7 +747,7 @@ BiosVideoChildHandleInstall (
 //      DBG("GopDevicePath OK\n");
  //     Status = EFI_UNSUPPORTED;
 /*
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         goto Done;
       } */
       
@@ -763,7 +763,7 @@ BiosVideoChildHandleInstall (
       DBG("!BiosVideoPrivate->GopDevicePath\n");
       Status = EFI_UNSUPPORTED;
       
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         goto Done;
       }
       
@@ -778,7 +778,7 @@ BiosVideoChildHandleInstall (
 //    DBG("Creat child handle %r\n", Status);
  //   Status = EFI_UNSUPPORTED;
 
- /*   if (EFI_ERROR (Status)) {
+ /*   if (EFI_ERROR(Status)) {
       goto Done;
     }*/
   }
@@ -815,7 +815,7 @@ BiosVideoChildHandleInstall (
   } else {
     Status = EFI_UNSUPPORTED;
   }
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     //
     // The VESA BIOS Extensions are not compatible with Graphics Output, so check for support
     // for the standard 640x480 16 color VGA mode
@@ -832,17 +832,17 @@ BiosVideoChildHandleInstall (
       }
     }
 
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       //
       // Free GOP mode structure if it is not freed before
       // VgaMiniPort does not need this structure any more
       //
       if (BiosVideoPrivate->GraphicsOutput.Mode != NULL) {
         if (BiosVideoPrivate->GraphicsOutput.Mode->Info != NULL) {
-          FreePool (BiosVideoPrivate->GraphicsOutput.Mode->Info);
+          FreePool(BiosVideoPrivate->GraphicsOutput.Mode->Info);
           BiosVideoPrivate->GraphicsOutput.Mode->Info = NULL;
         }
-        FreePool (BiosVideoPrivate->GraphicsOutput.Mode);
+        FreePool(BiosVideoPrivate->GraphicsOutput.Mode);
         BiosVideoPrivate->GraphicsOutput.Mode = NULL;
       }
 
@@ -876,7 +876,7 @@ BiosVideoChildHandleInstall (
                     NULL
                     );
 
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       //
       // Open the Parent Handle for the child
       //
@@ -888,7 +888,7 @@ BiosVideoChildHandleInstall (
                       BiosVideoPrivate->Handle,
                       EFI_OPEN_PROTOCOL_BY_CHILD_CONTROLLER
                       );
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         goto Done;
       }
       ProtocolInstalled = TRUE;
@@ -909,7 +909,7 @@ BiosVideoChildHandleInstall (
   }
 
 Done:
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     if ((BiosVideoPrivate != NULL) && (BiosVideoPrivate->ExitBootServicesEvent != NULL)) {
       gBS->CloseEvent (BiosVideoPrivate->ExitBootServicesEvent);
     }  
@@ -959,11 +959,11 @@ BiosVideoChildHandleUninstall (
                   Handle,
                   EFI_OPEN_PROTOCOL_GET_PROTOCOL
                   );
-  if (!EFI_ERROR (Status)) {
+  if (!EFI_ERROR(Status)) {
       BiosVideoPrivate = BIOS_VIDEO_DEV_FROM_GRAPHICS_OUTPUT_THIS (GraphicsOutput);
   }
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     Status = gBS->OpenProtocol (
                    Handle,
                    &gEfiVgaMiniPortProtocolGuid,
@@ -972,7 +972,7 @@ BiosVideoChildHandleUninstall (
                    Handle,
                    EFI_OPEN_PROTOCOL_GET_PROTOCOL
                    );
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       BiosVideoPrivate = BIOS_VIDEO_DEV_FROM_VGA_MINI_PORT_THIS (VgaMiniPort);
     }
   }
@@ -1029,7 +1029,7 @@ BiosVideoChildHandleUninstall (
                     );
   }
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     gBS->OpenProtocol (
            Controller,
            &gEfiPciIoProtocolGuid,
@@ -1080,25 +1080,25 @@ BiosVideoDeviceReleaseResource (
   // Free VGA Frame Buffer
   //
   if (BiosVideoPrivate->VgaFrameBuffer != NULL) {
-    FreePool (BiosVideoPrivate->VgaFrameBuffer);
+    FreePool(BiosVideoPrivate->VgaFrameBuffer);
   }
   //
   // Free VBE Frame Buffer
   //
   if (BiosVideoPrivate->VbeFrameBuffer != NULL) {
-    FreePool (BiosVideoPrivate->VbeFrameBuffer);
+    FreePool(BiosVideoPrivate->VbeFrameBuffer);
   }
   //
   // Free line buffer
   //
   if (BiosVideoPrivate->LineBuffer != NULL) {
-    FreePool (BiosVideoPrivate->LineBuffer);
+    FreePool(BiosVideoPrivate->LineBuffer);
   }
   //
   // Free mode data
   //
   if (BiosVideoPrivate->ModeData != NULL) {
-    FreePool (BiosVideoPrivate->ModeData);
+    FreePool(BiosVideoPrivate->ModeData);
   }
   //
   // Free memory allocated below 1MB
@@ -1116,30 +1116,30 @@ BiosVideoDeviceReleaseResource (
   //
   if (BiosVideoPrivate->GraphicsOutput.Mode != NULL) {
     if (BiosVideoPrivate->GraphicsOutput.Mode->Info != NULL) {
-        FreePool (BiosVideoPrivate->GraphicsOutput.Mode->Info);
+        FreePool(BiosVideoPrivate->GraphicsOutput.Mode->Info);
         BiosVideoPrivate->GraphicsOutput.Mode->Info = NULL;
     }
-    FreePool (BiosVideoPrivate->GraphicsOutput.Mode);
+    FreePool(BiosVideoPrivate->GraphicsOutput.Mode);
     BiosVideoPrivate->GraphicsOutput.Mode = NULL;
   }
   //
   // Free EDID discovered protocol occupied resource
   //
   if (BiosVideoPrivate->EdidDiscovered.Edid != NULL) {
-    FreePool (BiosVideoPrivate->EdidDiscovered.Edid);
+    FreePool(BiosVideoPrivate->EdidDiscovered.Edid);
   }
   //
   // Free EDID active protocol occupied resource
   //
   if (BiosVideoPrivate->EdidActive.Edid != NULL) {
-    FreePool (BiosVideoPrivate->EdidActive.Edid);
+    FreePool(BiosVideoPrivate->EdidActive.Edid);
   }
 
   if (BiosVideoPrivate->GopDevicePath!= NULL) {
-    FreePool (BiosVideoPrivate->GopDevicePath);
+    FreePool(BiosVideoPrivate->GopDevicePath);
   }
 
-  FreePool (BiosVideoPrivate);
+  FreePool(BiosVideoPrivate);
 
   return ;
 }
@@ -1491,11 +1491,11 @@ BiosVideoCheckForVbe (
                   BiosVideoPrivate->NumberOfPagesBelow1MB,
                   &BiosVideoPrivate->PagesBelow1MB
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
-  gBS->SetMem (&ValidEdidTiming, sizeof (VESA_BIOS_EXTENSIONS_VALID_EDID_TIMING), 0);
+  SetMem(&ValidEdidTiming, sizeof (VESA_BIOS_EXTENSIONS_VALID_EDID_TIMING), 0);
   
   //
   // Fill in the VBE related data structures
@@ -1526,9 +1526,9 @@ BiosVideoCheckForVbe (
   // Desc:  determine whether VESA BIOS extensions are present and the capabilities
   //    supported by the display adapter
   //
-  gBS->SetMem (&Regs, sizeof (Regs), 0);
+  SetMem(&Regs, sizeof (Regs), 0);
   Regs.X.AX = VESA_BIOS_EXTENSIONS_RETURN_CONTROLLER_INFORMATION;
-  gBS->SetMem (BiosVideoPrivate->VbeInformationBlock, sizeof (VESA_BIOS_EXTENSIONS_INFORMATION_BLOCK), 0);
+  SetMem(BiosVideoPrivate->VbeInformationBlock, sizeof (VESA_BIOS_EXTENSIONS_INFORMATION_BLOCK), 0);
   BiosVideoPrivate->VbeInformationBlock->VESASignature  = VESA_BIOS_EXTENSIONS_VBE2_SIGNATURE;
   Regs.X.ES = EFI_SEGMENT ((UINTN) BiosVideoPrivate->VbeInformationBlock);
   Regs.X.DI = EFI_OFFSET ((UINTN) BiosVideoPrivate->VbeInformationBlock);
@@ -1568,7 +1568,7 @@ BiosVideoCheckForVbe (
                    NULL,
                    (VOID **) &EdidOverride
                    );
-  if (!EFI_ERROR (Status)) {
+  if (!EFI_ERROR(Status)) {
     //
     // Allocate double size of VESA_BIOS_EXTENSIONS_EDID_BLOCK_SIZE to avoid overflow
     //
@@ -1586,7 +1586,7 @@ BiosVideoCheckForVbe (
                              &EdidOverrideDataSize,
                              (UINT8 **) &EdidOverrideDataBlock
                              );
-    if (!EFI_ERROR (Status)  &&
+    if (!EFI_ERROR(Status)  &&
          EdidAttributes == 0 &&
          EdidOverrideDataSize != 0) {
       //
@@ -1618,7 +1618,7 @@ BiosVideoCheckForVbe (
   //    01h failed (e.g. non-DDC monitor)
   //
 
-    gBS->SetMem (&Regs, sizeof (Regs), 0);
+    SetMem(&Regs, sizeof (Regs), 0);
     Regs.X.AX = VESA_BIOS_EXTENSIONS_EDID;
     Regs.X.BX = 1;
     Regs.X.CX = 0;
@@ -1635,7 +1635,7 @@ BiosVideoCheckForVbe (
       // Set EDID Discovered Data
       //
       BiosVideoPrivate->EdidDiscovered.SizeOfEdid = VESA_BIOS_EXTENSIONS_EDID_BLOCK_SIZE;
-      BiosVideoPrivate->EdidDiscovered.Edid = (UINT8 *) AllocateCopyPool (
+      BiosVideoPrivate->EdidDiscovered.Edid = (UINT8 *) AllocateCopyPool(
           VESA_BIOS_EXTENSIONS_EDID_BLOCK_SIZE,
           BiosVideoPrivate->VbeEdidDataBlock
           );
@@ -1667,7 +1667,7 @@ BiosVideoCheckForVbe (
       // Copy EDID Override Data to EDID Active Data
       //
       BiosVideoPrivate->EdidActive.SizeOfEdid = (UINT32) EdidActiveDataSize;
-      BiosVideoPrivate->EdidActive.Edid = (UINT8 *) AllocateCopyPool (
+      BiosVideoPrivate->EdidActive.Edid = (UINT8 *) AllocateCopyPool(
                                                       EdidActiveDataSize,
                                                       EdidActiveDataBlock
                                                       );
@@ -1720,10 +1720,10 @@ BiosVideoCheckForVbe (
     //      01h failed
     // Desc:  determine the attributes of the specified video mode
     //
-    gBS->SetMem (&Regs, sizeof (Regs), 0);
+    SetMem(&Regs, sizeof (Regs), 0);
     Regs.X.AX = VESA_BIOS_EXTENSIONS_RETURN_MODE_INFORMATION;
     Regs.X.CX = VbeModeNumber;
-    gBS->SetMem (BiosVideoPrivate->VbeModeInformationBlock, sizeof (VESA_BIOS_EXTENSIONS_MODE_INFORMATION_BLOCK), 0);
+    SetMem(BiosVideoPrivate->VbeModeInformationBlock, sizeof (VESA_BIOS_EXTENSIONS_MODE_INFORMATION_BLOCK), 0);
     Regs.X.ES = EFI_SEGMENT ((UINTN) BiosVideoPrivate->VbeModeInformationBlock);
     Regs.X.DI = EFI_OFFSET ((UINTN) BiosVideoPrivate->VbeModeInformationBlock);
 
@@ -1882,7 +1882,7 @@ BiosVideoCheckForVbe (
     }
 
     if (ModeNumber > 1) {
-      CopyMem (
+      CopyMem(
         ModeBuffer,
         BiosVideoPrivate->ModeData,
         (ModeNumber - 1) * sizeof (BIOS_VIDEO_MODE_DATA)
@@ -1890,7 +1890,7 @@ BiosVideoCheckForVbe (
     }
 
     if (BiosVideoPrivate->ModeData != NULL) {
-      FreePool (BiosVideoPrivate->ModeData);
+      FreePool(BiosVideoPrivate->ModeData);
     }
 
     CurrentModeData = &ModeBuffer[ModeNumber - 1];
@@ -1976,14 +1976,14 @@ BiosVideoCheckForVbe (
 //  PreferMode = HighestResolutionMode;
   Status = BiosVideoGraphicsOutputSetMode (&BiosVideoPrivate->GraphicsOutput, (UINT32) PreferMode);
     DBG(" - SetMode pref %d (%d) = %r\n", PreferMode, (UINT32) PreferMode, Status);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     for (PreferMode = 0; PreferMode < ModeNumber; PreferMode ++) {
       Status = BiosVideoGraphicsOutputSetMode (
                 &BiosVideoPrivate->GraphicsOutput,
                 (UINT32) PreferMode
                 );
             DBG(" - SetMode pref %d (%d) = %r\n", PreferMode, (UINT32) PreferMode, Status);
-      if (!EFI_ERROR (Status)) {
+      if (!EFI_ERROR(Status)) {
         break;
       }
     }
@@ -1999,14 +1999,14 @@ Done:
   //
   // If there was an error, then free the mode structure
   //
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     if (BiosVideoPrivate->ModeData != NULL) {
-      FreePool (BiosVideoPrivate->ModeData);
+      FreePool(BiosVideoPrivate->ModeData);
       BiosVideoPrivate->ModeData  = NULL;
       BiosVideoPrivate->MaxMode   = 0;
     }
     if (EdidOverrideDataBlock != NULL) {
-      FreePool (EdidOverrideDataBlock);
+      FreePool(EdidOverrideDataBlock);
     }
   }
 
@@ -2077,17 +2077,17 @@ Done:
   //
   // If there was an error, then free the mode structure
   //
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     if (BiosVideoPrivate->ModeData != NULL) {
-      FreePool (BiosVideoPrivate->ModeData);
+      FreePool(BiosVideoPrivate->ModeData);
       BiosVideoPrivate->ModeData = NULL;
     }
     if (BiosVideoPrivate->GraphicsOutput.Mode != NULL) {
       if (BiosVideoPrivate->GraphicsOutput.Mode->Info != NULL) {
-        FreePool (BiosVideoPrivate->GraphicsOutput.Mode->Info);
+        FreePool(BiosVideoPrivate->GraphicsOutput.Mode->Info);
         BiosVideoPrivate->GraphicsOutput.Mode->Info = NULL;
       }
-      FreePool (BiosVideoPrivate->GraphicsOutput.Mode);
+      FreePool(BiosVideoPrivate->GraphicsOutput.Mode);
       BiosVideoPrivate->GraphicsOutput.Mode = NULL;
     }
   }
@@ -2154,7 +2154,7 @@ BiosVideoGraphicsOutputQueryMode (
   (*Info)->HorizontalResolution = ModeData->HorizontalResolution;
   (*Info)->VerticalResolution   = ModeData->VerticalResolution;
   (*Info)->PixelFormat = ModeData->PixelFormat;
-  CopyMem (&((*Info)->PixelInformation), &(ModeData->PixelBitMask), sizeof(ModeData->PixelBitMask));
+  CopyMem(&((*Info)->PixelInformation), &(ModeData->PixelBitMask), sizeof(ModeData->PixelBitMask));
 
   (*Info)->PixelsPerScanLine =  (ModeData->BytesPerScanLine * 8) / ModeData->BitsPerPixel;
 
@@ -2185,15 +2185,15 @@ BiosVideoSetModeWorker (
   EFI_IA32_REGISTER_SET   Regs;
 
   if (BiosVideoPrivate->LineBuffer != NULL) {
-    FreePool (BiosVideoPrivate->LineBuffer);
+    FreePool(BiosVideoPrivate->LineBuffer);
   }
 
   if (BiosVideoPrivate->VgaFrameBuffer != NULL) {
-    FreePool (BiosVideoPrivate->VgaFrameBuffer);
+    FreePool(BiosVideoPrivate->VgaFrameBuffer);
   }
 
   if (BiosVideoPrivate->VbeFrameBuffer != NULL) {
-    FreePool (BiosVideoPrivate->VbeFrameBuffer);
+    FreePool(BiosVideoPrivate->VbeFrameBuffer);
   }
 
   BiosVideoPrivate->LineBuffer = (UINT8 *) AllocatePool (ModeData->BytesPerScanLine);
@@ -2203,7 +2203,7 @@ BiosVideoSetModeWorker (
   //
   // Clear all registers
   //
-  gBS->SetMem (&Regs, sizeof (Regs), 0);
+  SetMem(&Regs, sizeof (Regs), 0);
 
   if (ModeData->VbeModeNumber < 0x100) {
     //
@@ -2233,7 +2233,7 @@ BiosVideoSetModeWorker (
     //
     Regs.X.AX = VESA_BIOS_EXTENSIONS_SET_MODE;
     Regs.X.BX = (UINT16) (ModeData->VbeModeNumber | VESA_BIOS_EXTENSIONS_MODE_NUMBER_LINEAR_FRAME_BUFFER);
-    gBS->SetMem (BiosVideoPrivate->VbeCrtcInformationBlock, sizeof (VESA_BIOS_EXTENSIONS_CRTC_INFORMATION_BLOCK), 0);
+    SetMem(BiosVideoPrivate->VbeCrtcInformationBlock, sizeof (VESA_BIOS_EXTENSIONS_CRTC_INFORMATION_BLOCK), 0);
     Regs.X.ES = EFI_SEGMENT ((UINTN) BiosVideoPrivate->VbeCrtcInformationBlock);
     Regs.X.DI = EFI_OFFSET ((UINTN) BiosVideoPrivate->VbeCrtcInformationBlock);
     BiosVideoPrivate->LegacyBios->Int86 (BiosVideoPrivate->LegacyBios, 0x10, &Regs);
@@ -2255,7 +2255,7 @@ BiosVideoSetModeWorker (
                                             (ModeData->BytesPerScanLine * ModeData->VerticalResolution) >> 2,
                                             BiosVideoPrivate->VbeFrameBuffer
                                             );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }*/
   }
@@ -2342,7 +2342,7 @@ BiosVideoGraphicsOutputSetMode (
   }
 
   Status = BiosVideoSetModeWorker (BiosVideoPrivate, ModeData, BiosVideoPrivate->GopDevicePath);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DBG(" - %r\n", Status);
     return Status;
   }
@@ -2352,7 +2352,7 @@ BiosVideoGraphicsOutputSetMode (
   This->Mode->Info->HorizontalResolution = ModeData->HorizontalResolution;
   This->Mode->Info->VerticalResolution = ModeData->VerticalResolution;
   This->Mode->Info->PixelFormat = ModeData->PixelFormat;
-  CopyMem (&(This->Mode->Info->PixelInformation), &(ModeData->PixelBitMask), sizeof (ModeData->PixelBitMask));
+  CopyMem(&(This->Mode->Info->PixelInformation), &(ModeData->PixelBitMask), sizeof (ModeData->PixelBitMask));
   This->Mode->Info->PixelsPerScanLine =  (ModeData->BytesPerScanLine * 8) / ModeData->BitsPerPixel;
   This->Mode->SizeOfInfo = sizeof(EFI_GRAPHICS_OUTPUT_MODE_INFORMATION);
 
@@ -2413,7 +2413,7 @@ CopyVideoBuffer (
                      TotalBytes,
                      VbeBuffer
                      );
- //   ASSERT_EFI_ERROR (Status);
+ //   ASSERT_EFI_ERROR(Status);
     return;
   }
 
@@ -2431,8 +2431,8 @@ CopyVideoBuffer (
                      UnalignedBytes,
                      VbeBuffer
                      );
- //   ASSERT_EFI_ERROR (Status);
-    if (EFI_ERROR (Status)) {
+ //   ASSERT_EFI_ERROR(Status);
+    if (EFI_ERROR(Status)) {
       return;
     }
     FrameBufferAddr += UnalignedBytes;
@@ -2457,8 +2457,8 @@ CopyVideoBuffer (
                     CopyBlockNum,
                     VbeBuffer
                     );
-//    ASSERT_EFI_ERROR (Status);
-    if (EFI_ERROR (Status)) {
+//    ASSERT_EFI_ERROR(Status);
+    if (EFI_ERROR(Status)) {
       return;
     }
   }
@@ -2474,8 +2474,8 @@ CopyVideoBuffer (
                     RemainingBytes,
                     VbeBuffer
                     );
-//    ASSERT_EFI_ERROR (Status);
-    if (EFI_ERROR (Status)) {
+//    ASSERT_EFI_ERROR(Status);
+    if (EFI_ERROR(Status)) {
       return;
     }
   }
@@ -2634,7 +2634,7 @@ BiosVideoVbeBltWorker (
       VbeBuffer   = ((UINT8 *) VbeFrameBuffer + DstY * BytesPerScanLine + DestinationX * VbePixelWidth);
       VbeBuffer1  = ((UINT8 *) VbeFrameBuffer + SrcY * BytesPerScanLine + SourceX * VbePixelWidth);
 
-      gBS->CopyMem (
+      CopyMem(
             VbeBuffer,
             VbeBuffer1,
             TotalBytes
@@ -2670,7 +2670,7 @@ BiosVideoVbeBltWorker (
           ((Blt->Blue & Mode->Blue.Mask) << Mode->Blue.Position);
 
     for (Index = 0; Index < Width; Index++) {
- /*     gBS->CopyMem (
+ /*     gBS->CopyMem(
             VbeBuffer,
             &Pixel,
             VbePixelWidth
@@ -2681,7 +2681,7 @@ BiosVideoVbeBltWorker (
 
     VbeBuffer = (UINT8 *) ((UINTN) VbeFrameBuffer + (DestinationY * BytesPerScanLine) + DestinationX * VbePixelWidth);
     for (DstY = DestinationY + 1; DstY < (Height + DestinationY); DstY++) {
-      gBS->CopyMem (
+      CopyMem(
             (VOID *) ((UINTN) VbeFrameBuffer + (DstY * BytesPerScanLine) + DestinationX * VbePixelWidth),
             VbeBuffer,
             TotalBytes
@@ -2716,7 +2716,7 @@ BiosVideoVbeBltWorker (
         Pixel = ((Blt->Red & Mode->Red.Mask) << Mode->Red.Position) |
           ((Blt->Green & Mode->Green.Mask) << Mode->Green.Position) |
             ((Blt->Blue & Mode->Blue.Mask) << Mode->Blue.Position);
-   /*     gBS->CopyMem (
+   /*     gBS->CopyMem(
               VbeBuffer,
               &Pixel,
               VbePixelWidth
@@ -3172,7 +3172,7 @@ BiosVideoGraphicsOutputVgaBlt (
       DestinationAddress  = (UINT8 *) (MemAddress + (DestinationY << 6) + (DestinationY << 4) + (DestinationX >> 3));
       Bytes               = Width >> 3;
       for (Index = 0, Offset = 0; Index < Height; Index++, Offset += BytesPerScanLine) {
-        PciIo->CopyMem (
+        PciIo->CopyMem(
                 PciIo,
                 EfiPciIoWidthUint8,
                 EFI_PCI_IO_PASS_THROUGH_BAR,
@@ -3555,8 +3555,8 @@ CsmVideoEntryPoint(
              &gBiosVideoComponentName,
              &gBiosVideoComponentName2
              );
-//  ASSERT_EFI_ERROR (Status);
-  if (EFI_ERROR (Status)) {
+//  ASSERT_EFI_ERROR(Status);
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 

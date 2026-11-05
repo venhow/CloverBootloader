@@ -17,6 +17,7 @@
 
 #include <Protocol/AppleSMC.h>
 
+
 // DBG_TO: 0=no debug, 1=serial, 2=console 3=log
 // serial requires
 // [PcdsFixedAtBuild]
@@ -40,7 +41,7 @@
 #define APPLE_SMC_SIGNATURE     SIGNATURE_64('A','P','P','L','E','S','M','C')
 #define NON_APPLE_SMC_SIGNATURE SIGNATURE_64('S','M','C','H','E','L','P','E')
 
-EFI_HANDLE              mHandle = NULL;
+EFI_HANDLE              m7Handle = NULL;
 //EFI_BOOT_SERVICES*			gBS;
 
 extern EFI_GUID gEfiAppleBootGuid;
@@ -335,7 +336,6 @@ SmcGetKeyInfoImpl (IN  APPLE_SMC_IO_PROTOCOL  *This,
                    OUT SMC_KEY_ATTRIBUTES     *Attributes
                    )
 {
-  UINT32 Num = 0;
   SMC_STACK *TmpStack = SmcStack;
   if (!Size || !Type || !Attributes) {
     return EFI_INVALID_PARAMETER;
@@ -347,7 +347,6 @@ SmcGetKeyInfoImpl (IN  APPLE_SMC_IO_PROTOCOL  *This,
       *Attributes = TmpStack->Attributes;
       return EFI_SUCCESS;
     }
-    Num++;
     TmpStack = TmpStack->Next;
   }
   return EFI_NOT_FOUND;  
@@ -479,11 +478,7 @@ APPLE_SMC_IO_PROTOCOL SMCHelperProtocol = {
   0,
   SMC_PORT_BASE,
   FALSE,
-/*  SmcUnknown1Impl,
-  SmcUnknown2Impl,
-  SmcUnknown3Impl,
-  SmcUnknown4Impl,
-  SmcUnknown5Impl */
+
 };
 
 APPLE_SMC_STATE_PROTOCOL SMCStateProtocol = {
@@ -497,7 +492,7 @@ APPLE_SMC_STATE_PROTOCOL SMCStateProtocol = {
 
 
 
-
+#if SEPARATE_SMC_DRIVER
 /****************************************************************
  * Entry point
  ***************************************************************/
@@ -517,7 +512,7 @@ SMCHelperEntrypoint (
  // gBS				= SystemTable->BootServices;
   
   Status = gBS->InstallMultipleProtocolInterfaces (
-                &mHandle,
+                &m7Handle,
                 &gAppleSMCProtocolGuid,
                 &SMCHelperProtocol,
                 &gAppleSMCStateProtocolGuid,
@@ -527,3 +522,22 @@ SMCHelperEntrypoint (
   
   return Status;
 }
+#else
+EFI_STATUS SMCHelperInstall(EFI_HANDLE* Handle)
+{
+	  EFI_STATUS					Status; // = EFI_SUCCESS;
+
+	 // gBS				= SystemTable->BootServices;
+
+	  Status = gBS->InstallMultipleProtocolInterfaces (
+	                Handle,
+	                &gAppleSMCProtocolGuid,
+	                &SMCHelperProtocol,
+	                &gAppleSMCStateProtocolGuid,
+	                &SMCStateProtocol,
+	                NULL
+	                );
+
+	  return Status;
+}
+#endif

@@ -27,7 +27,7 @@ AsyncIoCallback (
   EFI_STATUS                  Status;
 
   Status = gBS->CloseEvent (Event);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return;
   }
 
@@ -39,7 +39,7 @@ AsyncIoCallback (
             Request->Packet.TransactionStatus));
   DEBUG_CODE_END ();
 
-  if (EFI_ERROR (Request->Packet.TransactionStatus)) {
+  if (EFI_ERROR(Request->Packet.TransactionStatus)) {
     Request->Token->TransactionStatus = Request->Packet.TransactionStatus;
   }
 
@@ -49,7 +49,7 @@ AsyncIoCallback (
     gBS->SignalEvent (Request->Token->Event);
   }
 
-  FreePool (Request);
+  FreePool(Request);
 }
 
 /**
@@ -134,8 +134,8 @@ EmmcSendStatus (
   SdMmcCmdBlk.CommandArgument = (UINT32)Rca << 16;
 
   Status = PassThru->PassThru (PassThru, Device->Slot, &Packet, NULL);
-  if (!EFI_ERROR (Status)) {
-    CopyMem (DevStatus, &SdMmcStatusBlk.Resp0, sizeof (UINT32));
+  if (!EFI_ERROR(Status)) {
+    CopyMem(DevStatus, &SdMmcStatusBlk.Resp0, sizeof (UINT32));
   }
 
   return Status;
@@ -183,11 +183,11 @@ EmmcGetCsd (
   SdMmcCmdBlk.CommandArgument = (UINT32)Rca << 16;
 
   Status = PassThru->PassThru (PassThru, Device->Slot, &Packet, NULL);
-  if (!EFI_ERROR (Status)) {
+  if (!EFI_ERROR(Status)) {
     //
     // For details, refer to SD Host Controller Simplified Spec 3.0 Table 2-12.
     //
-    CopyMem (((UINT8*)Csd) + 1, &SdMmcStatusBlk.Resp0, sizeof (EMMC_CSD) - 1);
+    CopyMem(((UINT8*)Csd) + 1, &SdMmcStatusBlk.Resp0, sizeof (EMMC_CSD) - 1);
   }
 
   return Status;
@@ -235,11 +235,11 @@ EmmcGetCid (
   SdMmcCmdBlk.CommandArgument = (UINT32)Rca << 16;
 
   Status = PassThru->PassThru (PassThru, Device->Slot, &Packet, NULL);
-  if (!EFI_ERROR (Status)) {
+  if (!EFI_ERROR(Status)) {
     //
     // For details, refer to SD Host Controller Simplified Spec 3.0 Table 2-12.
     //
-    CopyMem (((UINT8*)Cid) + 1, &SdMmcStatusBlk.Resp0, sizeof (EMMC_CID) - 1);
+    CopyMem(((UINT8*)Cid) + 1, &SdMmcStatusBlk.Resp0, sizeof (EMMC_CID) - 1);
   }
 
   return Status;
@@ -326,7 +326,7 @@ EmmcSetExtCsd (
   Device   = Partition->Device;
   PassThru = Device->Private->PassThru;
 
-  SetExtCsdReq = AllocateZeroPool (sizeof (EMMC_REQUEST));
+  SetExtCsdReq = AllocateZeroPool(sizeof (EMMC_REQUEST));
   if (SetExtCsdReq == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Error;
@@ -360,7 +360,7 @@ EmmcSetExtCsd (
                     SetExtCsdReq,
                     &SetExtCsdReq->Event
                     );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       goto Error;
     }
   } else {
@@ -375,14 +375,14 @@ Error:
     // For asynchronous operation, only free request and event in error case.
     // The request and event will be freed in asynchronous callback for success case.
     //
-    if (EFI_ERROR (Status) && (SetExtCsdReq != NULL)) {
+    if (EFI_ERROR(Status) && (SetExtCsdReq != NULL)) {
       OldTpl = gBS->RaiseTPL (TPL_NOTIFY);
       RemoveEntryList (&SetExtCsdReq->Link);
       gBS->RestoreTPL (OldTpl);
       if (SetExtCsdReq->Event != NULL) {
         gBS->CloseEvent (SetExtCsdReq->Event);
       }
-      FreePool (SetExtCsdReq);
+      FreePool(SetExtCsdReq);
     }
   } else {
     //
@@ -392,7 +392,7 @@ Error:
       OldTpl = gBS->RaiseTPL (TPL_NOTIFY);
       RemoveEntryList (&SetExtCsdReq->Link);
       gBS->RestoreTPL (OldTpl);
-      FreePool (SetExtCsdReq);
+      FreePool(SetExtCsdReq);
     }
   }
 
@@ -432,7 +432,7 @@ EmmcSetBlkCount (
   Device   = Partition->Device;
   PassThru = Device->Private->PassThru;
 
-  SetBlkCntReq = AllocateZeroPool (sizeof (EMMC_REQUEST));
+  SetBlkCntReq = AllocateZeroPool(sizeof (EMMC_REQUEST));
   if (SetBlkCntReq == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Error;
@@ -462,7 +462,7 @@ EmmcSetBlkCount (
                     SetBlkCntReq,
                     &SetBlkCntReq->Event
                     );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       goto Error;
     }
   } else {
@@ -477,14 +477,14 @@ Error:
     // For asynchronous operation, only free request and event in error case.
     // The request and event will be freed in asynchronous callback for success case.
     //
-    if (EFI_ERROR (Status) && (SetBlkCntReq != NULL)) {
+    if (EFI_ERROR(Status) && (SetBlkCntReq != NULL)) {
       OldTpl = gBS->RaiseTPL (TPL_NOTIFY);
       RemoveEntryList (&SetBlkCntReq->Link);
       gBS->RestoreTPL (OldTpl);
       if (SetBlkCntReq->Event != NULL) {
         gBS->CloseEvent (SetBlkCntReq->Event);
       }
-      FreePool (SetBlkCntReq);
+      FreePool(SetBlkCntReq);
     }
   } else {
     //
@@ -494,7 +494,7 @@ Error:
       OldTpl = gBS->RaiseTPL (TPL_NOTIFY);
       RemoveEntryList (&SetBlkCntReq->Link);
       gBS->RestoreTPL (OldTpl);
-      FreePool (SetBlkCntReq);
+      FreePool(SetBlkCntReq);
     }
   }
 
@@ -549,7 +549,7 @@ EmmcProtocolInOut (
   Device   = Partition->Device;
   PassThru = Device->Private->PassThru;
 
-  ProtocolReq = AllocateZeroPool (sizeof (EMMC_REQUEST));
+  ProtocolReq = AllocateZeroPool(sizeof (EMMC_REQUEST));
   if (ProtocolReq == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Error;
@@ -595,7 +595,7 @@ EmmcProtocolInOut (
                     ProtocolReq,
                     &ProtocolReq->Event
                     );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       goto Error;
     }
   } else {
@@ -610,14 +610,14 @@ Error:
     // For asynchronous operation, only free request and event in error case.
     // The request and event will be freed in asynchronous callback for success case.
     //
-    if (EFI_ERROR (Status) && (ProtocolReq != NULL)) {
+    if (EFI_ERROR(Status) && (ProtocolReq != NULL)) {
       OldTpl = gBS->RaiseTPL (TPL_NOTIFY);
       RemoveEntryList (&ProtocolReq->Link);
       gBS->RestoreTPL (OldTpl);
       if (ProtocolReq->Event != NULL) {
         gBS->CloseEvent (ProtocolReq->Event);
       }
-      FreePool (ProtocolReq);
+      FreePool(ProtocolReq);
     }
   } else {
     //
@@ -627,7 +627,7 @@ Error:
       OldTpl = gBS->RaiseTPL (TPL_NOTIFY);
       RemoveEntryList (&ProtocolReq->Link);
       gBS->RestoreTPL (OldTpl);
-      FreePool (ProtocolReq);
+      FreePool(ProtocolReq);
     }
   }
 
@@ -675,7 +675,7 @@ EmmcRwMultiBlocks (
   Device   = Partition->Device;
   PassThru = Device->Private->PassThru;
 
-  RwMultiBlkReq = AllocateZeroPool (sizeof (EMMC_REQUEST));
+  RwMultiBlkReq = AllocateZeroPool(sizeof (EMMC_REQUEST));
   if (RwMultiBlkReq == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Error;
@@ -729,7 +729,7 @@ EmmcRwMultiBlocks (
                     RwMultiBlkReq,
                     &RwMultiBlkReq->Event
                     );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       goto Error;
     }
   } else {
@@ -744,14 +744,14 @@ Error:
     // For asynchronous operation, only free request and event in error case.
     // The request and event will be freed in asynchronous callback for success case.
     //
-    if (EFI_ERROR (Status) && (RwMultiBlkReq != NULL)) {
+    if (EFI_ERROR(Status) && (RwMultiBlkReq != NULL)) {
       OldTpl = gBS->RaiseTPL (TPL_NOTIFY);
       RemoveEntryList (&RwMultiBlkReq->Link);
       gBS->RestoreTPL (OldTpl);
       if (RwMultiBlkReq->Event != NULL) {
         gBS->CloseEvent (RwMultiBlkReq->Event);
       }
-      FreePool (RwMultiBlkReq);
+      FreePool(RwMultiBlkReq);
     }
   } else {
     //
@@ -761,7 +761,7 @@ Error:
       OldTpl = gBS->RaiseTPL (TPL_NOTIFY);
       RemoveEntryList (&RwMultiBlkReq->Link);
       gBS->RestoreTPL (OldTpl);
-      FreePool (RwMultiBlkReq);
+      FreePool(RwMultiBlkReq);
     }
   }
 
@@ -867,7 +867,7 @@ EmmcReadWrite (
     PartitionConfig &= (UINT8)~0x7;
     PartitionConfig |= Partition->PartitionType;
     Status = EmmcSetExtCsd (Partition, OFFSET_OF (EMMC_EXT_CSD, PartitionConfig), PartitionConfig, Token, FALSE);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
     Device->ExtCsd.PartitionConfig = PartitionConfig;
@@ -886,13 +886,13 @@ EmmcReadWrite (
       BlockNum = MaxBlock;
     }
     Status = EmmcSetBlkCount (Partition, (UINT16)BlockNum, Token, FALSE);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
 
     BufferSize = BlockNum * BlockSize;
     Status = EmmcRwMultiBlocks (Partition, Lba, Buffer, BufferSize, IsRead, Token, LastRw);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
     DEBUG ((DEBUG_BLKIO,
@@ -934,7 +934,7 @@ EmmcReset (
 
   PassThru = Partition->Device->Private->PassThru;
   Status   = PassThru->ResetDevice (PassThru, Partition->Device->Slot);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     Status = EFI_DEVICE_ERROR;
   }
 
@@ -1082,7 +1082,7 @@ EmmcResetEx (
       gBS->SignalEvent (Request->Token->Event);
     }
 
-    FreePool (Request);
+    FreePool(Request);
   }
   gBS->RestoreTPL (OldTpl);
 
@@ -1351,7 +1351,7 @@ EmmcSecurityProtocolInOut (
     PartitionConfig &= (UINT8)~0x7;
     PartitionConfig |= Partition->PartitionType;
     Status = EmmcSetExtCsd (Partition, OFFSET_OF (EMMC_EXT_CSD, PartitionConfig), PartitionConfig, NULL, FALSE);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
     Device->ExtCsd.PartitionConfig = PartitionConfig;
@@ -1370,13 +1370,13 @@ EmmcSecurityProtocolInOut (
     }
 
     Status = EmmcSetBlkCount (Partition, (UINT16)BlockNum, NULL, FALSE);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
 
     PayloadBufferSize = BlockNum * BlockSize;
     Status = EmmcProtocolInOut (Partition, SecurityProtocolId, SecurityProtocolSpecificData, PayloadBufferSize, PayloadBuffer, IsRead, Timeout, NULL, FALSE);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
 
@@ -1619,7 +1619,7 @@ EmmcEraseBlockStart (
   Device   = Partition->Device;
   PassThru = Device->Private->PassThru;
 
-  EraseBlockStart = AllocateZeroPool (sizeof (EMMC_REQUEST));
+  EraseBlockStart = AllocateZeroPool(sizeof (EMMC_REQUEST));
   if (EraseBlockStart == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Error;
@@ -1654,7 +1654,7 @@ EmmcEraseBlockStart (
                     EraseBlockStart,
                     &EraseBlockStart->Event
                     );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       goto Error;
     }
   } else {
@@ -1669,14 +1669,14 @@ Error:
     // For asynchronous operation, only free request and event in error case.
     // The request and event will be freed in asynchronous callback for success case.
     //
-    if (EFI_ERROR (Status) && (EraseBlockStart != NULL)) {
+    if (EFI_ERROR(Status) && (EraseBlockStart != NULL)) {
       OldTpl = gBS->RaiseTPL (TPL_NOTIFY);
       RemoveEntryList (&EraseBlockStart->Link);
       gBS->RestoreTPL (OldTpl);
       if (EraseBlockStart->Event != NULL) {
         gBS->CloseEvent (EraseBlockStart->Event);
       }
-      FreePool (EraseBlockStart);
+      FreePool(EraseBlockStart);
     }
   } else {
     //
@@ -1686,7 +1686,7 @@ Error:
       OldTpl = gBS->RaiseTPL (TPL_NOTIFY);
       RemoveEntryList (&EraseBlockStart->Link);
       gBS->RestoreTPL (OldTpl);
-      FreePool (EraseBlockStart);
+      FreePool(EraseBlockStart);
     }
   }
 
@@ -1726,7 +1726,7 @@ EmmcEraseBlockEnd (
   Device   = Partition->Device;
   PassThru = Device->Private->PassThru;
 
-  EraseBlockEnd = AllocateZeroPool (sizeof (EMMC_REQUEST));
+  EraseBlockEnd = AllocateZeroPool(sizeof (EMMC_REQUEST));
   if (EraseBlockEnd == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Error;
@@ -1761,7 +1761,7 @@ EmmcEraseBlockEnd (
                     EraseBlockEnd,
                     &EraseBlockEnd->Event
                     );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       goto Error;
     }
   } else {
@@ -1776,14 +1776,14 @@ Error:
     // For asynchronous operation, only free request and event in error case.
     // The request and event will be freed in asynchronous callback for success case.
     //
-    if (EFI_ERROR (Status) && (EraseBlockEnd != NULL)) {
+    if (EFI_ERROR(Status) && (EraseBlockEnd != NULL)) {
       OldTpl = gBS->RaiseTPL (TPL_NOTIFY);
       RemoveEntryList (&EraseBlockEnd->Link);
       gBS->RestoreTPL (OldTpl);
       if (EraseBlockEnd->Event != NULL) {
         gBS->CloseEvent (EraseBlockEnd->Event);
       }
-      FreePool (EraseBlockEnd);
+      FreePool(EraseBlockEnd);
     }
   } else {
     //
@@ -1793,7 +1793,7 @@ Error:
       OldTpl = gBS->RaiseTPL (TPL_NOTIFY);
       RemoveEntryList (&EraseBlockEnd->Link);
       gBS->RestoreTPL (OldTpl);
-      FreePool (EraseBlockEnd);
+      FreePool(EraseBlockEnd);
     }
   }
 
@@ -1831,7 +1831,7 @@ EmmcEraseBlock (
   Device   = Partition->Device;
   PassThru = Device->Private->PassThru;
 
-  EraseBlock = AllocateZeroPool (sizeof (EMMC_REQUEST));
+  EraseBlock = AllocateZeroPool(sizeof (EMMC_REQUEST));
   if (EraseBlock == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Error;
@@ -1868,7 +1868,7 @@ EmmcEraseBlock (
                     EraseBlock,
                     &EraseBlock->Event
                     );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       goto Error;
     }
   } else {
@@ -1883,14 +1883,14 @@ Error:
     // For asynchronous operation, only free request and event in error case.
     // The request and event will be freed in asynchronous callback for success case.
     //
-    if (EFI_ERROR (Status) && (EraseBlock != NULL)) {
+    if (EFI_ERROR(Status) && (EraseBlock != NULL)) {
       OldTpl = gBS->RaiseTPL (TPL_NOTIFY);
       RemoveEntryList (&EraseBlock->Link);
       gBS->RestoreTPL (OldTpl);
       if (EraseBlock->Event != NULL) {
         gBS->CloseEvent (EraseBlock->Event);
       }
-      FreePool (EraseBlock);
+      FreePool(EraseBlock);
     }
   } else {
     //
@@ -1900,7 +1900,7 @@ Error:
       OldTpl = gBS->RaiseTPL (TPL_NOTIFY);
       RemoveEntryList (&EraseBlock->Link);
       gBS->RestoreTPL (OldTpl);
-      FreePool (EraseBlock);
+      FreePool(EraseBlock);
     }
   }
 
@@ -1931,7 +1931,7 @@ EmmcWriteZeros (
   UINT8                                *Buffer;
   UINT32                               MediaId;
 
-  Buffer = AllocateZeroPool (Size);
+  Buffer = AllocateZeroPool(Size);
   if (Buffer == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
@@ -1939,7 +1939,7 @@ EmmcWriteZeros (
   MediaId = Partition->BlockMedia.MediaId;
 
   Status = EmmcReadWrite (Partition, MediaId, StartLba, Buffer, Size, FALSE, NULL);
-  FreePool (Buffer);
+  FreePool(Buffer);
 
   return Status;
 }
@@ -2037,7 +2037,7 @@ EmmcEraseBlocks (
     PartitionConfig &= (UINT8)~0x7;
     PartitionConfig |= Partition->PartitionType;
     Status = EmmcSetExtCsd (Partition, OFFSET_OF (EMMC_EXT_CSD, PartitionConfig), PartitionConfig, (EFI_BLOCK_IO2_TOKEN*)Token, FALSE);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
     Device->ExtCsd.PartitionConfig = PartitionConfig;
@@ -2062,7 +2062,7 @@ EmmcEraseBlocks (
     //
     if (BlockNum < EraseGroupSize) {
       Status = EmmcWriteZeros (Partition, FirstLba, Size);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         return Status;
       }
 
@@ -2090,7 +2090,7 @@ EmmcEraseBlocks (
     if (StartGroupLba > FirstLba) {
       WriteZeroSize = (UINTN)(StartGroupLba - FirstLba) * BlockSize;
       Status = EmmcWriteZeros (Partition, FirstLba, WriteZeroSize);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         return Status;
       }
     }
@@ -2103,7 +2103,7 @@ EmmcEraseBlocks (
     if (EndGroupLba <= LastLba) {
       WriteZeroSize = (UINTN)(LastLba + 1 - EndGroupLba) * BlockSize;
       Status = EmmcWriteZeros (Partition, EndGroupLba, WriteZeroSize);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         return Status;
       }
     }
@@ -2133,17 +2133,17 @@ EmmcEraseBlocks (
   }
 
   Status = EmmcEraseBlockStart (Partition, FirstLba, (EFI_BLOCK_IO2_TOKEN*)Token, FALSE);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
   Status = EmmcEraseBlockEnd (Partition, LastLba, (EFI_BLOCK_IO2_TOKEN*)Token, FALSE);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
   Status = EmmcEraseBlock (Partition, (EFI_BLOCK_IO2_TOKEN*)Token, TRUE);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 

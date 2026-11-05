@@ -179,7 +179,7 @@ AddImageStruct(
   mImageStruct[mImageStructCount].EntryPoint = EntryPoint;
   if (PdbString != NULL) {
     PdbStringSize = AsciiStrSize(PdbString);
-    mImageStruct[mImageStructCount].PdbString = AllocateCopyPool (PdbStringSize, PdbString);
+    mImageStruct[mImageStructCount].PdbString = AllocateCopyPool(PdbStringSize, PdbString);
     if (mImageStruct[mImageStructCount].PdbString != NULL) {
       mImageStruct[mImageStructCount].PdbStringSize = (UINT16) PdbStringSize;
     }
@@ -266,7 +266,7 @@ GetSmmLoadedImage(
   if (Status != EFI_BUFFER_TOO_SMALL) {
     return;
   }
-  HandleBuffer = AllocateZeroPool (HandleBufferSize);
+  HandleBuffer = AllocateZeroPool(HandleBufferSize);
   if (HandleBuffer == NULL) {
     return;
   }
@@ -377,7 +377,7 @@ DumpSmiChildContext (
     Str = ConvertDevicePathToText((EFI_DEVICE_PATH_PROTOCOL *)(((SMI_HANDLER_PROFILE_USB_REGISTER_CONTEXT *)Context) + 1), TRUE, TRUE);
     DEBUG ((DEBUG_INFO, "  UsbDevicePath - %s\n", Str));
     if (Str != NULL) {
-      FreePool (Str);
+      FreePool(Str);
     }
   } else {
     DEBUG ((DEBUG_INFO, "  Context - "));
@@ -649,7 +649,7 @@ GetSmmImageDatabaseData (
     ImageStruct->ImageSize = mImageStruct[Index].ImageSize;
     if (mImageStruct[Index].PdbStringSize != 0) {
       ImageStruct->PdbStringOffset = sizeof(SMM_CORE_IMAGE_DATABASE_STRUCTURE);
-      CopyMem ((VOID *)((UINTN)ImageStruct + ImageStruct->PdbStringOffset), mImageStruct[Index].PdbString, mImageStruct[Index].PdbStringSize);
+      CopyMem((VOID *)((UINTN)ImageStruct + ImageStruct->PdbStringOffset), mImageStruct[Index].PdbString, mImageStruct[Index].PdbStringSize);
     } else {
       ImageStruct->PdbStringOffset = 0;
     }
@@ -709,7 +709,7 @@ GetSmmSmiHandlerDataOnSmiEntry(
     SmiHandlerStruct->ContextBufferSize = (UINT32)SmiHandler->ContextSize;
     if (SmiHandler->ContextSize != 0) {
       SmiHandlerStruct->ContextBufferOffset = sizeof(SMM_CORE_SMI_HANDLER_STRUCTURE);
-      CopyMem ((UINT8 *)SmiHandlerStruct + SmiHandlerStruct->ContextBufferOffset, SmiHandler->Context, SmiHandler->ContextSize);
+      CopyMem((UINT8 *)SmiHandlerStruct + SmiHandlerStruct->ContextBufferOffset, SmiHandler->Context, SmiHandler->ContextSize);
     } else {
       SmiHandlerStruct->ContextBufferOffset = 0;
     }
@@ -1030,7 +1030,7 @@ RegisterSmiHandlerProfileHandler (
                     &gSmiHandlerProfileGuid,
                     &DispatchHandle
                     );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   BuildSmiHandlerProfileDatabase();
 }
@@ -1123,7 +1123,7 @@ ConvertSmiHandlerUsbContext (
   }
   SmiHandlerUsbContext->Type = UsbContext->Type;
   SmiHandlerUsbContext->DevicePathSize = (UINT32)DevicePathSize;
-  CopyMem (SmiHandlerUsbContext + 1, UsbContext->Device, DevicePathSize);
+  CopyMem(SmiHandlerUsbContext + 1, UsbContext->Device, DevicePathSize);
   *SmiHandlerUsbContextSize = sizeof (SMI_HANDLER_PROFILE_USB_REGISTER_CONTEXT) + DevicePathSize;
   return SmiHandlerUsbContext;
 }
@@ -1198,7 +1198,7 @@ SmiHandlerProfileRegisterHandler (
     return EFI_INVALID_PARAMETER;
   }
 
-  SmiHandler = AllocateZeroPool (sizeof (SMI_HANDLER));
+  SmiHandler = AllocateZeroPool(sizeof (SMI_HANDLER));
   if (SmiHandler == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
@@ -1215,7 +1215,7 @@ SmiHandlerProfileRegisterHandler (
     } else if (CompareGuid (HandlerGuid, &gEfiSmmSwDispatch2ProtocolGuid)) {
       SmiHandler->Context = ConvertSmiHandlerSwContext (Context, ContextSize, &SmiHandler->ContextSize);
     } else {
-      SmiHandler->Context = AllocateCopyPool (ContextSize, Context);
+      SmiHandler->Context = AllocateCopyPool(ContextSize, Context);
     }
   }
   if (SmiHandler->Context == NULL) {
@@ -1225,9 +1225,9 @@ SmiHandlerProfileRegisterHandler (
   SmiEntry = SmmCoreFindHardwareSmiEntry (HandlerGuid, TRUE);
   if (SmiEntry == NULL) {
     if (SmiHandler->Context != NULL) {
-      FreePool (SmiHandler->Context);
+      FreePool(SmiHandler->Context);
     }
-    FreePool (SmiHandler);
+    FreePool(SmiHandler);
     return EFI_OUT_OF_RESOURCES;
   }
 
@@ -1309,7 +1309,7 @@ SmiHandlerProfileUnregisterHandler (
 
   if (SearchContext != NULL) {
     if (CompareGuid (HandlerGuid, &gEfiSmmUsbDispatch2ProtocolGuid)) {
-      FreePool (SearchContext);
+      FreePool(SearchContext);
     }
   }
 
@@ -1320,13 +1320,13 @@ SmiHandlerProfileUnregisterHandler (
 
   RemoveEntryList (&SmiHandler->Link);
   if (SmiHandler->Context != NULL) {
-    FreePool (SmiHandler->Context);
+    FreePool(SmiHandler->Context);
   }
-  FreePool (SmiHandler);
+  FreePool(SmiHandler);
 
   if (IsListEmpty (&SmiEntry->SmiHandlers)) {
     RemoveEntryList (&SmiEntry->AllEntries);
-    FreePool (SmiEntry);
+    FreePool(SmiEntry);
   }
 
   return EFI_SUCCESS;
@@ -1352,7 +1352,7 @@ SmmCoreInitializeSmiHandlerProfile (
                       SmmReadyToLockInSmiHandlerProfile,
                       &Registration
                       );
-    ASSERT_EFI_ERROR (Status);
+    ASSERT_EFI_ERROR(Status);
 
     Handle = NULL;
     Status = gSmst->SmmInstallProtocolInterface (
@@ -1361,7 +1361,7 @@ SmmCoreInitializeSmiHandlerProfile (
                       EFI_NATIVE_INTERFACE,
                       &mSmiHandlerProfile
                       );
-    ASSERT_EFI_ERROR (Status);
+    ASSERT_EFI_ERROR(Status);
   }
 }
 

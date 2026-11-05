@@ -1,20 +1,61 @@
 #!/bin/bash
 
 # created by vector sigma on July 15 2019
-# github version
+# modified by LAbyOne on My 2021
+# github version CloverHackyColor
 
 # Linux users should be able to use this wrapper, although the following are needed:
-# gcc         (check for ./build_gcc8.sh or newer)
-# python      (sudo apt-get install python)
-# uuid-dev    (sudo apt-get install uuid-dev)
-# git         (sudo apt-get install git)
+# (Ubuntu alike)
+# sudo apt-get install build-essential uuid-dev iasl git gcc-9 nasm python3-distutils
 
 # $1 argument override MYTOOLCHAIN variable, in case you want GCC53 for example
+# ====== COLORS ======
+COL_BLACK="\x1b[40;01m"
+COL_RED="\x1b[31;01m"
+COL_GREEN="\x1b[32;01m"
+COL_YELLOW="\x1b[33;01m"
+COL_MAGENTA="\x1b[35;01m"
+COL_CYAN="\x1b[36;01m"
+COL_WHITE="\x1b[37;01m"
+COL_BLUE="\x1b[34;01m"
+COL_RESET="\x1b[39;49;00m"
+# ====== Main Window SetUp ======
+if [[ "$2" != ci ]]; then
+osascript <<EOF
+tell application "System Events" to tell application "Finder"
+	tell process "Terminal"
+		set frontmost to true
+	end tell
+end tell
 
+tell application "Terminal"
+	activate
+	set bounds of window 1 to {0, 23, 615, 420}
+#	set current settings of window 1 to settings set "Pro"
+#	set font name of window 1 to "Monaco"
+#	set font size of window 1 to "11"
+#	set normal text color of window 1 to {3341, 35186, 50092}
+#	set position of first window to {915, 474}
+end tell
+EOF
+fi
+# ====== Clover workspace SetUp ======
 cd "$(dirname $([ -L $0 ] && readlink $0 || echo $0))"
 declare -r CLOVERROOT="$PWD"
 declare -r SYSNAME="$(uname)"
-MYTOOLCHAIN=${1:-GCC53}
+MYTOOLCHAIN=${1:-GCC161}
+revision=$(git describe --tags $(git rev-list --tags --max-count=1))
+lsha1="not a git repo"
+pyversion=$(echo $COL_CYAN"Current Python version: "$COL_WHITE$($(which python3) --version))
+pynone=$(echo -e "$COL_RED    Python3 seems missing on this machine, it is required to build Clover ")
+export DIR_OUT=${DIR_OUT:-"$CLOVERROOT"/toolchain/tools/output}
+export DIR_SCT=${DIR_SCT:-${CLOVERROOT}/toolchain/tools/Scripts}
+if [[ ! -d ${DIR_SCT} ]] || [[ ! -d ${DIR_OUT} ]]; then
+  mkdir -p ${DIR_SCT} ${DIR_OUT}
+fi
+if [[ -d .git ]]; then
+  lsha1=$(git rev-parse --short HEAD)
+fi
 
 # Functions
 pathmunge() {
@@ -60,7 +101,11 @@ if [[ "$SYSNAME" == Linux ]]; then
   TOOLCHAIN_DIR=${TOOLCHAIN_DIR:-/usr}
 elif [[ "$SYSNAME" == Darwin ]]; then
   pathmunge "$(xcode-select --print-path)"/usr/bin
-  TOOLCHAIN_DIR=${TOOLCHAIN_DIR:-"$CLOVERROOT"/toolchain}
+  if [[ -d ~/src/opt/local ]]; then
+    TOOLCHAIN_DIR=~/src/opt/local
+  else
+    TOOLCHAIN_DIR=${TOOLCHAIN_DIR:-"$CLOVERROOT"/toolchain}
+  fi
 fi
 
 pathmunge "$TOOLCHAIN_DIR"/bin
@@ -77,13 +122,13 @@ checkTools() {
 if [[ "$SYSNAME" == Darwin ]]; then
   checkXCODE
   exportPaths
-  local GCC53_BIN="$PREFIX/cross/bin/x86_64-clover-linux-gnu-gcc"
-  if [[ $MYTOOLCHAIN == GCC* ]] && [[ ! -x "${GCC53_BIN}" ]]; then
-    if [[ $MYTOOLCHAIN == GCC53 ]]; then
+  local GCC161_BIN="$PREFIX/cross/bin/x86_64-clover-linux-gnu-gcc"
+  if [[ $MYTOOLCHAIN == GCC* ]] && [[ ! -x "${GCC161_BIN}" ]]; then
+    if [[ $MYTOOLCHAIN == GCC161 ]]; then
       cd "${CLOVERROOT}"
-      ./build_gcc9.sh
+      ./build_gcc16.sh
     else
-      MYTOOLCHAIN=XCODE8
+      MYTOOLCHAIN=XCODE16
     fi
   fi
 else
@@ -91,12 +136,30 @@ else
 fi
 }
 
+# Clone OR Update OpenCorePkg
+function clone_OpenCorePkg() {
+  pushd . >/dev/null
+  cd "${CLOVERROOT}"
+  if [ ! -d OpenCorePkg/AppleModels ]; then
+    echo "Cloning OpenCorePkg...."
+    git clone https://github.com/CloverHackyColor/OpenCorePkg.git > /dev/null
+    cd "${OpenCorePkg}"
+    git submodule update --init
+  else
+    echo "Updating OpenCorePkg...."
+    cd "${OpenCorePkg}"
+    git pull > /dev/null
+  fi
+  popd >/dev/null
+}
+
 updateClover() {
 echo "[UPDATE CLOVER]"
 cd "${CLOVERROOT}"
+clone_OpenCorePkg
 if [[ -d .git ]]; then
-  git fetch --all
-  git pull origin master
+  git fetch --all --recurse-submodules
+  git pull --recurse-submodules origin master
 else
   echo "Error: this is not a git repository, can't update!"
 fi
@@ -106,45 +169,227 @@ updateResetClover() {
 echo "[UPDATE RESET CLOVER]"
 cd "${CLOVERROOT}"
 if [[ -d .git ]]; then
-  git fetch --all
+  git fetch --all --recurse-submodules
+  git submodule foreach --recursive git clean -d -f -f
+  git clean -d -f -f
+  git submodule foreach --recursive git reset --hard origin/master
   git reset --hard origin/master
-  git pull origin master
+  git pull --recurse-submodules origin master
 else
   echo "Error: this is not a git repository, can't update!"
 fi
 }
 
-buildClover() {
-checkTools
-
-cd "${CLOVERROOT}"
-
-if [[ -z "$WORKSPACE" ]]; then
-  export EDK_TOOLS_PATH="${PWD}"/BaseTools
-  set +u
-  source ./edksetup.sh BaseTools
-  set -u
-  cd "$CLOVERROOT"
-  WORKSPACE="${PWD}"
-fi
-
-echo "[BUILD CLOVER]"
-# Run a custom build script if exist (~/src/tools/Scripts/build.sh)
-# This allow the user to run ebuild.sh with own parameters
-if [[ -x "${DIR_TOOLS}"/Scripts/build.sh ]]; then
-  echo "Running custom build script"
-  "${DIR_TOOLS}"/Scripts/build.sh "${CLOVERROOT}" $MYTOOLCHAIN
+buildCloverHFSPlus() {
+if [[ -f "${CLOVERROOT}"/FileSystems/HFSPlus/X64/HFSPlus.efi ]]; then
+  echo "building Clover with HFSPlus"
+  buildClover HFSPlus
 else
-  ./ebuild.sh -fr -mc --no-usb -D NO_GRUB_DRIVERS_EMBEDDED -t $MYTOOLCHAIN
-  ./ebuild.sh -fr -D NO_GRUB_DRIVERS_EMBEDDED -t $MYTOOLCHAIN
-fi
-
-# Run a post build script if exist (~/src/tools/Scripts/postbuild.sh)
-if [[ -x "${DIR_TOOLS}"/Scripts/postbuild.sh ]]; then
-  echo "Running postbuild script"
-  "${DIR_TOOLS}"/Scripts/postbuild.sh "${CLOVERROOT}" $MYTOOLCHAIN
+  echo "${CLOVERROOT}/FileSystems/HFSPlus/X64/HFSPlus.efi: no such file!"
+  sleep 3
+  menu
 fi
 }
+
+makeRelease() {
+  checkTools
+
+  # to force recreation of the Conf folder. You can still use a custom CONF_PATH if you don't want recreation.
+  rm -rf "$CLOVERROOT"/Conf
+  mkdir "$CLOVERROOT"/Conf
+
+  cd "${CLOVERROOT}"
+  if [[ -z "$WORKSPACE" ]]; then
+    export EDK_TOOLS_PATH="${PWD}"/BaseTools
+    set +u
+    source ./edksetup.sh BaseTools
+    set -u
+    cd "$CLOVERROOT"
+    WORKSPACE="${PWD}"
+  fi
+
+  echo "[BUILD CLOVER RELEASE]"
+  ./ebuild.sh -fr -mc --no-usb -D NO_GRUB_DRIVERS_EMBEDDED -t $MYTOOLCHAIN
+  ./ebuild.sh -fr -D NO_GRUB_DRIVERS_EMBEDDED -D LESS_DEBUG -t $MYTOOLCHAIN	  
+  # Run a post build script if exist (${DIR_TOOLS}/CloverScripts/postbuild.sh)
+  if [[ -x "${DIR_TOOLS}"/CloverScripts/postbuild.sh ]]; then
+		chmod +x "${DIR_TOOLS}"/CloverScripts/postbuild.sh
+		echo "Running Clover postbuild script"
+		"${DIR_TOOLS}"/CloverScripts/postbuild.sh "${CLOVERROOT}" $MYTOOLCHAIN
+  fi
+}
+
+makeReleaseXC() {
+  checkTools
+
+  # to force recreation of the Conf folder. You can still use a custom CONF_PATH if you don't want recreation.
+  rm -rf "$CLOVERROOT"/Conf
+  mkdir "$CLOVERROOT"/Conf
+
+  cd "${CLOVERROOT}"
+  if [[ -z "$WORKSPACE" ]]; then
+    export EDK_TOOLS_PATH="${PWD}"/BaseTools
+    set +u
+    source ./edksetup.sh BaseTools
+    set -u
+    cd "$CLOVERROOT"
+    WORKSPACE="${PWD}"
+  fi
+
+  echo "[BUILD CLOVER RELEASE WITH XCODE]"
+  local xrel="$(defaults read /Applications/Xcode.app/Contents/version.plist CFBundleShortVersionString)"
+  if [[ "$xrel" < "14.*" ]]; then
+	  ./ebuild.sh -fr -mc --no-usb -D NO_GRUB_DRIVERS_EMBEDDED -t XCODE8
+	  ./ebuild.sh -fr -D NO_GRUB_DRIVERS_EMBEDDED -D LESS_DEBUG -t XCODE8
+  elif [[ "$xrel" == "14.*" ]]; then
+	  ./ebuild.sh -fr -mc --no-usb -D NO_GRUB_DRIVERS_EMBEDDED -t XCODE14
+	  ./ebuild.sh -fr -D NO_GRUB_DRIVERS_EMBEDDED -D LESS_DEBUG -t XCODE14
+  elif [[ "$xrel" == "15.*" ]]; then
+	  ./ebuild.sh -fr -mc --no-usb -D NO_GRUB_DRIVERS_EMBEDDED -t XCODE15
+	  ./ebuild.sh -fr -D NO_GRUB_DRIVERS_EMBEDDED -D LESS_DEBUG -t XCODE15
+  elif [[ "$xrel" == "16.*" ]]; then
+	  ./ebuild.sh -fr -mc --no-usb -D NO_GRUB_DRIVERS_EMBEDDED -t XCODE16
+	  ./ebuild.sh -fr -D NO_GRUB_DRIVERS_EMBEDDED -D LESS_DEBUG -t XCODE16
+  elif [[ "$xrel" > "16.*" ]]; then
+	  ./ebuild.sh -fr -mc --no-usb -D NO_GRUB_DRIVERS_EMBEDDED -t XCODE16
+	  ./ebuild.sh -fr -D NO_GRUB_DRIVERS_EMBEDDED -D LESS_DEBUG -t XCODE16
+  fi
+  # Run a post build script if exist (${DIR_TOOLS}/CloverScripts/postbuild.sh)
+  if [[ -x "${DIR_TOOLS}"/CloverScripts/postbuild.sh ]]; then
+		chmod +x "${DIR_TOOLS}"/CloverScripts/postbuild.sh
+		echo "Running Clover postbuild script"
+		"${DIR_TOOLS}"/CloverScripts/postbuild.sh "${CLOVERROOT}" $MYTOOLCHAIN
+  fi
+}
+
+
+BLC() {
+if [[ ! -d "${CLOVERROOT}"/CloverPackage/BootLoaderChooser ]]; then
+  mkdir -p "${CLOVERROOT}"/CloverPackage/BootLoaderChooser
+fi
+curl -sLq https://github.com/jief666/BootloaderChooser/releases/download/1.4/BootX64.efi  > "${CLOVERROOT}"/CloverPackage/BootLoaderChooser/BootX64.efi
+chmod 775 "${CLOVERROOT}"/CloverPackage/BootLoaderChooser/BootX64.efi
+}
+
+buildClover() {
+  checkTools
+
+  # to force recreation of the Conf folder. You can still use a custom CONF_PATH if you don't want recreation.
+  rm -rf "$CLOVERROOT"/Conf
+  mkdir "$CLOVERROOT"/Conf
+
+  cd "${CLOVERROOT}"
+  if [[ -z "$WORKSPACE" ]]; then
+    export EDK_TOOLS_PATH="${PWD}"/BaseTools
+    set +u
+    source ./edksetup.sh BaseTools
+    set -u
+    cd "$CLOVERROOT"
+    WORKSPACE="${PWD}"
+  fi
+
+  echo "[BUILD CLOVER]"
+  # Run a custom build script if exist (${DIR_TOOLS}/Scripts/build.sh)
+  # This allow the user to run ebuild.sh with own parameters
+  if [[ -x "${DIR_TOOLS}"/Scripts/build.sh ]]; then
+    echo "Running custom build script"
+    "${DIR_TOOLS}"/Scripts/build.sh "${CLOVERROOT}" $MYTOOLCHAIN
+  else
+    local parameter=${1:-none}
+    if [[ "${parameter}" == HFSPlus ]]; then
+      #./ebuild.sh -fr -mc --no-usb -D NO_GRUB_DRIVERS_EMBEDDED -D USE_APPLE_HFSPLUS_DRIVER -t $MYTOOLCHAIN
+      ./ebuild.sh -fr -D NO_GRUB_DRIVERS_EMBEDDED -D USE_APPLE_HFSPLUS_DRIVER -t $MYTOOLCHAIN
+    else
+      #./ebuild.sh -fr -mc --no-usb -D NO_GRUB_DRIVERS_EMBEDDED -t $MYTOOLCHAIN
+      ./ebuild.sh -fr -D NO_GRUB_DRIVERS_EMBEDDED -D LESS_DEBUG -t $MYTOOLCHAIN
+    fi
+  fi
+  # Run a post build script if exist (${DIR_TOOLS}/CloverScripts/postbuild.sh)
+  if [[ -x "${DIR_TOOLS}"/CloverScripts/postbuild.sh ]]; then
+		chmod +x "${DIR_TOOLS}"/CloverScripts/postbuild.sh
+		echo "Running Clover postbuild script"
+		"${DIR_TOOLS}"/CloverScripts/postbuild.sh "${CLOVERROOT}" $MYTOOLCHAIN
+  fi
+  # Run a custom post build script if exist (${DIR_TOOLS}/Scripts/postbuild.sh)
+  if [[ -x "${DIR_TOOLS}"/Scripts/postbuild.sh ]]; then
+    echo "Running postbuild script"
+    "${DIR_TOOLS}"/Scripts/postbuild.sh "${CLOVERROOT}" $MYTOOLCHAIN
+  fi
+}
+
+buildCloverXC() {
+  checkTools
+  # to force recreation of the Conf folder. You can still use a custom CONF_PATH if you don't want recreation.
+  rm -rf "$CLOVERROOT"/Conf
+  mkdir "$CLOVERROOT"/Conf
+
+  cd "${CLOVERROOT}"
+  if [[ -z "$WORKSPACE" ]]; then
+    export EDK_TOOLS_PATH="${PWD}"/BaseTools
+    set +u
+    source ./edksetup.sh BaseTools
+    set -u
+    cd "$CLOVERROOT"
+    WORKSPACE="${PWD}"
+  fi
+
+  echo "[BUILD CLOVER WITH XCODE]"
+  # Run a custom build script if exist (${DIR_TOOLS}/Scripts/build.sh)
+  # This allow the user to run ebuild.sh with own parameters
+  if [[ -x "${DIR_TOOLS}"/Scripts/build.sh ]]; then
+    echo "Running custom build script"
+    "${DIR_TOOLS}"/Scripts/build.sh "${CLOVERROOT}" $MYTOOLCHAIN
+  else
+  local xrel="$(defaults read /Applications/Xcode.app/Contents/version.plist CFBundleShortVersionString)"
+    if [[ "$xrel" < "14.*" ]]; then
+  	  ./ebuild.sh -fr -D NO_GRUB_DRIVERS_EMBEDDED -D USE_APPLE_HFSPLUS_DRIVER -t XCODE8
+    elif [[ "$xrel" == "14.*" ]]; then
+  	  ./ebuild.sh -fr -D NO_GRUB_DRIVERS_EMBEDDED -D USE_APPLE_HFSPLUS_DRIVER -t XCODE14
+    elif [[ "$xrel" == "15.*" ]]; then
+  	  ./ebuild.sh -fr -D NO_GRUB_DRIVERS_EMBEDDED -D USE_APPLE_HFSPLUS_DRIVER -t XCODE15
+    elif [[ "$xrel" == "16.*" ]]; then
+  	  ./ebuild.sh -fr -D NO_GRUB_DRIVERS_EMBEDDED -D USE_APPLE_HFSPLUS_DRIVER -t XCODE16
+    elif [[ "$xrel" > "16.*" ]]; then
+  	  ./ebuild.sh -fr -D NO_GRUB_DRIVERS_EMBEDDED -D USE_APPLE_HFSPLUS_DRIVER -t XCODE16
+    fi
+  fi
+  # Run a post build script if exist (${DIR_TOOLS}/CloverScripts/postbuild.sh)
+  if [[ -x "${DIR_TOOLS}"/CloverScripts/postbuild.sh ]]; then
+		chmod +x "${DIR_TOOLS}"/CloverScripts/postbuild.sh
+		echo "Running Clover postbuild script"
+		"${DIR_TOOLS}"/CloverScripts/postbuild.sh "${CLOVERROOT}" $MYTOOLCHAIN
+  fi
+  # Run a custom post build script if exist (${DIR_TOOLS}/Scripts/postbuild.sh)
+  if [[ -x "${DIR_TOOLS}"/Scripts/postbuild.sh ]]; then
+    echo "Running postbuild script"
+    "${DIR_TOOLS}"/Scripts/postbuild.sh "${CLOVERROOT}" $MYTOOLCHAIN
+  fi
+}
+
+buildtestsix() {
+  checkTools
+
+  # to force recreation of the Conf folder. You can still use a custom CONF_PATH if you don't want recreation.
+  rm -rf "$CLOVERROOT"/Conf
+  mkdir "$CLOVERROOT"/Conf
+
+  cd "${CLOVERROOT}"
+  echo "[BUILD CLOVERDB]"
+  ./hebuild.sh  -t $MYTOOLCHAIN
+}
+
+buildtestsev() {
+  checkTools
+
+  # to force recreation of the Conf folder. You can still use a custom CONF_PATH if you don't want recreation.
+  rm -rf "$CLOVERROOT"/Conf
+  mkdir "$CLOVERROOT"/Conf
+
+  cd "${CLOVERROOT}"
+  echo "[BUILD CLOVERDB]"
+  ./hebuild.sh -mc --no-usb -D NO_GRUB_DRIVERS_EMBEDDED  -t $MYTOOLCHAIN
+}
+
 
 buildCloverTest() {
 checkTools
@@ -167,67 +412,77 @@ echo "[BUILD CLOVER TEST]"
 buildPkg() {
 if [[ "$SYSNAME" == Darwin ]]; then
   cd "${CLOVERROOT}"/CloverPackage
-  echo "[BUILD PKG]"
   checkXCODE
   checkGETTEXT
-  make pkg
+  echo "[BUILD PKG]"
+  echo "The log will be created in the CloverPackage folder."
+  rm -f mpkg.log
+  make pkg | tee mpkg.log
 else
   echo && echo "can't build pkg on a non Darwin OS!"
 fi
 }
 
 buildApp() {
+local withClover=${1-"none"}
 if [[ "$SYSNAME" == Darwin ]]; then
   if [[ -f "${CLOVERROOT}"/CloverPackage/CloverV2/EFI/CLOVER/CLOVERX64.efi ]]; then
+    rm -f "${CLOVERROOT}"/CloverPackage/sym/.withV2
+    mkdir -p "${CLOVERROOT}"/CloverPackage/sym
+    if [[ $withClover == withV2 ]]; then
+      touch "${CLOVERROOT}"/CloverPackage/sym/.withV2
+    fi
     cd "${CLOVERROOT}"/CloverApp
     echo "[BUILD APP]"
-    echo "(Require Xcode 11 or greater)"
     checkXCODE
     make
-    if [[ -d "${CLOVERROOT}"/.git ]];then
-      local aname="Clover.app-$( git -C "${CLOVERROOT}" describe --tags --abbrev=0 ).zip"
-    else
-      local aname=Clover.app.zip
-    fi
-    rm -f "${CLOVERROOT}"/CloverPackage/sym/Clover.app*.zip
-    mkdir -p "${CLOVERROOT}"/CloverPackage/sym
-
-    cd "${CLOVERROOT}"/CloverApp/build
-    zip -qq -r -y "${CLOVERROOT}"/CloverPackage/sym/${aname} Clover.app/
-    open "${CLOVERROOT}"/CloverPackage/sym
   else
     echo && echo "please, build Clover first!"
     sleep 3
   fi
 else
-  echo && echo "can't build pkg on a non Darwin OS!"
+  echo && echo "Clover.app can only be built in macOS!"
 fi
 }
 
 buildIso() {
-cd "${CLOVERROOT}"/CloverPackage
-echo "[BUILD ISO]"
-make iso
+  cd "${CLOVERROOT}"/CloverPackage
+  echo "[BUILD ISO]"
+  make iso
 }
 
+makeV2() {
+	#clear
+	export V2=${V2:-${CLOVERROOT}/CloverPackage/CloverV2}
+	if [[ -f $V2/EFI/CLOVER/CLOVERX64.efi ]]; then
+		cd "${CLOVERROOT}"/CloverPackage
+		echo "" && echo -e $COL_CYAN"[BUILD CloverV2]"
+		make zip
+	else
+		echo "" && echo -e $COL_RED"please, Compile Clover first!!"
+		Sleep 3
+	fi
+}
+
+
 checkStatus() {
-cd "${CLOVERROOT}"
-if [[ -d .git ]]; then
-  git fetch origin
-  git status
-else
-  echo "Error: this is not a git repository, can't get info!"
-fi
+  if [[ -d .git ]]; then
+    git fetch --recurse-submodules origin
+    git log -n 1 > "${DIR_OUT}"/status_${revision}-$(date +%Y%m%d-%H.%M.%S).txt
+    git status >> "${DIR_OUT}"/status_${revision}-$(date +%Y%m%d-%H.%M.%S).txt
+    git submodule foreach --recursive "git log -n 1 && git status" >> "${DIR_OUT}"/status_${revision}-$(date +%Y%m%d-%H.%M.%S).txt && open "${DIR_OUT}"/status_${revision}-*.txt
+  else
+    echo "Error: this is not a git repository, can't get info!"
+  fi
 }
 
 showdiff() {
-cd "${CLOVERROOT}"
-if [[ -d .git ]]; then
-  git fetch origin
-  git diff
-else
-  echo "Error: this is not a git repository, can't get info!"
-fi
+  if [[ -d .git ]]; then
+    git fetch --recurse-submodules origin
+    git diff > "${DIR_OUT}"/diff_${revision}-$(date +%Y%m%d-%H.%M.%S).txt && open "${DIR_OUT}"/diff_${revision}-*.txt
+  else
+    echo "Error: this is not a git repository, can't get info!"
+  fi
 }
 
 cleanBaseTools() {
@@ -235,74 +490,302 @@ cd "${CLOVERROOT}"/BaseTools
 make clean
 }
 
-menu() {
+makeBaseTools() {
+cd $HOME/src/CloverBootloader
+make -C BaseTools "BUILD_CC=clang"
+}
+
+## Utilities
+Xplist() {
+  if [[ ! -d $HOME/Desktop/ClovUtils ]]; then
+    mkdir -p $HOME/Desktop/ClovUtils
+  fi
+#  cd $HOME/Desktop/ClovUtils && curl -qsSLk https://github.com/ic005k/Xplist/releases/download/1.2.47/Xplist_Mac.dmg > Xplist_Mac.dmg
+#  hdiutil attach -quiet -noverify -nobrowse Xplist_Mac.dmg && cp -Rf /Volumes/bin\:release\:Xplist/Xplist.app $HOME/Desktop/ClovUtils
+#  hdiutil detach -force /Volumes/bin\:release\:Xplist
+  cd $HOME/Desktop/ClovUtils && curl -qsSLk https://github.com/CloverHackyColor/Xplist/releases/download/1.3.1/Xplist.zip > Xplist.zip
+  unzip -q Xplist.zip && rm -r Xplist.zip && open $HOME/Desktop/ClovUtils
+  rm -rf $HOME/Desktop/ClovUtils/__MACOSX
+}
+
+Hackintool() {
+  if [[ ! -d $HOME/Desktop/ClovUtils ]]; then
+    mkdir -p $HOME/Desktop/ClovUtils
+  fi
+  cd $HOME/Desktop/ClovUtils && curl -sLq https://github.com/headkaze/Hackintool/releases/download/3.8.4/Hackintool.zip -o Hackintool.zip
+  unzip -q Hackintool.zip && rm -r Hackintool.zip && open $HOME/Desktop/ClovUtils
+}
+
+BitmaskDecode() {
+  if [[ ! -d $HOME/Desktop/ClovUtils ]]; then
+    mkdir -p $HOME/Desktop/ClovUtils
+  fi
+  cd $HOME/Desktop/ClovUtils && git clone -q https://github.com/corpnewt/BitmaskDecode && open $HOME/Desktop/ClovUtils
+}
+
+MaciASL() {
+  if [[ ! -d $HOME/Desktop/ClovUtils ]]; then
+    mkdir -p $HOME/Desktop/ClovUtils
+  fi
+  cd $HOME/Desktop/ClovUtils && curl -sLq https://github.com/acidanthera/MaciASL/releases/download/1.6.2/MaciASL-1.6.2-RELEASE.dmg > MaciASL-1.6.2-RELEASE.dmg
+  hdiutil attach -quiet -noverify -nobrowse MaciASL-1.6.2-RELEASE.dmg && cp -Rf /Volumes/MaciASL/MaciASL.app $HOME/Desktop/ClovUtils
+  hdiutil detach -force /Volumes/MaciASL
+  rm -r $HOME/Desktop/ClovUtils/MaciASL-1.6.2-RELEASE.dmg && open $HOME/Desktop/ClovUtils
+}
+
+dmidecode() {
+  if [[ ! -d $HOME/Desktop/ClovUtils ]]; then
+    mkdir -p $HOME/Desktop/ClovUtils
+  fi
+  cd $HOME/Desktop/ClovUtils && mkdir -p $HOME/Desktop/ClovUtils/dmidecode 
+  cd $HOME/Desktop/ClovUtils/dmidecode && curl -sLq  https://github.com/CloverHackyColor/dmidecode/releases/download/3.6/dmidecode.zip > dmidecode.zip 
+  unzip -q $HOME/Desktop/ClovUtils/dmidecode/dmidecode.zip 
+  rm -r $HOME/Desktop/ClovUtils/dmidecode/dmidecode.zip 
+  open $HOME/Desktop/ClovUtils/dmidecode
+}
+
+Get-IOReg-Devices() {
+  if [[ ! -d $HOME/Desktop/ClovUtils ]]; then
+    mkdir -p $HOME/Desktop/ClovUtils
+  fi
+  cd $HOME/Desktop/ClovUtils && git clone -q https://github.com/LAbyOne/Get-IOReg-Devices
+  mv -f Get-IOReg-Devices/Get\ IOReg\ Devices $HOME/Desktop/ClovUtils/Get\ IOReg-Devices && chmod a+x $HOME/Desktop/ClovUtils/Get\ IOReg-Devices/*.command
+  rm -rf Get-IOReg-Devices && open $HOME/Desktop/ClovUtils
+}
+
+SSDTTime() {
+  if [[ ! -d $HOME/Desktop/ClovUtils ]]; then
+    mkdir -p $HOME/Desktop/ClovUtils
+  fi
+  cd $HOME/Desktop/ClovUtils && git clone -q https://github.com/corpnewt/SSDTTime && open $HOME/Desktop/ClovUtils
+}
+
+USBMap() {
+  if [[ ! -d $HOME/Desktop/ClovUtils ]]; then
+    mkdir -p $HOME/Desktop/ClovUtils
+  fi
+  cd $HOME/Desktop/ClovUtils && git clone -q https://github.com/corpnewt/USBMap
+  open $HOME/Desktop/ClovUtils
+}
+
+Xiasl() {
+  if [[ ! -d $HOME/Desktop/ClovUtils ]]; then
+    mkdir -p $HOME/Desktop/ClovUtils
+  fi
+#  cd $HOME/Desktop/ClovUtils && curl -sLq https://github.com/ic005k/Xiasl/releases/download/1.1.66/Xiasl_Mac.dmg > Xiasl_Mac.dmg
+#  hdiutil attach -quiet -noverify -nobrowse Xiasl_Mac.dmg && cp -Rf /Volumes/bin\:release\:Xiasl/Xiasl.app $HOME/Desktop/ClovUtils
+#  hdiutil detach -force /Volumes/bin\:release\:Xiasl
+  cd $HOME/Desktop/ClovUtils && curl -sLq https://github.com/CloverHackyColor/Xiasl/releases/download/1.1.67/Xiasl.zip > Xiasl.zip
+  unzip -q Xiasl.zip && rm -r Xiasl.zip && open $HOME/Desktop/ClovUtils
+  rm -rf $HOME/Desktop/ClovUtils/__MACOSX
+}
+
+CsrDecode() {
+  if [[ ! -d $HOME/Desktop/ClovUtils ]]; then
+    mkdir -p $HOME/Desktop/ClovUtils/CsrDecode
+  fi
+  cd $HOME/Desktop/ClovUtils && git clone -q https://github.com/corpnewt/CsrDecode && open $HOME/Desktop/ClovUtils
+}
+
+gibMacOS() {
+  if [[ ! -d $HOME/Desktop/ClovUtils ]]; then
+    mkdir -p $HOME/Desktop/ClovUtils
+  fi
+  cd $HOME/Desktop/ClovUtils && git clone -q https://github.com/corpnewt/gibMacOS && open $HOME/Desktop/ClovUtils
+}
+
+mountR/W() {
+  if [[ ! -d $HOME/Desktop/ClovUtils ]]; then
+    mkdir -p $HOME/Desktop/ClovUtils
+  fi
+  cd $HOME/Desktop/ClovUtils && curl -sLq https://github.com/jacklukem/BigSurmountsrw/releases/download/1.0/BigSurmountsrw2.app.zip -o BigSurmountsrw2.app.zip && open $HOME/Desktop/ClovUtils
+  unzip -q $HOME/Desktop/ClovUtils/BigSurmountsrw2.app.zip && rm -r $HOME/Desktop/ClovUtils/BigSurmountsrw2.app.zip $HOME/Desktop/ClovUtils/__MACOSX
+}
+
+
+testing() {
+#clear
 echo
-echo '------------------------------------------------------------------------'
-cd "${CLOVERROOT}"
+echo -e $COL_GREEN" ---------------------------------------------------------------------------------"
+echo -e "                          🍀 Clover r${revision}$COL_WHITE (SHA: $lsha1)"
+echo -e $COL_CYAN"                                     Test Builds"
+echo -e $COL_GREEN" ---------------------------------------------------------------------------------"$COL_RESET
+echo -e "\n"
 
-local lsha1="not a git repo"
-
-if [[ -d .git ]]; then
-  lsha1=$(git rev-parse --short HEAD)
-fi
-
-echo "buildme, Clover v2.5k r$(git describe --tags $(git rev-list --tags --max-count=1﻿)) (SHA: $lsha1)"
-echo "TOOLCHAIN: $MYTOOLCHAIN (override example: './buildme XCODE8')"
-echo
-PS3='Please enter your choice: '
-options=( 'build Clover'
-          'make pkg'
-          'make app'
-          'make iso'
-          'build all'
+PS3='
+Please enter your choice: '
+options=( 'test Clover with boot6'
+          'test Clover with boot7'
           'test build (no autogen, no boot files)'
-          'status'
-          'update Clover'
-          'update Clover (reset changes)'
-          'show diff'
-          'open drivers directory'
-          'clean BaseTools'
-          'quit')
-
+          'back to Cloverbuilds'
+          'Exit')
 select opt in "${options[@]}"
-do
-  case $opt in
-    "build Clover")
-      buildClover
+ do
+    case $opt in
+    "test Clover with boot6")
+      buildtestsix
       break
     ;;
-    "make pkg")
-      buildPkg
-      break
-    ;;
-    "make app")
-      buildApp
-      break
-    ;;
-    "make iso")
-      buildIso
-      break
-    ;;
-    "build all")
-      buildClover
-      buildPkg
-      buildIso
-      buildApp
+    "test Clover with boot7")
+      buildtestsev
       break
     ;;
     "test build (no autogen, no boot files)")
       buildCloverTest
       break
     ;;
-    "update Clover")
-      updateClover
+    "back to Cloverbuilds")
+      menu
       break
     ;;
-    "update Clover (reset changes)")
-      updateResetClover
+    "Exit")
+      exit
       break
     ;;
-    "status")
+    *)
+      echo "invalid option $REPLY"
+      break
+    ;;
+    esac
+  done
+testing
+}
+
+Utilities() {
+echo
+echo -e $COL_GREEN" ---------------------------------------------------------------------------------"
+echo -e "                          🍀 Clover r${revision}$COL_WHITE (SHA: $lsha1)"
+echo -e $COL_CYAN"                                  External Utilities "
+echo -e $COL_WHITE"                     All Files will be put on Desktop/ClovUtils"
+echo -e $COL_GREEN" ---------------------------------------------------------------------------------"$COL_RESET
+echo -e "\n"
+
+PS3='
+Please enter your choice: '
+options=( 'Get Xplist'
+          'Get Hackintool'
+          'Get BitmaskDecode'
+          'Get MaciASL'
+          'Get dmidecode'
+          'Get IOReg-Devices'
+          'Get SSDTTime'
+          'Get USBMap'
+          'Get Xiasl'
+          'Get CsrDecode'
+          'Get gibMacOS'
+          'Get mountR/W'
+          'back to Cloverbuilds'
+          'Exit')
+select opt in "${options[@]}"
+ do
+    case $opt in
+    "Get Xplist")
+      Xplist
+      break
+    ;;
+    "Get Hackintool")
+      Hackintool
+      break
+    ;;
+    "Get BitmaskDecode")
+      BitmaskDecode
+      break
+    ;;
+    "Get MaciASL")
+      MaciASL
+      break
+    ;;
+    "Get dmidecode")
+      dmidecode
+      break
+    ;;
+    "Get IOReg-Devices")
+      Get-IOReg-Devices
+      break
+    ;;
+    "Get SSDTTime")
+      SSDTTime
+      break
+    ;;
+    "Get USBMap")
+      USBMap
+      break
+    ;;
+    "Get Xiasl")
+      Xiasl
+      break
+    ;;
+    "Get CsrDecode")
+      CsrDecode
+      break
+    ;;
+    "Get gibMacOS")
+      gibMacOS
+      break
+    ;;
+    "Get mountR/W")
+      mountR/W
+      break
+    ;;
+	"back to Cloverbuilds")
+	  menu
+	  break
+    ;;
+    "Exit")
+      exit
+      break
+    ;;
+    *)
+      echo "invalid option $REPLY"
+    break
+    ;;
+    esac
+  done
+Utilities
+}
+
+Extra() {
+#clear
+echo
+echo -e $COL_GREEN" ---------------------------------------------------------------------------------"
+if [[ ! -x "$(which python3)" ]]; then
+	echo -e " ${pynone}"
+fi
+echo -e "$COL_GREEN                           🍀 Clover r${revision}$COL_WHITE (SHA: $lsha1)"
+echo -e "$COL_WHITE                              Default TOOLCHAIN:$COL_CYAN $MYTOOLCHAIN$COL_WHITE "
+echo -e "${COL_WHITE}                     Switch to${COL_CYAN} XCODE${COL_WHITE} can be done on${COL_CYAN} Cloverbuilds"
+if [[ -x "$(which python3)" ]]; then
+	echo -e $COL_GREEN" ---------------------- ${pyversion}$COL_GREEN -------------------- "$COL_RESET
+	echo -e "\n"
+else
+echo -e $COL_GREEN" ---------------------------------------------------------------------------------"$COL_RESET
+echo -e "\n"
+fi
+PS3='
+Please enter your choice: '
+options=( 'Cloverbuilds'
+          'test Clover'
+          'check status'
+          'show diff'
+          'open CloverV2 directory'
+          'update Clover (reset changes)'
+          'clean BaseTools'
+          'make BaseTools'
+          'Utilities'
+          'Exit')
+
+select opt in "${options[@]}"
+do
+  case $opt in
+    "Cloverbuilds")
+      menu
+      break
+    ;;
+    "test Clover")
+      testing
+      break
+    ;;
+    "check status")
       checkStatus
       break
     ;;
@@ -310,20 +793,155 @@ do
       showdiff
       break
     ;;
-    "open drivers directory")
-      if [[ -d "${CLOVERROOT}"/CloverPackage/CloverV2/EFI/CLOVER/drivers ]]; then
-        open "${CLOVERROOT}"/CloverPackage/CloverV2/EFI/CLOVER/drivers
+    "open CloverV2 directory")
+      if [[ -d "${CLOVERROOT}"/CloverPackage/CloverV2/EFI/CLOVER ]]; then
+        open "${CLOVERROOT}"/CloverPackage/CloverV2/EFI/CLOVER
       else
         echo && echo "Directory not found. Compile Clover first!!"
         sleep 2
       fi
       break
     ;;
-    "clean BaseTools")
-      cleanBaseTools
+    "update Clover (reset changes)")
+      read -p "Are you sure? (type y to confirm or any other to negate) " -n 1 -r
+      echo
+      if [[ $REPLY =~ ^[Yy]$ ]]; then
+        updateResetClover
+      fi
       break
     ;;
-    "quit")
+    "clean BaseTools")
+      read -p "Are you sure? (type y to confirm or any other to negate) " -n 1 -r
+      echo
+      if [[ $REPLY =~ ^[Yy]$ ]]; then
+        cleanBaseTools
+      fi
+      break
+    ;;
+      "make BaseTools")
+       makeBaseTools
+      break
+	;;
+    "Utilities")
+      Utilities
+      break
+    ;;
+    "Exit")
+      exit 0
+    ;;
+    *)
+      echo "invalid option $REPLY"
+      break
+    ;;
+  esac
+done
+Extra
+}
+
+menu() {
+#clear
+echo
+echo -e $COL_GREEN" ---------------------------------------------------------------------------------"
+if [[ ! -x "$(which python3)" ]]; then
+	echo -e " ${pynone}"
+fi
+echo -e "$COL_GREEN                           🍀 Clover r${revision}$COL_WHITE (SHA: $lsha1)"
+echo -e "$COL_WHITE                              Default TOOLCHAIN:$COL_CYAN $MYTOOLCHAIN$COL_WHITE "
+echo -e "${COL_WHITE}                     Switch to${COL_CYAN} XCODE${COL_WHITE} select:${COL_CYAN} build (with XCode)"
+echo -e "${COL_WHITE}     Depending on your${COL_CYAN} XCODE version${COL_WHITE} the Toolset will be${COL_CYAN} automatically chosen"
+# echo -e "${COL_WHITE}    Toolset${COL_CYAN} is automatically chosen${COL_WHITE} depending on the${COL_CYAN} XCODE installed version"
+if [[ -x "$(which python3)" ]]; then
+	echo -e $COL_GREEN" ---------------------- ${pyversion}$COL_GREEN -------------------- "$COL_RESET
+	echo -e "\n"
+else
+echo -e $COL_GREEN" ---------------------------------------------------------------------------------"$COL_RESET
+echo -e "\n"
+fi
+PS3='
+Please enter your choice: '
+options=( 'build Clover (Default Toolchain)'
+          'build all (Default Toolchain)'
+    		  'make Release (Default Toolchain)'
+          'update Clover'
+          'make pkg'
+          'make iso'
+    		  'make Clover_V2'
+          'build Clover (with XCode)'
+          'build all (with XCode)'
+    		  'make Release (with XCode)'
+    		  'build Clover with HFSPlus'
+    		  'Extra Options'
+          'Exit')
+
+select opt in "${options[@]}"
+do
+  case $opt in
+    "build Clover (Default Toolchain)")
+      buildClover
+      break
+    ;;
+	"build all (Default Toolchain)")
+      buildClover
+      BLC
+      buildPkg
+      buildIso
+      makeV2 
+      break
+	;;
+    "make Release (Default Toolchain)")
+      makeRelease
+      BLC
+      buildPkg
+      buildIso
+      makeV2
+      break
+    ;;
+      "update Clover")
+      updateClover
+      break
+    ;;
+      "make pkg")
+      BLC
+      buildPkg
+      break
+    ;;
+      "make iso")
+      buildIso
+      break
+    ;;
+      "make Clover_V2")
+      makeV2
+      break
+    ;;
+      "build Clover (with XCode)")
+      buildCloverXC
+      break
+    ;;
+      "build all (with XCode)")
+      buildCloverXC
+      BLC
+      buildPkg
+      buildIso
+      makeV2
+      break
+    ;;
+      "make Release (with XCode)")
+      makeReleaseXC
+      BLC
+      buildPkg
+      buildIso
+      makeV2
+      break
+    ;;
+      "build Clover with HFSPlus")
+      buildCloverHFSPlus
+      break
+    ;;
+      "Extra Options")
+      Extra
+      break	
+    ;;
+    "Exit")
       exit 0
     ;;
     *)
@@ -336,12 +954,15 @@ menu
 }
 
 # Main
+clone_OpenCorePkg
 set -e
-if [[ "$2" == travis ]]; then
-  buildClover
+if [[ "$2" == ci ]]; then
+  makeRelease
+#  buildCCPV
+  BLC
   buildPkg
   buildIso
+  makeV2
 else
   menu
 fi
-

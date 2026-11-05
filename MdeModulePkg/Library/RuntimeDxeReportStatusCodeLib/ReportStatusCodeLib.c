@@ -2,6 +2,7 @@
   API implementation for instance of Report Status Code Library.
 
   Copyright (c) 2006 - 2018, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) Microsoft Corporation.
   SPDX-License-Identifier: BSD-2-Clause-Patent
 
 **/
@@ -28,6 +29,7 @@
 #define MAX_EXTENDED_DATA_SIZE  0x200
 
 EFI_STATUS_CODE_PROTOCOL  *mReportStatusCodeLibStatusCodeProtocol = NULL;
+EFI_EVENT                 mOnStatusCodeProtocolInstallEvent;
 EFI_EVENT                 mReportStatusCodeLibVirtualAddressChangeEvent;
 EFI_EVENT                 mReportStatusCodeLibExitBootServicesEvent;
 BOOLEAN                   mHaveExitedBootServices = FALSE;
@@ -58,11 +60,34 @@ InternalGetReportStatusCode (
   //
   if (gBS != NULL && gBS->LocateProtocol != NULL) {
     Status = gBS->LocateProtocol (&gEfiStatusCodeRuntimeProtocolGuid, NULL, (VOID**) &mReportStatusCodeLibStatusCodeProtocol);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       mReportStatusCodeLibStatusCodeProtocol = NULL;
     }
   }
 }
+
+/**
+  Notification function called when the Status Code Runtime protocol is installed. Locates and caches the protocol.
+
+    @param[in]    Event           Not Used.
+    @param[in]    Context         Not Used.
+
+    @retval   none
+ **/
+VOID
+EFIAPI
+OnStatusCodeRuntimeProtocolInstalledNotification (
+  IN EFI_EVENT  Event,
+  IN VOID       *Context
+  )
+{
+  InternalGetReportStatusCode ();
+
+  if (mReportStatusCodeLibStatusCodeProtocol != NULL) {
+    gBS->CloseEvent (mOnStatusCodeProtocolInstallEvent);
+  }
+}
+
 
 /**
   Notification function of EVT_SIGNAL_VIRTUAL_ADDRESS_CHANGE.
@@ -126,12 +151,40 @@ ReportStatusCodeLibConstructor (
   )
 {
   EFI_STATUS  Status;
+  VOID        *Registration;
 
   //
   // Cache the report status code service
   //
   InternalGetReportStatusCode ();
 
+  //
+  // Register for protocol installation notification if the protocol is not found
+  //
+  if (mReportStatusCodeLibStatusCodeProtocol == NULL) {
+    //
+    // Create the event
+    //
+    Status = gBS->CreateEvent (
+                    EVT_NOTIFY_SIGNAL,
+                    TPL_CALLBACK,
+                    OnStatusCodeRuntimeProtocolInstalledNotification,
+                    NULL,
+                    &mOnStatusCodeProtocolInstallEvent
+                    );
+    ASSERT_EFI_ERROR (Status);
+
+    //
+    // Register for protocol notifications on this event
+    //
+    Status = gBS->RegisterProtocolNotify (
+                    &gEfiStatusCodeRuntimeProtocolGuid,
+                    mOnStatusCodeProtocolInstallEvent,
+                    &Registration
+                    );
+    ASSERT_EFI_ERROR (Status);
+  }
+  
   //
   // Register notify function for EVT_SIGNAL_VIRTUAL_ADDRESS_CHANGE
   //
@@ -143,7 +196,7 @@ ReportStatusCodeLibConstructor (
                   &gEfiEventVirtualAddressChangeGuid,
                   &mReportStatusCodeLibVirtualAddressChangeEvent
                   );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   //
   // Register notify function for EVT_SIGNAL_EXIT_BOOT_SERVICES
@@ -156,7 +209,7 @@ ReportStatusCodeLibConstructor (
                   &gEfiEventExitBootServicesGuid,
                   &mReportStatusCodeLibExitBootServicesEvent
                   );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   return EFI_SUCCESS;
 }
@@ -183,11 +236,16 @@ ReportStatusCodeLibDestructor (
   EFI_STATUS  Status;
 
   ASSERT (gBS != NULL);
+  
+  if (mReportStatusCodeLibStatusCodeProtocol == NULL) {
+    Status = gBS->CloseEvent (mOnStatusCodeProtocolInstallEvent);
+    ASSERT_EFI_ERROR (Status);
+  }
   Status = gBS->CloseEvent (mReportStatusCodeLibVirtualAddressChangeEvent);
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   Status = gBS->CloseEvent (mReportStatusCodeLibExitBootServicesEvent);
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   return EFI_SUCCESS;
 }
@@ -228,9 +286,9 @@ InternalReportStatusCode (
       (ReportErrorCodeEnabled() && ((Type) & EFI_STATUS_CODE_TYPE_MASK) == EFI_ERROR_CODE) ||
       (ReportDebugCodeEnabled() && ((Type) & EFI_STATUS_CODE_TYPE_MASK) == EFI_DEBUG_CODE)) {
     //
-    // If mReportStatusCodeLibStatusCodeProtocol is NULL, then check if Report Status Code Protocol is available in system.
+    // If mReportStatusCodeLibStatusCodeProtocol is NULL, the protocol has not yet been registered. Return immediately.
     //
-    InternalGetReportStatusCode ();
+    //InternalGetReportStatusCode ();
     if (mReportStatusCodeLibStatusCodeProtocol == NULL) {
       return EFI_UNSUPPORTED;
     }
@@ -348,7 +406,7 @@ ReportStatusCodeExtractAssertInfo (
       ((Value    & EFI_STATUS_CODE_OPERATION_MASK) == EFI_SW_EC_ILLEGAL_SOFTWARE_STATE)) {
     AssertData   = (EFI_DEBUG_ASSERT_DATA *)(Data + 1);
     *Filename    = (CHAR8 *)(AssertData + 1);
-    *Description = *Filename + AsciiStrLen (*Filename) + 1;
+    *Description = *Filename + AsciiStrLen(*Filename) + 1;
     *LineNumber  = AssertData->LineNumber;
     return TRUE;
   }
@@ -664,7 +722,7 @@ ReportStatusCodeEx (
   // Fill in the extended data buffer
   //
   if (ExtendedData != NULL) {
-    CopyMem (StatusCodeData + 1, ExtendedData, ExtendedDataSize);
+    CopyMem(StatusCodeData + 1, ExtendedData, ExtendedDataSize);
   }
 
   //
@@ -679,7 +737,7 @@ ReportStatusCodeEx (
   // Free the allocated buffer
   //
   if (StatusCodeData != (EFI_STATUS_CODE_DATA *) StatusCodeBuffer) {
-    gBS->FreePool (StatusCodeData);
+    gBS->FreePool(StatusCodeData);
   }
 
   return Status;

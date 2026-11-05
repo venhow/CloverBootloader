@@ -337,7 +337,7 @@ SetDevicePathEndNode (
   )
 {
   ASSERT (Node != NULL);
-  CopyMem (Node, &mUefiDevicePathLibEndDevicePath, sizeof (mUefiDevicePathLibEndDevicePath));
+  CopyMem(Node, &mUefiDevicePathLibEndDevicePath, sizeof (mUefiDevicePathLibEndDevicePath));
 }
 
 /**
@@ -419,7 +419,7 @@ UefiDevicePathLibDuplicateDevicePath (
   // Allocate space for duplicate device path
   //
 
-  return AllocateCopyPool (Size, DevicePath);
+  return AllocateCopyPool(Size, DevicePath);
 }
 
 /**
@@ -485,13 +485,13 @@ UefiDevicePathLibAppendDevicePath (
   NewDevicePath = AllocatePool (Size);
 
   if (NewDevicePath != NULL) {
-    NewDevicePath = CopyMem (NewDevicePath, FirstDevicePath, Size1);
+    NewDevicePath = CopyMem(NewDevicePath, FirstDevicePath, Size1);
     //
     // Over write FirstDevicePath EndNode and do the copy
     //
     DevicePath2 = (EFI_DEVICE_PATH_PROTOCOL *) ((CHAR8 *) NewDevicePath +
                   (Size1 - END_DEVICE_PATH_LENGTH));
-    CopyMem (DevicePath2, SecondDevicePath, Size2);
+    CopyMem(DevicePath2, SecondDevicePath, Size2);
   }
 
   return NewDevicePath;
@@ -549,7 +549,7 @@ UefiDevicePathLibAppendDevicePathNode (
   if (TempDevicePath == NULL) {
     return NULL;
   }
-  TempDevicePath = CopyMem (TempDevicePath, DevicePathNode, NodeLength);
+  TempDevicePath = CopyMem(TempDevicePath, DevicePathNode, NodeLength);
   //
   // Add and end device path node to convert Node to device path
   //
@@ -560,7 +560,7 @@ UefiDevicePathLibAppendDevicePathNode (
   //
   NewDevicePath = AppendDevicePath (DevicePath, TempDevicePath);
 
-  FreePool (TempDevicePath);
+  FreePool(TempDevicePath);
 
   return NewDevicePath;
 }
@@ -618,7 +618,7 @@ UefiDevicePathLibAppendDevicePathInstance (
   NewDevicePath = AllocatePool (SrcSize + InstanceSize);
   if (NewDevicePath != NULL) {
 
-    TempDevicePath = CopyMem (NewDevicePath, DevicePath, SrcSize);;
+    TempDevicePath = CopyMem(NewDevicePath, DevicePath, SrcSize);;
 
     while (!IsDevicePathEnd (TempDevicePath)) {
       TempDevicePath = NextDevicePathNode (TempDevicePath);
@@ -626,7 +626,7 @@ UefiDevicePathLibAppendDevicePathInstance (
 
     TempDevicePath->SubType  = END_INSTANCE_DEVICE_PATH_SUBTYPE;
     TempDevicePath           = NextDevicePathNode (TempDevicePath);
-    CopyMem (TempDevicePath, DevicePathInstance, InstanceSize);
+    CopyMem(TempDevicePath, DevicePathInstance, InstanceSize);
   }
 
   return NewDevicePath;
@@ -752,7 +752,7 @@ UefiDevicePathLibCreateDeviceNode (
     return NULL;
   }
 
-  DevicePath = AllocateZeroPool (NodeLength);
+  DevicePath = AllocateZeroPool(NodeLength);
   if (DevicePath != NULL) {
      DevicePath->Type    = NodeType;
      DevicePath->SubType = NodeSubType;
@@ -833,7 +833,7 @@ DevicePathFromHandle (
                   &gEfiDevicePathProtocolGuid,
                   (VOID *) &DevicePath
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DevicePath = NULL;
   }
   return DevicePath;
@@ -880,7 +880,7 @@ FileDevicePath (
     FilePath = (FILEPATH_DEVICE_PATH *) FileDevicePath;
     FilePath->Header.Type    = MEDIA_DEVICE_PATH;
     FilePath->Header.SubType = MEDIA_FILEPATH_DP;
-    CopyMem (&FilePath->PathName, FileName, Size);
+    CopyMem(&FilePath->PathName, FileName, Size);
     SetDevicePathNodeLength (&FilePath->Header, Size + SIZE_OF_FILEPATH_DEVICE_PATH);
     SetDevicePathEndNode (NextDevicePathNode (&FilePath->Header));
 
@@ -889,7 +889,7 @@ FileDevicePath (
     }
 
     DevicePath = AppendDevicePath (DevicePath, FileDevicePath);
-    FreePool (FileDevicePath);
+    FreePool(FileDevicePath);
   }
 
   return DevicePath;

@@ -86,7 +86,7 @@ BdsLibLoadDrivers (
                     &ImageHandle
                     );
 
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       gBS->HandleProtocol (ImageHandle, &gEfiLoadedImageProtocolGuid, (VOID **) &ImageInfo);
 
       //
@@ -287,25 +287,25 @@ BdsLibRegisterNewOption (
         //
         // Got the option, so just return
         //
-        FreePool (OptionPtr);
-        FreePool (TempOptionPtr);
+        FreePool(OptionPtr);
+        FreePool(TempOptionPtr);
         return EFI_SUCCESS;
       } else {
         //
         // Option description changed, need update.
         //
         UpdateDescription = TRUE;
-        FreePool (OptionPtr);
+        FreePool(OptionPtr);
         break;
       }
     }
 
-    FreePool (OptionPtr);
+    FreePool(OptionPtr);
   }
 
   OptionSize          = sizeof (UINT32) + sizeof (UINT16) + StrSize (String);
   OptionSize          += GetDevicePathSize (DevicePath);
-  OptionPtr           = AllocateZeroPool (OptionSize);
+  OptionPtr           = AllocateZeroPool(OptionSize);
 //  ASSERT (OptionPtr != NULL);
   if (!OptionPtr) {
     return EFI_OUT_OF_RESOURCES;
@@ -316,9 +316,9 @@ BdsLibRegisterNewOption (
   TempPtr             += sizeof (UINT32);
   *(UINT16 *) TempPtr = (UINT16) GetDevicePathSize (DevicePath);
   TempPtr             += sizeof (UINT16);
-  CopyMem (TempPtr, String, StrSize (String));
+  CopyMem(TempPtr, String, StrSize (String));
   TempPtr             += StrSize (String);
-  CopyMem (TempPtr, DevicePath, GetDevicePathSize (DevicePath));
+  CopyMem(TempPtr, DevicePath, GetDevicePathSize (DevicePath));
 
   if (UpdateDescription) {
     //
@@ -353,15 +353,15 @@ BdsLibRegisterNewOption (
   //
   // Return if only need to update a changed description or fail to set option.
   //
-  if (EFI_ERROR (Status) || UpdateDescription) {
-    FreePool (OptionPtr);
+  if (EFI_ERROR(Status) || UpdateDescription) {
+    FreePool(OptionPtr);
     if (TempOptionPtr != NULL) {
-      FreePool (TempOptionPtr);
+      FreePool(TempOptionPtr);
     }
     return Status;
   }
 
-  FreePool (OptionPtr);
+  FreePool(OptionPtr);
 
   //
   // Update the option order variable
@@ -380,7 +380,7 @@ BdsLibRegisterNewOption (
                     &BootOrderEntry
                     );
     if (TempOptionPtr != NULL) {
-      FreePool (TempOptionPtr);
+      FreePool(TempOptionPtr);
     }
     return Status;
   }
@@ -396,12 +396,12 @@ BdsLibRegisterNewOption (
   // Append the new option number to the original option order
   //
   OrderItemNum = (TempOptionSize / sizeof (UINT16)) + 1 ;
-  OptionOrderPtr = AllocateZeroPool ( OrderItemNum * sizeof (UINT16));
+  OptionOrderPtr = AllocateZeroPool( OrderItemNum * sizeof (UINT16));
 //  ASSERT (OptionOrderPtr!= NULL);
   if (!OptionOrderPtr) {
     return EFI_NOT_FOUND;
   }
-  CopyMem (OptionOrderPtr, TempOptionPtr, (OrderItemNum - 1) * sizeof (UINT16));
+  CopyMem(OptionOrderPtr, TempOptionPtr, (OrderItemNum - 1) * sizeof (UINT16));
 
   OptionOrderPtr[Index] = RegisterOptionNumber;
 
@@ -412,8 +412,8 @@ BdsLibRegisterNewOption (
                   OrderItemNum * sizeof (UINT16),
                   OptionOrderPtr
                   );
-  FreePool (TempOptionPtr);
-  FreePool (OptionOrderPtr);
+  FreePool(TempOptionPtr);
+  FreePool(OptionOrderPtr);
 
   return Status;
 }
@@ -646,7 +646,7 @@ BdsLibVariableToOption (
   // Validate Boot#### variable data.
   //
   if (!ValidateOption(Variable, VariableSize)) {
-    FreePool (Variable);
+    FreePool(Variable);
     return NULL;
   }
 
@@ -693,37 +693,37 @@ BdsLibVariableToOption (
   // The Console variables may have multiple device paths, so make
   // an Entry for each one.
   //
-  Option = AllocateZeroPool (sizeof (BDS_COMMON_OPTION));
+  Option = AllocateZeroPool(sizeof (BDS_COMMON_OPTION));
   if (Option == NULL) {
-    FreePool (Variable);
+    FreePool(Variable);
     return NULL;
   }
 
   Option->Signature   = BDS_LOAD_OPTION_SIGNATURE;
-  Option->DevicePath  = AllocateCopyPool (GetDevicePathSize (DevicePath), DevicePath);
+  Option->DevicePath  = AllocateCopyPool(GetDevicePathSize (DevicePath), DevicePath);
 //  ASSERT(Option->DevicePath != NULL);
   if (!Option->DevicePath) {
-    FreePool (Option);
+    FreePool(Option);
     return NULL;
   }
-//  CopyMem (Option->DevicePath, DevicePath, GetDevicePathSize (DevicePath));
+//  CopyMem(Option->DevicePath, DevicePath, GetDevicePathSize (DevicePath));
 
   Option->Attribute   = Attribute;
-  Option->Description = AllocateCopyPool (StrSize (Description), Description);
+  Option->Description = AllocateCopyPool(StrSize (Description), Description);
 //  ASSERT(Option->Description != NULL);
   if (!Option->Description) {
-    FreePool (Option);
+    FreePool(Option);
     return NULL;
   }
-//  CopyMem (Option->Description, Description, StrSize (Description));
+//  CopyMem(Option->Description, Description, StrSize (Description));
 
-  Option->LoadOptions = AllocateCopyPool (LoadOptionsSize, LoadOptions);
+  Option->LoadOptions = AllocateCopyPool(LoadOptionsSize, LoadOptions);
 //  ASSERT(Option->LoadOptions != NULL);
   if (!Option->LoadOptions) {
-    FreePool (Option);
+    FreePool(Option);
     return NULL;
   }
-//  CopyMem (Option->LoadOptions, LoadOptions, LoadOptionsSize);
+//  CopyMem(Option->LoadOptions, LoadOptions, LoadOptionsSize);
   Option->LoadOptionsSize = LoadOptionsSize;
 
   //
@@ -739,7 +739,7 @@ BdsLibVariableToOption (
                + (UINT16) (CharToUint (VariableName[NumOff+3]) * 0x1);
   }
     InsertTailList (BdsCommonOptionList, &Option->Link);
-    FreePool (Variable);
+    FreePool(Variable);
     return Option;
   }
 
@@ -800,7 +800,7 @@ BdsLibBuildOptionFromVar (
     }
   }
 
-  FreePool (OptionOrder);
+  FreePool(OptionOrder);
 
   return EFI_SUCCESS;
 }
@@ -860,7 +860,7 @@ BdsLibGetVariableAndSize (
     //
     // Allocate the buffer to return
     //
-    Buffer = AllocateZeroPool (BufferSize);
+    Buffer = AllocateZeroPool(BufferSize);
     if (Buffer == NULL) {
       *VariableSize = 0;
       return NULL;
@@ -869,8 +869,8 @@ BdsLibGetVariableAndSize (
     // Read variable into the allocated buffer.
     //
     Status = gRT->GetVariable (Name, VendorGuid, NULL, &BufferSize, Buffer);
-    if (EFI_ERROR (Status)) {
-      FreePool (Buffer);
+    if (EFI_ERROR(Status)) {
+      FreePool(Buffer);
       BufferSize = 0;
       Buffer     = NULL;
     }
@@ -983,11 +983,11 @@ BdsLibMatchDevicePaths (
     // return success
     //
     if (CompareMem (Single, DevicePathInst, Size) == 0) {
-      FreePool (DevicePathInst);
+      FreePool(DevicePathInst);
       return TRUE;
     }
 
-    FreePool (DevicePathInst);
+    FreePool(DevicePathInst);
     DevicePathInst = GetNextDevicePathInstance (&DevicePath, &Size);
   }
 
@@ -1019,7 +1019,7 @@ BdsLibOutputStrings (
   Status = EFI_SUCCESS;
   VA_START (Args, ConOut);
 
-  while (!EFI_ERROR (Status)) {
+  while (!EFI_ERROR(Status)) {
     //
     // If String is NULL, then it's the end of the list
     //
@@ -1030,7 +1030,7 @@ BdsLibOutputStrings (
 
     Status = ConOut->OutputString (ConOut, String);
 
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       break;
     }
   }
@@ -1157,15 +1157,15 @@ SetupResetReminder (
   if (IsResetReminderFeatureEnable ()) {
     if (IsResetRequired ()) {
 
-      StringBuffer1 = AllocateZeroPool (MAX_STRING_LEN * sizeof (CHAR16));
+      StringBuffer1 = AllocateZeroPool(MAX_STRING_LEN * sizeof (CHAR16));
  //     ASSERT (StringBuffer1 != NULL);
       if (!StringBuffer1) {
         return;
       }
-      StringBuffer2 = AllocateZeroPool (MAX_STRING_LEN * sizeof (CHAR16));
+      StringBuffer2 = AllocateZeroPool(MAX_STRING_LEN * sizeof (CHAR16));
  //     ASSERT (StringBuffer2 != NULL);
       if (!StringBuffer2) {
-        FreePool (StringBuffer1);
+        FreePool(StringBuffer1);
         return;
       }
       StrCpyS (StringBuffer1, MAX_STRING_LEN, L"Configuration changed. Reset to apply it Now.");
@@ -1177,8 +1177,8 @@ SetupResetReminder (
         CreatePopUp (EFI_LIGHTGRAY | EFI_BACKGROUND_BLUE, &Key, StringBuffer1, StringBuffer2, NULL);
       } while (Key.UnicodeChar != CHAR_CARRIAGE_RETURN);
 
-      FreePool (StringBuffer1);
-      FreePool (StringBuffer2);
+      FreePool(StringBuffer1);
+      FreePool(StringBuffer2);
 
         gRT->ResetSystem (EfiResetCold, EFI_SUCCESS, 0, NULL);
       }
@@ -1225,7 +1225,7 @@ BdsLibGetImageHeader (
                   &gEfiSimpleFileSystemProtocolGuid,
                   (VOID *) &Volume
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto Done;
   }
 
@@ -1233,13 +1233,13 @@ BdsLibGetImageHeader (
                      Volume,
                      &Root
                      );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     Root = NULL;
     goto Done;
   }
 //  ASSERT (Root != NULL);
   Status = Root->Open (Root, &ThisFile, FileName, EFI_FILE_MODE_READ, 0);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto Done;
   }
  // ASSERT (ThisFile != NULL);
@@ -1251,7 +1251,7 @@ BdsLibGetImageHeader (
   do {
     Info   = NULL;
     Status = gBS->AllocatePool (EfiBootServicesData, BufferSize, (VOID **) &Info);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       goto Done;
     }
     Status = ThisFile->GetInfo (
@@ -1260,25 +1260,25 @@ BdsLibGetImageHeader (
                          &BufferSize,
                          Info
                          );
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       break;
     }
     if (Status != EFI_BUFFER_TOO_SMALL) {
-      FreePool (Info);
+      gBS->FreePool(Info);
       goto Done;
     }
-    FreePool (Info);
+    gBS->FreePool(Info);
   } while (TRUE);
 
   FileSize = Info->FileSize;
-  FreePool (Info);
+  gBS->FreePool(Info);
 
   //
   // Read dos header
   //
   BufferSize = sizeof (EFI_IMAGE_DOS_HEADER);
   Status = ThisFile->Read (ThisFile, &BufferSize, DosHeader);
-  if (EFI_ERROR (Status) ||
+  if (EFI_ERROR(Status) ||
       BufferSize < sizeof (EFI_IMAGE_DOS_HEADER) ||
       FileSize <= DosHeader->e_lfanew ||
       DosHeader->e_magic != EFI_IMAGE_DOS_SIGNATURE) {
@@ -1290,7 +1290,7 @@ BdsLibGetImageHeader (
   // Move to PE signature
   //
   Status = ThisFile->SetPosition (ThisFile, DosHeader->e_lfanew);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     Status = EFI_LOAD_ERROR;
     goto Done;
   }
@@ -1300,7 +1300,7 @@ BdsLibGetImageHeader (
   //
   BufferSize = sizeof (EFI_IMAGE_OPTIONAL_HEADER_UNION);
   Status = ThisFile->Read (ThisFile, &BufferSize, Hdr.Pe32);
-  if (EFI_ERROR (Status) ||
+  if (EFI_ERROR(Status) ||
       BufferSize < sizeof (EFI_IMAGE_OPTIONAL_HEADER_UNION) ||
       Hdr.Pe32->Signature != EFI_IMAGE_NT_SIGNATURE) {
     Status = EFI_LOAD_ERROR;
@@ -1388,7 +1388,7 @@ BdsSetMemoryTypeInformationVariable (
              &gEfiMemoryTypeInformationGuid,
              (VOID **) &CurrentMemoryTypeInformation
              );
-  if (EFI_ERROR (Status) || CurrentMemoryTypeInformation == NULL) {
+  if (EFI_ERROR(Status) || CurrentMemoryTypeInformation == NULL) {
     return;
   }
 
@@ -1473,7 +1473,7 @@ BdsSetMemoryTypeInformationVariable (
                     PreviousMemoryTypeInformation
                     );
 
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
     //
     // If the Memory Type Information settings have been modified, then reset the platform
     // so the new Memory Type Information setting will be used to guarantee that an S4
@@ -1525,7 +1525,7 @@ BdsLibUserIdentify (
                   NULL,
                   (VOID **) &Manager
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return EFI_SUCCESS;
   }
 
@@ -1587,7 +1587,7 @@ SetVariableAndReportStatusCodeOnError (
                   DataSize,
                   Data
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     NameSize = StrSize (VariableName);
     SetVariableStatus = AllocatePool (sizeof (EDKII_SET_VARIABLE_STATUS) + NameSize + DataSize);
     if (SetVariableStatus != NULL) {
@@ -1596,9 +1596,9 @@ SetVariableAndReportStatusCodeOnError (
       SetVariableStatus->DataSize   = DataSize;
       SetVariableStatus->SetStatus  = Status;
       SetVariableStatus->Attributes = Attributes;
-      CopyMem (SetVariableStatus + 1,                          VariableName, NameSize);
+      CopyMem(SetVariableStatus + 1,                          VariableName, NameSize);
       if ((Data != NULL) && (DataSize != 0)) {
-        CopyMem (((UINT8 *) (SetVariableStatus + 1)) + NameSize, Data,         DataSize);
+        CopyMem(((UINT8 *) (SetVariableStatus + 1)) + NameSize, Data,         DataSize);
       }
 
       REPORT_STATUS_CODE_EX (
@@ -1611,7 +1611,7 @@ SetVariableAndReportStatusCodeOnError (
         sizeof (EDKII_SET_VARIABLE_STATUS) + NameSize + DataSize
         );
 
-      FreePool (SetVariableStatus);
+      FreePool(SetVariableStatus);
     }
   }
 

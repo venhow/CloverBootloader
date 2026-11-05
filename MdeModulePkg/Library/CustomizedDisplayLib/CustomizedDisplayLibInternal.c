@@ -118,7 +118,7 @@ PrintBannerInfo (
         break;
       }
 
-      FreePool (StrFrontPageBanner);
+      FreePool(StrFrontPageBanner);
     }
   }
 }
@@ -154,7 +154,7 @@ PrintFramework (
     return;
   }
 
-  Buffer = AllocateZeroPool (0x10000);
+  Buffer = AllocateZeroPool(0x10000);
   ASSERT (Buffer != NULL);
   Character = BOXDRAW_HORIZONTAL;
   for (Index = 0; Index + 2 < (gScreenDimensions.RightColumn - gScreenDimensions.LeftColumn); Index++) {
@@ -195,7 +195,7 @@ PrintFramework (
     TitleStr,
     gScreenDimensions.RightColumn - 1 - TitleColumn
     );
-  FreePool (TitleStr);
+  FreePool(TitleStr);
 
   Character = BOXDRAW_UP_RIGHT;
   PrintCharAt (gScreenDimensions.LeftColumn, gScreenDimensions.TopRow + NONE_FRONT_PAGE_HEADER_HEIGHT - 1, Character);
@@ -234,7 +234,7 @@ PrintFramework (
   Character = BOXDRAW_UP_LEFT;
   PrintCharAt ((UINTN) -1, (UINTN) -1, Character);
 
-  FreePool (Buffer);
+  FreePool(Buffer);
 }
 
 /**
@@ -297,11 +297,11 @@ ProcessUserOpcode(
             // Initialize Driver private data
             //
             if (gBannerData == NULL) {
-              gBannerData = AllocateZeroPool (sizeof (BANNER_DATA));
+              gBannerData = AllocateZeroPool(sizeof (BANNER_DATA));
               ASSERT (gBannerData != NULL);
             }
 
-            CopyMem (
+            CopyMem(
               &gBannerData->Banner[((EFI_IFR_GUID_BANNER *) OpCodeData)->LineNumber][
               ((EFI_IFR_GUID_BANNER *) OpCodeData)->Alignment],
               &((EFI_IFR_GUID_BANNER *) OpCodeData)->Title,
@@ -431,7 +431,7 @@ ScreenDiemensionInfoValidate (
           ((FormData->ScreenDimensions->RightColumn - FormData->ScreenDimensions->LeftColumn) > 2) &&
           ((FormData->ScreenDimensions->BottomRow - FormData->ScreenDimensions->TopRow) > STATUS_BAR_HEIGHT +
             FRONT_PAGE_HEADER_HEIGHT + gFooterHeight + 3)) {
-        CopyMem (&gScreenDimensions, (VOID *) FormData->ScreenDimensions, sizeof (EFI_SCREEN_DESCRIPTOR));
+        CopyMem(&gScreenDimensions, (VOID *) FormData->ScreenDimensions, sizeof (EFI_SCREEN_DESCRIPTOR));
       } else {
         return EFI_INVALID_PARAMETER;
       }
@@ -461,7 +461,7 @@ LibGetToken (
 
   String = HiiGetString (HiiHandle, Token, NULL);
   if (String == NULL) {
-    String = AllocateCopyPool (StrSize (mLibUnknownString), mLibUnknownString);
+    String = AllocateCopyPool(StrSize (mLibUnknownString), mLibUnknownString);
     ASSERT (String != NULL);
   }
 
@@ -572,7 +572,7 @@ PrintHotKeyHelpString (
   CHAR16                 BakChar;
   CHAR16                 *ColumnStr;
 
-  CopyMem (&LocalScreen, &gScreenDimensions, sizeof (EFI_SCREEN_DESCRIPTOR));
+  CopyMem(&LocalScreen, &gScreenDimensions, sizeof (EFI_SCREEN_DESCRIPTOR));
   ColumnWidth            = (LocalScreen.RightColumn - LocalScreen.LeftColumn) / 3;
   BottomRowOfHotKeyHelp  = LocalScreen.BottomRow - STATUS_BAR_HEIGHT - 3;
   ColumnStr              = gLibEmptyString;
@@ -743,29 +743,29 @@ FreeLibStrings (
   VOID
   )
 {
-  FreePool (gEnterString);
-  FreePool (gEnterCommitString);
-  FreePool (gEnterEscapeString);
-  FreePool (gEscapeString);
-  FreePool (gMoveHighlight);
-  FreePool (gDecNumericInput);
-  FreePool (gHexNumericInput);
-  FreePool (gToggleCheckBox);
+  FreePool(gEnterString);
+  FreePool(gEnterCommitString);
+  FreePool(gEnterEscapeString);
+  FreePool(gEscapeString);
+  FreePool(gMoveHighlight);
+  FreePool(gDecNumericInput);
+  FreePool(gHexNumericInput);
+  FreePool(gToggleCheckBox);
 
-  FreePool (gAreYouSure);
-  FreePool (gYesResponse);
-  FreePool (gNoResponse);
-  FreePool (gPlusString);
-  FreePool (gMinusString);
-  FreePool (gAdjustNumber);
-  FreePool (gSaveChanges);
+  FreePool(gAreYouSure);
+  FreePool(gYesResponse);
+  FreePool(gNoResponse);
+  FreePool(gPlusString);
+  FreePool(gMinusString);
+  FreePool(gAdjustNumber);
+  FreePool(gSaveChanges);
 
-  FreePool (gLibEmptyString);
+  FreePool(gLibEmptyString);
 
-  FreePool (gNvUpdateMessage);
-  FreePool (gInputErrorMessage);
+  FreePool(gNvUpdateMessage);
+  FreePool(gInputErrorMessage);
 
-  FreePool (mSpaceBuffer);
+  FreePool(mSpaceBuffer);
 }
 
 /**
@@ -786,7 +786,7 @@ WaitForKeyStroke (
 
   while (TRUE) {
     Status = gST->ConIn->ReadKeyStroke (gST->ConIn, Key);
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       break;
     }
 
@@ -859,8 +859,8 @@ PrintInternal (
   //
   // For now, allocate an arbitrarily long buffer
   //
-  Buffer        = AllocateZeroPool (0x10000);
-  BackupBuffer  = AllocateZeroPool (0x10000);
+  Buffer        = AllocateZeroPool(0x10000);
+  BackupBuffer  = AllocateZeroPool(0x10000);
   ASSERT (Buffer);
   ASSERT (BackupBuffer);
 
@@ -939,8 +939,8 @@ PrintInternal (
     Out->OutputString (Out, &mSpaceBuffer[SPACE_BUFFER_SIZE - Width + PrintWidth]);
   }
 
-  FreePool (Buffer);
-  FreePool (BackupBuffer);
+  FreePool(Buffer);
+  FreePool(BackupBuffer);
   return TotalCount;
 }
 

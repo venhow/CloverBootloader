@@ -37,7 +37,7 @@ WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
 #define DBG(...)
 #endif
 
-extern int MapBiosKey(EFI_KEY_DATA KeyData, APPLE_KEY* pKey, UINT8* pCurModifierMap);
+extern int MapBiosKey(EFI_KEY_DATA KeyData, APPLE_KEY_CODE* pKey, UINT8* pCurModifierMap);
 //
 // EFI Driver Binding Protocol Instance
 //
@@ -74,7 +74,7 @@ Enqueue (
     return EFI_NOT_READY;
   }
 
-  CopyMem (&Queue->Buffer[Queue->Rear], KeyData, sizeof (EFI_KEY_DATA));
+  CopyMem(&Queue->Buffer[Queue->Rear], KeyData, sizeof (EFI_KEY_DATA));
   Queue->Rear = (Queue->Rear + 1) % QUEUE_MAX_COUNT;
 
   return EFI_SUCCESS;
@@ -101,7 +101,7 @@ Dequeue (
     return EFI_NOT_READY;
   }
 
-  CopyMem (KeyData, &Queue->Buffer[Queue->Front], sizeof (EFI_KEY_DATA));
+  CopyMem(KeyData, &Queue->Buffer[Queue->Front], sizeof (EFI_KEY_DATA));
   Queue->Front  = (Queue->Front + 1) % QUEUE_MAX_COUNT;
 
   return EFI_SUCCESS;
@@ -166,14 +166,14 @@ BiosKeyboardDriverBindingSupported (
                   (VOID **) &LegacyBios
                   );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }*/
 	//
 	// See if the Legacy 8259 Protocol is available
 	//
 	Status = gBS->LocateProtocol (&gEfiLegacy8259ProtocolGuid, NULL, (VOID **) &Legacy8259);
-	if (EFI_ERROR (Status)) {
+	if (EFI_ERROR(Status)) {
 DBG(" Legacy 8259 Protocol NOT available\n");
 		return Status;
 	}
@@ -190,7 +190,7 @@ DBG(" Legacy 8259 Protocol NOT available\n");
                   EFI_OPEN_PROTOCOL_BY_DRIVER
                   );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
 //DBG("OpenProtocol gEfiIsaIoProtocolGuid failed, status=%x\n", Status);
     return Status;
   }
@@ -271,7 +271,7 @@ BiosKeyboardDriverBindingStart (
                   (VOID **) &LegacyBios
                   );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }*/
 	//
@@ -279,7 +279,7 @@ BiosKeyboardDriverBindingStart (
 	//
 	if (mLegacy8259 == NULL) {
 		Status = gBS->LocateProtocol (&gEfiLegacy8259ProtocolGuid, NULL, (VOID **) &mLegacy8259);
-		if (EFI_ERROR (Status)) {
+		if (EFI_ERROR(Status)) {
 			goto Done;
 		}
 
@@ -295,7 +295,7 @@ BiosKeyboardDriverBindingStart (
 								Controller,
 								EFI_OPEN_PROTOCOL_BY_DRIVER
 								);
-	if (EFI_ERROR (Status)) {
+	if (EFI_ERROR(Status)) {
 		return Status;
 	}
 
@@ -310,7 +310,7 @@ BiosKeyboardDriverBindingStart (
                   Controller,
                   EFI_OPEN_PROTOCOL_BY_DRIVER
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
 	  gBS->CloseProtocol (
 						  Controller,
 						  &gEfiDevicePathProtocolGuid,
@@ -323,7 +323,7 @@ BiosKeyboardDriverBindingStart (
   //
   // Allocate the private device structure
   //
-    BiosKeyboardPrivate = (BIOS_KEYBOARD_DEV *) AllocateZeroPool (sizeof (BIOS_KEYBOARD_DEV));
+    BiosKeyboardPrivate = (BIOS_KEYBOARD_DEV *) AllocateZeroPool(sizeof (BIOS_KEYBOARD_DEV));
   if (NULL == BiosKeyboardPrivate) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Done;
@@ -381,7 +381,7 @@ BiosKeyboardDriverBindingStart (
                   &(BiosKeyboardPrivate->SimpleTextIn),
                   &((BiosKeyboardPrivate->SimpleTextIn).WaitForKey)
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     (BiosKeyboardPrivate->SimpleTextIn).WaitForKey = NULL;
     goto Done;
   }
@@ -392,7 +392,7 @@ BiosKeyboardDriverBindingStart (
                   &(BiosKeyboardPrivate->SimpleTextInputEx),
                   &(BiosKeyboardPrivate->SimpleTextInputEx.WaitForKeyEx)
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     BiosKeyboardPrivate->SimpleTextInputEx.WaitForKeyEx = NULL;
     goto Done;
   }
@@ -407,7 +407,7 @@ BiosKeyboardDriverBindingStart (
                   BiosKeyboardPrivate,
                   &BiosKeyboardPrivate->TimerEvent
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     Status      = EFI_OUT_OF_RESOURCES;
     StatusCode  = EFI_PERIPHERAL_KEYBOARD | EFI_P_EC_CONTROLLER_ERROR;
     goto Done;
@@ -418,7 +418,7 @@ BiosKeyboardDriverBindingStart (
                   TimerPeriodic,
                   KEYBOARD_TIMER_INTERVAL
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     Status      = EFI_OUT_OF_RESOURCES;
     StatusCode  = EFI_PERIPHERAL_KEYBOARD | EFI_P_EC_CONTROLLER_ERROR;
     goto Done;
@@ -441,7 +441,7 @@ BiosKeyboardDriverBindingStart (
                   &BiosKeyboardPrivate->SimpleTextInputEx,
                   extVerif
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
 //    DEBUG ((EFI_D_ERROR, "[KBD]Reset Failed. Status - %r\n", Status));
     StatusCode = EFI_PERIPHERAL_KEYBOARD | EFI_P_EC_NOT_DETECTED;
     goto Done;
@@ -559,7 +559,7 @@ Done:
       );
   }
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
 
     if (BiosKeyboardPrivate != NULL) {
       if ((BiosKeyboardPrivate->SimpleTextIn).WaitForKey != NULL) {
@@ -575,7 +575,7 @@ Done:
         gBS->CloseEvent (BiosKeyboardPrivate->TimerEvent);
       }
 
-      FreePool (BiosKeyboardPrivate);
+      FreePool(BiosKeyboardPrivate);
     }
 	  gBS->CloseProtocol (
 						  Controller,
@@ -634,7 +634,7 @@ BiosKeyboardDriverBindingStop (
                   Controller,
                   EFI_OPEN_PROTOCOL_GET_PROTOCOL
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -646,7 +646,7 @@ BiosKeyboardDriverBindingStop (
                   Controller,
                   EFI_OPEN_PROTOCOL_TEST_PROTOCOL
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -662,7 +662,7 @@ BiosKeyboardDriverBindingStop (
                   &BiosKeyboardPrivate->SimpleTextInputEx,
                   NULL
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
   //
@@ -691,7 +691,7 @@ BiosKeyboardDriverBindingStop (
   gBS->CloseEvent (BiosKeyboardPrivate->SimpleTextInputEx.WaitForKeyEx);
   BiosKeyboardFreeNotifyList (&BiosKeyboardPrivate->NotifyList);
 
-  FreePool (BiosKeyboardPrivate);
+  FreePool(BiosKeyboardPrivate);
 
   return EFI_SUCCESS;
 }
@@ -1079,7 +1079,7 @@ KeyboardReadKeyStrokeWorker (
   // If there's no key, just return
   //
   Status = CheckQueue (&BiosKeyboardPrivate->Queue);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     gBS->RestoreTPL (OldTpl);
     return EFI_NOT_READY;
   }
@@ -1153,7 +1153,7 @@ BiosKeyboardReset (
                This,
                &Key
                );
-  } while (!EFI_ERROR (Status));
+  } while (!EFI_ERROR(Status));
 //
   // 3
   // check for KBC itself firstly for setted-up already or not by reading SYSF (bit2) of status register via 64H
@@ -1173,7 +1173,7 @@ BiosKeyboardReset (
                KBC_CMDREG_VIA64_CMDBYTE_R
                );
 
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       Status    = EFI_DEVICE_ERROR;
       goto Exit;
     }
@@ -1183,7 +1183,7 @@ BiosKeyboardReset (
                &CommandByte
                );
 
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       Status    = EFI_DEVICE_ERROR;
       goto Exit;
     }
@@ -1204,7 +1204,7 @@ BiosKeyboardReset (
                KBC_CMDREG_VIA64_AUX_DISABLE
                );
 
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       Status    = EFI_DEVICE_ERROR;
       goto Exit;
     }
@@ -1214,7 +1214,7 @@ BiosKeyboardReset (
                KBC_CMDREG_VIA64_KB_DISABLE
                );
 
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       Status    = EFI_DEVICE_ERROR;
       goto Exit;
     }
@@ -1236,7 +1236,7 @@ BiosKeyboardReset (
                BiosKeyboardPrivate,
                KBC_CMDREG_VIA64_KBC_SLFTEST
                );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       Status    = EFI_DEVICE_ERROR;
       goto Exit;
     }
@@ -1246,7 +1246,7 @@ BiosKeyboardReset (
                KBC_CMDECHO_KBCSLFTEST_OK,
                KEYBOARD_WAITFORVALUE_TIMEOUT
                );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       Status    = EFI_DEVICE_ERROR;
       goto Exit;
     }
@@ -1262,7 +1262,7 @@ BiosKeyboardReset (
              KBC_CMDREG_VIA64_CMDBYTE_W
              );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     Status    = EFI_DEVICE_ERROR;
     goto Exit;
   }
@@ -1313,7 +1313,7 @@ BiosKeyboardReset (
                KBC_INPBUF_VIA60_KBRESET
                );
 
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       Status    = EFI_DEVICE_ERROR;
       goto Exit;
     }
@@ -1324,7 +1324,7 @@ BiosKeyboardReset (
                KEYBOARD_WAITFORVALUE_TIMEOUT
                );
 
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       Status    = EFI_DEVICE_ERROR;
       goto Exit;
     }
@@ -1338,7 +1338,7 @@ BiosKeyboardReset (
                KEYBOARD_WAITFORVALUE_TIMEOUT
                );
 
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       Status    = EFI_DEVICE_ERROR;
       goto Exit;
     }
@@ -1350,7 +1350,7 @@ BiosKeyboardReset (
                BiosKeyboardPrivate,
                KBC_INPBUF_VIA60_KBSCODE
                );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       Status    = EFI_DEVICE_ERROR;
       goto Exit;
     }
@@ -1361,7 +1361,7 @@ BiosKeyboardReset (
                KEYBOARD_WAITFORVALUE_TIMEOUT
                );
 
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       Status    = EFI_DEVICE_ERROR;
       goto Exit;
     }
@@ -1370,7 +1370,7 @@ BiosKeyboardReset (
                BiosKeyboardPrivate,
                KBC_INPBUF_VIA60_SCODESET2
                );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       Status    = EFI_DEVICE_ERROR;
       goto Exit;
     }
@@ -1381,7 +1381,7 @@ BiosKeyboardReset (
                KEYBOARD_WAITFORVALUE_TIMEOUT
                );
 
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       Status    = EFI_DEVICE_ERROR;
       goto Exit;
     }
@@ -1393,7 +1393,7 @@ BiosKeyboardReset (
                BiosKeyboardPrivate,
                KBC_INPBUF_VIA60_KBEN
                );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       Status    = EFI_DEVICE_ERROR;
       goto Exit;
     }
@@ -1404,7 +1404,7 @@ BiosKeyboardReset (
                KEYBOARD_WAITFORVALUE_TIMEOUT
                );
 
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       Status    = EFI_DEVICE_ERROR;
       goto Exit;
     }
@@ -1423,7 +1423,7 @@ BiosKeyboardReset (
                BiosKeyboardPrivate,
                KBC_CMDREG_VIA64_KB_CKECK
                );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       Status    = EFI_DEVICE_ERROR;
       goto Exit;
     }
@@ -1434,7 +1434,7 @@ BiosKeyboardReset (
                KEYBOARD_WAITFORVALUE_TIMEOUT
                );
 
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       Status    = EFI_DEVICE_ERROR;
       goto Exit;
     }
@@ -1449,7 +1449,7 @@ BiosKeyboardReset (
              KBC_CMDREG_VIA64_KB_ENABLE
              );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     Status    = EFI_DEVICE_ERROR;
     goto Exit;
   }
@@ -1464,7 +1464,7 @@ BiosKeyboardReset (
                KBC_CMDREG_VIA64_AUX_ENABLE
                );
 
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       Status    = EFI_DEVICE_ERROR;
 
     }
@@ -1506,7 +1506,7 @@ BiosKeyboardReadKeyStroke (
   BiosKeyboardPrivate = BIOS_KEYBOARD_DEV_FROM_THIS (This);
 
   Status = KeyboardReadKeyStrokeWorker (BiosKeyboardPrivate, &KeyData);
-  if (EFI_ERROR (Status)) {  //EFI_NOT_READY mean the queue is empty
+  if (EFI_ERROR(Status)) {  //EFI_NOT_READY mean the queue is empty
     return Status;
   }
 
@@ -1521,7 +1521,7 @@ BiosKeyboardReadKeyStroke (
     }
   }
 
-  CopyMem (Key, &KeyData.Key, sizeof (EFI_INPUT_KEY));
+  CopyMem(Key, &KeyData.Key, sizeof (EFI_INPUT_KEY));
 
   return EFI_SUCCESS;
 }
@@ -1556,7 +1556,7 @@ BiosKeyboardWaitForKey (
   //
   BiosKeyboardTimerHandler (NULL, BIOS_KEYBOARD_DEV_FROM_THIS (Context));
 
-  if (!EFI_ERROR (BiosKeyboardCheckForKey (Context))) {
+  if (!EFI_ERROR(BiosKeyboardCheckForKey (Context))) {
     gBS->SignalEvent (Event);
   }
 }
@@ -1802,7 +1802,7 @@ CheckKeyboardConnect (
              BiosKeyboardPrivate,
              KBC_INPBUF_VIA60_KBEN
              );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
 //    DEBUG ((EFI_D_ERROR, "[KBD]CheckKeyboardConnect - Keyboard enable failed!\n"));
     REPORT_STATUS_CODE (
       EFI_ERROR_CODE | EFI_ERROR_MINOR,
@@ -1817,7 +1817,7 @@ CheckKeyboardConnect (
              KEYBOARD_WAITFORVALUE_TIMEOUT
              );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
 //    DEBUG ((EFI_D_ERROR, "[KBD]CheckKeyboardConnect - Timeout!\n"));
     REPORT_STATUS_CODE (
       EFI_ERROR_CODE | EFI_ERROR_MINOR,
@@ -1840,7 +1840,7 @@ CheckKeyboardConnect (
 **/
 static int apple_need_zero = 0;
 
-int MapBiosKey(EFI_KEY_DATA KeyData, APPLE_KEY* pKey, UINT8* pCurModifierMap)
+int MapBiosKey(EFI_KEY_DATA KeyData, APPLE_KEY_CODE* pKey, UINT8* pCurModifierMap)
 {
 	if ( KeyData.Key.UnicodeChar == 0 )
 	{
@@ -2045,7 +2045,7 @@ BiosKeyboardTimerHandler (
   BIOS_KEYBOARD_CONSOLE_IN_EX_NOTIFY *CurrentNotify;
   //for AppleDb
   UINTN               NumberOfKeys;
-  APPLE_KEY           Keys[8]; // APPLE_KEY is UINT16
+  APPLE_KEY_CODE           Keys[8]; // APPLE_KEY_CODE is UINT16
 
   ZeroMem (&Regs, sizeof (EFI_IA32_REGISTER_SET));
 
@@ -2147,8 +2147,11 @@ BiosKeyboardTimerHandler (
   //
   // Clear the CTRL and ALT BDA flag
   //
-  KbFlag1 = *((UINT8 *) (UINTN) 0x417);  // read the STATUS FLAGS 1
-  KbFlag2 = *((UINT8 *) (UINTN) 0x418); // read STATUS FLAGS 2
+  volatile UINT8 * volatile kbf;
+  kbf = (volatile UINT8 *) (UINTN) 0x417;
+  KbFlag1 = *kbf;  // read the STATUS FLAGS 1
+  kbf = (volatile UINT8 *) (UINTN) 0x418;
+  KbFlag2 = *kbf; // read STATUS FLAGS 2
 /*
   DEBUG_CODE (
     {
@@ -2217,9 +2220,12 @@ BiosKeyboardTimerHandler (
   // Clear left alt and left ctrl BDA flag
   //
   KbFlag2 &= ~(KB_LEFT_ALT_PRESSED | KB_LEFT_CTRL_PRESSED);
-  *((UINT8 *) (UINTN) 0x418) = KbFlag2;
+
+  kbf = (volatile UINT8 *) (UINTN) 0x418;
+  *kbf = KbFlag2;
   KbFlag1 &= ~0x0C;
-  *((UINT8 *) (UINTN) 0x417) = KbFlag1;
+  kbf = (volatile UINT8 *) (UINTN) 0x417;
+  *kbf = KbFlag1;
 
 
   //
@@ -2310,9 +2316,9 @@ BiosKeyboardTimerHandler (
 
 */
 //  NumberOfKeys = 3;
-//  Keys[0] = (APPLE_KEY)KeyData.KeyState.KeyShiftState;
-//  Keys[1] = (APPLE_KEY)KeyData.KeyState.KeyToggleState;  //or 0?
-//  Keys[2] = (APPLE_KEY)KeyData.Key.ScanCode;
+//  Keys[0] = (APPLE_KEY_CODE)KeyData.KeyState.KeyShiftState;
+//  Keys[1] = (APPLE_KEY_CODE)KeyData.KeyState.KeyToggleState;  //or 0?
+//  Keys[2] = (APPLE_KEY_CODE)KeyData.Key.ScanCode;
 
   // Parse the modifier key, which is the first byte of keyboard input report.
   //
@@ -2384,7 +2390,7 @@ BiosKeyboardFreeNotifyList (
                    BIOS_KEYBOARD_CONSOLE_IN_EX_NOTIFY_SIGNATURE
                    );
     RemoveEntryList (ListHead->ForwardLink);
-    gBS->FreePool (NotifyNode);
+    gBS->FreePool(NotifyNode);
   }
 
   return EFI_SUCCESS;
@@ -2484,7 +2490,7 @@ DBG("BiosKeyboardResetEx -> Enter\n");
                                                &BiosKeyboardPrivate->SimpleTextIn,
                                                ExtendedVerification
                                                );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
 DBG("BiosKeyboardResetEx -> Leave EFI_DEVICE_ERROR\n");
     return EFI_DEVICE_ERROR;
   }
@@ -2581,7 +2587,7 @@ BiosKeyboardSetState (
                   (VOID **) &LegacyBios
                   );
 
-  ASSERT_EFI_ERROR (Status); */
+  ASSERT_EFI_ERROR(Status); */
   //
   // Enter critical section
   //
@@ -2599,17 +2605,17 @@ BiosKeyboardSetState (
   }
 
   Status = KeyboardWrite (BiosKeyboardPrivate, 0xed);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     Status = EFI_DEVICE_ERROR;
     goto Done;
   }
   Status = KeyboardWaitForValue (BiosKeyboardPrivate, 0xfa, KEYBOARD_WAITFORVALUE_TIMEOUT);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
      Status = EFI_DEVICE_ERROR;
      goto Done;
   }
   Status = KeyboardWrite (BiosKeyboardPrivate, Command);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
      Status = EFI_DEVICE_ERROR;
      goto Done;
   }
@@ -2699,7 +2705,7 @@ BiosKeyboardRegisterKeyNotify (
   // Allocate resource to save the notification function
   //
 
-  NewNotify = (BIOS_KEYBOARD_CONSOLE_IN_EX_NOTIFY *) AllocateZeroPool (sizeof (BIOS_KEYBOARD_CONSOLE_IN_EX_NOTIFY));
+  NewNotify = (BIOS_KEYBOARD_CONSOLE_IN_EX_NOTIFY *) AllocateZeroPool(sizeof (BIOS_KEYBOARD_CONSOLE_IN_EX_NOTIFY));
   if (NewNotify == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Exit;
@@ -2708,7 +2714,7 @@ BiosKeyboardRegisterKeyNotify (
   NewNotify->Signature         = BIOS_KEYBOARD_CONSOLE_IN_EX_NOTIFY_SIGNATURE;
   NewNotify->KeyNotificationFn = KeyNotificationFunction;
   NewNotify->NotifyHandle      = (EFI_HANDLE) NewNotify;
-  CopyMem (&NewNotify->KeyData, KeyData, sizeof (EFI_KEY_DATA));
+  CopyMem(&NewNotify->KeyData, KeyData, sizeof (EFI_KEY_DATA));
   InsertTailList (&BiosKeyboardPrivate->NotifyList, &NewNotify->NotifyEntry);
 
   *NotifyHandle                = NewNotify->NotifyHandle;
@@ -2824,7 +2830,7 @@ InitializeBiosKeyboard(
              &gBiosKeyboardComponentName,
              &gBiosKeyboardComponentName2
              );
-//  ASSERT_EFI_ERROR (Status);
+//  ASSERT_EFI_ERROR(Status);
 
   return Status;
 }

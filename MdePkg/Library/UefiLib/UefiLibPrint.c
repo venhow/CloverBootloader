@@ -80,12 +80,12 @@ InternalPrint (
     // To be extra safe make sure Console has been initialized
     //
     Status = Console->OutputString (Console, Buffer);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       Return = 0;
     }
   }
 
-  FreePool (Buffer);
+  FreePool(Buffer);
 
   return Return;
 }
@@ -221,12 +221,12 @@ AsciiInternalPrint (
     // To be extra safe make sure Console has been initialized
     //
     Status = Console->OutputString (Console, Buffer);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       Return = 0;
     }
   }
 
-  FreePool (Buffer);
+  FreePool(Buffer);
 
   return Return;
 }
@@ -390,7 +390,7 @@ InternalPrintGraphic (
                   );
 
   UgaDraw = NULL;
-  if (EFI_ERROR (Status) && FeaturePcdGet (PcdUgaConsumeSupport)) {
+  if (EFI_ERROR(Status) && FeaturePcdGet (PcdUgaConsumeSupport)) {
     //
     // If no GOP available, try to open UGA Draw protocol if supported.
     //
@@ -402,7 +402,7 @@ InternalPrintGraphic (
                     (VOID **) &UgaDraw
                     );
   }
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto Error;
   }
 
@@ -412,7 +412,7 @@ InternalPrintGraphic (
                   (VOID **) &Sto
                   );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto Error;
   }
 
@@ -428,11 +428,11 @@ InternalPrintGraphic (
   ASSERT ((HorizontalResolution != 0) && (VerticalResolution !=0));
 
   Status = gBS->LocateProtocol (&gEfiHiiFontProtocolGuid, NULL, (VOID **) &HiiFont);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto Error;
   }
 
-  Blt = (EFI_IMAGE_OUTPUT *) AllocateZeroPool (sizeof (EFI_IMAGE_OUTPUT));
+  Blt = (EFI_IMAGE_OUTPUT *) AllocateZeroPool(sizeof (EFI_IMAGE_OUTPUT));
   ASSERT (Blt != NULL);
   if (!Blt) {
     return 0;
@@ -444,18 +444,18 @@ InternalPrintGraphic (
   ZeroMem (&FontInfo, sizeof (EFI_FONT_DISPLAY_INFO));
 
   if (Foreground != NULL) {
-    CopyMem (&FontInfo.ForegroundColor, Foreground, sizeof (EFI_GRAPHICS_OUTPUT_BLT_PIXEL));
+    CopyMem(&FontInfo.ForegroundColor, Foreground, sizeof (EFI_GRAPHICS_OUTPUT_BLT_PIXEL));
   } else {
-    CopyMem (
+    CopyMem(
       &FontInfo.ForegroundColor,
       &mEfiColors[Sto->Mode->Attribute & 0x0f],
       sizeof (EFI_GRAPHICS_OUTPUT_BLT_PIXEL)
       );
   }
   if (Background != NULL) {
-    CopyMem (&FontInfo.BackgroundColor, Background, sizeof (EFI_GRAPHICS_OUTPUT_BLT_PIXEL));
+    CopyMem(&FontInfo.BackgroundColor, Background, sizeof (EFI_GRAPHICS_OUTPUT_BLT_PIXEL));
   } else {
-    CopyMem (
+    CopyMem(
       &FontInfo.BackgroundColor,
       &mEfiColors[Sto->Mode->Attribute >> 4],
       sizeof (EFI_GRAPHICS_OUTPUT_BLT_PIXEL)
@@ -479,7 +479,7 @@ InternalPrintGraphic (
                          &RowInfoArraySize,
                          NULL
                          );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       goto Error;
     }
 
@@ -493,7 +493,7 @@ InternalPrintGraphic (
       goto Error;
     }
 
-    Blt->Image.Bitmap = AllocateZeroPool ((UINT32) Blt->Width * Blt->Height * sizeof (EFI_GRAPHICS_OUTPUT_BLT_PIXEL));
+    Blt->Image.Bitmap = AllocateZeroPool((UINT32) Blt->Width * Blt->Height * sizeof (EFI_GRAPHICS_OUTPUT_BLT_PIXEL));
     ASSERT (Blt->Image.Bitmap != NULL);
     if (!Blt->Image.Bitmap) {
       return 0;
@@ -518,7 +518,7 @@ InternalPrintGraphic (
                          NULL
                          );
 
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       ASSERT (RowInfoArray != NULL);
       if (!RowInfoArray) {
         goto Error;
@@ -553,7 +553,7 @@ InternalPrintGraphic (
     } else {
       goto Error;
     }
-    FreePool (Blt->Image.Bitmap);
+    FreePool(Blt->Image.Bitmap);
   } else {
     goto Error;
   }
@@ -566,13 +566,13 @@ InternalPrintGraphic (
     PrintNum = 0;
   }
 
-  FreePool (RowInfoArray);
-  FreePool (Blt);
+  FreePool(RowInfoArray);
+  FreePool(Blt);
   return PrintNum;
 
 Error:
   if (Blt != NULL) {
-    FreePool (Blt);
+    FreePool(Blt);
   }
   return 0;
 }
@@ -659,7 +659,7 @@ PrintXY (
 
   ReturnNum = InternalPrintGraphic (PointX, PointY, ForeGround, BackGround, Buffer, PrintNum);
 
-  FreePool (Buffer);
+  FreePool(Buffer);
 
   return ReturnNum;
 }
@@ -743,7 +743,7 @@ AsciiPrintXY (
 
   ReturnNum = InternalPrintGraphic (PointX, PointY, ForeGround, BackGround, Buffer, PrintNum);
 
-  FreePool (Buffer);
+  FreePool(Buffer);
 
   return ReturnNum;
 }

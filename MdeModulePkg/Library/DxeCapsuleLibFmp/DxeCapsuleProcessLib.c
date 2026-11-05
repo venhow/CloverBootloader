@@ -257,27 +257,27 @@ InitCapsulePtr (
   //
   // Init temp Capsule Data table.
   //
-  mCapsulePtr       = (VOID **) AllocateZeroPool (sizeof (VOID *) * mCapsuleTotalNumber);
+  mCapsulePtr       = (VOID **) AllocateZeroPool(sizeof (VOID *) * mCapsuleTotalNumber);
   if (mCapsulePtr == NULL) {
     DEBUG ((DEBUG_ERROR, "Allocate mCapsulePtr fail!\n"));
     mCapsuleTotalNumber = 0;
     return ;
   }
-  mCapsuleStatusArray = (EFI_STATUS *) AllocateZeroPool (sizeof (EFI_STATUS) * mCapsuleTotalNumber);
+  mCapsuleStatusArray = (EFI_STATUS *) AllocateZeroPool(sizeof (EFI_STATUS) * mCapsuleTotalNumber);
   if (mCapsuleStatusArray == NULL) {
     DEBUG ((DEBUG_ERROR, "Allocate mCapsuleStatusArray fail!\n"));
-    FreePool (mCapsulePtr);
+    FreePool(mCapsulePtr);
     mCapsulePtr = NULL;
     mCapsuleTotalNumber = 0;
     return ;
   }
   SetMemN (mCapsuleStatusArray, sizeof (EFI_STATUS) * mCapsuleTotalNumber, EFI_NOT_READY);
 
-  CapsuleNameCapsulePtr =  (VOID **) AllocateZeroPool (sizeof (VOID *) * CapsuleNameCapsuleTotalNumber);
+  CapsuleNameCapsulePtr =  (VOID **) AllocateZeroPool(sizeof (VOID *) * CapsuleNameCapsuleTotalNumber);
   if (CapsuleNameCapsulePtr == NULL) {
     DEBUG ((DEBUG_ERROR, "Allocate CapsuleNameCapsulePtr fail!\n"));
-    FreePool (mCapsulePtr);
-    FreePool (mCapsuleStatusArray);
+    FreePool(mCapsulePtr);
+    FreePool(mCapsuleStatusArray);
     mCapsulePtr         = NULL;
     mCapsuleStatusArray = NULL;
     mCapsuleTotalNumber = 0;
@@ -310,12 +310,12 @@ InitCapsulePtr (
   }
 
   if (CapsuleNameTotalNumber == mCapsuleTotalNumber) {
-    mCapsuleNamePtr = (CHAR16 **) AllocateZeroPool (sizeof (CHAR16 *) * mCapsuleTotalNumber);
+    mCapsuleNamePtr = (CHAR16 **) AllocateZeroPool(sizeof (CHAR16 *) * mCapsuleTotalNumber);
     if (mCapsuleNamePtr == NULL) {
       DEBUG ((DEBUG_ERROR, "Allocate mCapsuleNamePtr fail!\n"));
-      FreePool (mCapsulePtr);
-      FreePool (mCapsuleStatusArray);
-      FreePool (CapsuleNameCapsulePtr);
+      FreePool(mCapsulePtr);
+      FreePool(mCapsuleStatusArray);
+      FreePool(CapsuleNameCapsulePtr);
       mCapsulePtr         = NULL;
       mCapsuleStatusArray = NULL;
       mCapsuleTotalNumber = 0;
@@ -334,7 +334,7 @@ InitCapsulePtr (
     mCapsuleNamePtr = NULL;
   }
 
-  FreePool (CapsuleNameCapsulePtr);
+  FreePool(CapsuleNameCapsulePtr);
 }
 
 /**
@@ -387,15 +387,15 @@ PopulateCapsuleInConfigurationTable (
   CacheIndex          = 0;
   CacheNumber         = 0;
 
-  CapsulePtrCache  = (VOID **) AllocateZeroPool (sizeof (VOID *) * mCapsuleTotalNumber);
+  CapsulePtrCache  = (VOID **) AllocateZeroPool(sizeof (VOID *) * mCapsuleTotalNumber);
   if (CapsulePtrCache == NULL) {
     DEBUG ((DEBUG_ERROR, "Allocate CapsulePtrCache fail!\n"));
     return ;
   }
-  CapsuleGuidCache = (EFI_GUID *) AllocateZeroPool (sizeof (EFI_GUID) * mCapsuleTotalNumber);
+  CapsuleGuidCache = (EFI_GUID *) AllocateZeroPool(sizeof (EFI_GUID) * mCapsuleTotalNumber);
   if (CapsuleGuidCache == NULL) {
     DEBUG ((DEBUG_ERROR, "Allocate CapsuleGuidCache fail!\n"));
-    FreePool (CapsulePtrCache);
+    FreePool(CapsulePtrCache);
     return ;
   }
 
@@ -462,7 +462,7 @@ PopulateCapsuleInConfigurationTable (
       CapsuleTable->CapsuleArrayNumber =  CapsuleNumber;
       CopyMem(&CapsuleTable->CapsulePtr[0], CapsulePtrCache, CapsuleNumber * sizeof(VOID*));
       Status = gBS->InstallConfigurationTable (&CapsuleGuidCache[CacheIndex], (VOID*)CapsuleTable);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         DEBUG ((DEBUG_ERROR, "InstallConfigurationTable (%g) fail!\n", &CapsuleGuidCache[CacheIndex]));
       }
     }

@@ -80,14 +80,14 @@ NvmeCreatePrpList (
         //
         // Fill all PRP entries except of last one.
         //
-        CopyMem (PrpEntry, (VOID *)(UINTN) (&PhysicalAddr), sizeof (UINT64));
+        CopyMem(PrpEntry, (VOID *)(UINTN) (&PhysicalAddr), sizeof (UINT64));
         PhysicalAddr += EFI_PAGE_SIZE;
       } else {
         //
         // Fill last PRP entries with next PRP List pointer.
         //
         NewPhyAddr = (PrpListPhyAddr + (PrpListIndex + 1) * EFI_PAGE_SIZE);
-        CopyMem (PrpEntry, (VOID *)(UINTN) (&NewPhyAddr), sizeof (UINT64));
+        CopyMem(PrpEntry, (VOID *)(UINTN) (&NewPhyAddr), sizeof (UINT64));
       }
     }
   }
@@ -98,7 +98,7 @@ NvmeCreatePrpList (
   PrpListBase = (UINTN)PrpListHost + PrpListIndex * EFI_PAGE_SIZE;
   for (PrpEntryIndex = 0; PrpEntryIndex < ((Remainder != 0) ? Remainder : PrpEntryNo); ++PrpEntryIndex) {
     PrpEntry = (UINT8 *)(UINTN) (PrpListBase + PrpEntryIndex * sizeof(UINT64));
-    CopyMem (PrpEntry, (VOID *)(UINTN) (&PhysicalAddr), sizeof (UINT64));
+    CopyMem(PrpEntry, (VOID *)(UINTN) (&PhysicalAddr), sizeof (UINT64));
 
     PhysicalAddr += EFI_PAGE_SIZE;
   }
@@ -471,7 +471,7 @@ NvmePassThruExecute (
                    &PhyAddr,
                    &MapData
                    );
-        if (EFI_ERROR (Status) || (MapLength != Packet->TransferLength)) {
+        if (EFI_ERROR(Status) || (MapLength != Packet->TransferLength)) {
           Status = EFI_OUT_OF_RESOURCES;
           DEBUG ((DEBUG_ERROR, "%a: Fail to map data buffer.\n", __FUNCTION__));
           goto Exit;
@@ -489,7 +489,7 @@ NvmePassThruExecute (
                    &PhyAddr,
                    &MapMeta
                    );
-        if (EFI_ERROR (Status) || (MapLength != Packet->MetadataLength)) {
+        if (EFI_ERROR(Status) || (MapLength != Packet->MetadataLength)) {
           Status = EFI_OUT_OF_RESOURCES;
           DEBUG ((DEBUG_ERROR, "%a: Fail to map meta data buffer.\n", __FUNCTION__));
           goto Exit;
@@ -554,7 +554,7 @@ NvmePassThruExecute (
   }
   Data32 = ReadUnaligned32 ((UINT32 *)&Private->SqTdbl[QueueId]);
   Status = NVME_SET_SQTDBL (Private, QueueId, &Data32);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG ((DEBUG_ERROR, "%a: NVME_SET_SQTDBL fail, Status - %r\n", __FUNCTION__, Status));
     goto Exit;
   }
@@ -580,7 +580,7 @@ NvmePassThruExecute (
     //
     DEBUG ((DEBUG_ERROR, "%a: Timeout occurs for the PassThru command.\n", __FUNCTION__));
     Status = NvmeControllerInit (Private);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       Status = EFI_DEVICE_ERROR;
     } else {
       //
@@ -603,7 +603,7 @@ NvmePassThruExecute (
   //
   // Copy the Respose Queue entry for this command to the callers response buffer
   //
-  CopyMem (Packet->NvmeCompletion, Cq, sizeof (EFI_NVM_EXPRESS_COMPLETION));
+  CopyMem(Packet->NvmeCompletion, Cq, sizeof (EFI_NVM_EXPRESS_COMPLETION));
 
   //
   // Check the NVMe cmd execution result
@@ -657,7 +657,7 @@ NvmePassThruGetDevicePath (
   Private = GET_NVME_PEIM_HC_PRIVATE_DATA_FROM_THIS_NVME_PASSTHRU (This);
 
   *DevicePathLength = Private->DevicePathLength;
-  *DevicePath       = AllocateCopyPool (Private->DevicePathLength, Private->DevicePath);
+  *DevicePath       = AllocateCopyPool(Private->DevicePathLength, Private->DevicePath);
   if (*DevicePath == NULL) {
     *DevicePathLength = 0;
     return EFI_OUT_OF_RESOURCES;

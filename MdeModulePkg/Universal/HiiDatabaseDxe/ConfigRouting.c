@@ -117,7 +117,7 @@ GetDevicePath (
   // as the device path resides in RAM memory.
   // Translate the data into binary.
   //
-  DevicePathBuffer = (UINT8 *) AllocateZeroPool ((Length + 1) / 2);
+  DevicePathBuffer = (UINT8 *) AllocateZeroPool((Length + 1) / 2);
   if (DevicePathBuffer == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
@@ -145,7 +145,7 @@ GetDevicePath (
       //
       // Invalid device path
       //
-      FreePool (DevicePathBuffer);
+      FreePool(DevicePathBuffer);
       return EFI_NOT_FOUND;
     }
     DevicePath = NextDevicePathNode (DevicePath);
@@ -234,7 +234,7 @@ GenerateSubStr (
   ASSERT (String != NULL && SubStr != NULL);
 
   if (Buffer == NULL) {
-    *SubStr = AllocateCopyPool (StrSize (String), String);
+    *SubStr = AllocateCopyPool(StrSize (String), String);
     ASSERT (*SubStr != NULL);
     return;
   }
@@ -243,7 +243,7 @@ GenerateSubStr (
   // Header + Data + '&' + '\0'
   //
   Length = StrLen (String) + BufferLen * 2 + 1 + 1;
-  Str    = AllocateZeroPool (Length * sizeof (CHAR16));
+  Str    = AllocateZeroPool(Length * sizeof (CHAR16));
   ASSERT (Str != NULL);
 
   StrCpyS (Str, Length, String);
@@ -359,7 +359,7 @@ OutputConfigBody (
     //
     // It is the last <ConfigResp> of the incoming configuration string.
     //
-    Result = AllocateCopyPool (StrSize (String), String);
+    Result = AllocateCopyPool(StrSize (String), String);
     if (Result == NULL) {
       return EFI_OUT_OF_RESOURCES;
     } else {
@@ -372,7 +372,7 @@ OutputConfigBody (
   if (Length == 0) {
     return EFI_NOT_FOUND;
   }
-  Result = AllocateCopyPool (Length * sizeof (CHAR16), String);
+  Result = AllocateCopyPool(Length * sizeof (CHAR16), String);
   if (Result == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
@@ -486,16 +486,16 @@ GetValueOfNumber (
   *Len   = StringPtr - TmpPtr;
   Length = *Len + 1;
 
-  Str = (EFI_STRING) AllocateZeroPool (Length * sizeof (CHAR16));
+  Str = (EFI_STRING) AllocateZeroPool(Length * sizeof (CHAR16));
   if (Str == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Exit;
   }
-  CopyMem (Str, TmpPtr, *Len * sizeof (CHAR16));
+  CopyMem(Str, TmpPtr, *Len * sizeof (CHAR16));
   *(Str + *Len) = L'\0';
 
   Length = (Length + 1) / 2;
-  Buf = (UINT8 *) AllocateZeroPool (Length);
+  Buf = (UINT8 *) AllocateZeroPool(Length);
   if (Buf == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Exit;
@@ -518,7 +518,7 @@ GetValueOfNumber (
 
 Exit:
   if (Str != NULL) {
-    FreePool (Str);
+    FreePool(Str);
   }
 
   return Status;
@@ -558,17 +558,17 @@ FindSameBlockElement(
   while (BlockPtr != NULL) {
     BlockPtr += StrLen (BlockName);
     Status = GetValueOfNumber (BlockPtr, &TempBuffer, &Length);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
     ASSERT (TempBuffer != NULL);
     if ((BufferLen == Length) && (0 == CompareMem (Buffer, TempBuffer, Length))) {
       *Found = TRUE;
-      FreePool (TempBuffer);
+      FreePool(TempBuffer);
       TempBuffer = NULL;
       return EFI_SUCCESS;
     } else {
-      FreePool (TempBuffer);
+      FreePool(TempBuffer);
       TempBuffer = NULL;
       BlockPtr = StrStr (BlockPtr + 1, BlockName);
     }
@@ -634,7 +634,7 @@ CompareBlockElementDefault (
     BlockPtrStart = BlockPtr;
     BlockPtr += StrLen (L"&OFFSET=");
     Status = GetValueOfNumber (BlockPtr, &TempBuffer, &OffsetLength);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       Status = EFI_OUT_OF_RESOURCES;
       goto Exit;
     }
@@ -643,10 +643,10 @@ CompareBlockElementDefault (
     //
     Status = FindSameBlockElement (StringPtr, L"&OFFSET=", TempBuffer, &FoundOffset, OffsetLength);
     if (TempBuffer != NULL) {
-      FreePool (TempBuffer);
+      FreePool(TempBuffer);
       TempBuffer = NULL;
     }
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       Status = EFI_OUT_OF_RESOURCES;
       goto Exit;
     }
@@ -666,7 +666,7 @@ CompareBlockElementDefault (
       // Copy the <BlockConfig> to AppendString.
       //
       if (AppendString == NULL) {
-        AppendString = (EFI_STRING) AllocateZeroPool (AppendSize + sizeof (CHAR16));
+        AppendString = (EFI_STRING) AllocateZeroPool(AppendSize + sizeof (CHAR16));
         StrnCatS (AppendString, AppendSize / sizeof (CHAR16) + 1, BlockPtrStart, AppendSize / sizeof (CHAR16));
       } else {
         TotalSize = StrSize (AppendString) + AppendSize + sizeof (CHAR16);
@@ -711,7 +711,7 @@ CompareBlockElementDefault (
 
 Exit:
   if (AppendString != NULL) {
-    FreePool (AppendString);
+    FreePool(AppendString);
   }
 
   return Status;
@@ -799,7 +799,7 @@ CompareNameElementDefault (
       // Copy the <NvConfig> to AppendString.
       //
       if (AppendString == NULL) {
-        AppendString = (EFI_STRING) AllocateZeroPool (AppendSize + sizeof (CHAR16));
+        AppendString = (EFI_STRING) AllocateZeroPool(AppendSize + sizeof (CHAR16));
         StrnCatS (AppendString, AppendSize / sizeof (CHAR16) + 1, NvConfigStart, AppendSize / sizeof (CHAR16));
       } else {
          TotalSize = StrSize (AppendString) + AppendSize + sizeof (CHAR16);
@@ -843,7 +843,7 @@ CompareNameElementDefault (
 
 Exit:
   if (AppendString != NULL) {
-    FreePool (AppendString);
+    FreePool(AppendString);
   }
   return Status;
 }
@@ -917,7 +917,7 @@ CompareAndMergeDefaultString (
   //
   // Copy the content of <ConfigAltResp> which contain current AltConfigHdr in AltCfgResp.
   //
-  ConfigAltResp = AllocateCopyPool (StrSize (*AltCfgResp), *AltCfgResp);
+  ConfigAltResp = AllocateCopyPool(StrSize (*AltCfgResp), *AltCfgResp);
   if (ConfigAltResp == NULL) {
     goto Exit;
   }
@@ -969,7 +969,7 @@ CompareAndMergeDefaultString (
     ReallocateSize = StrSize (ConfigAltResp) + sizeof (CHAR16);
   }
 
-  AltCfgRespBackup = (EFI_STRING) AllocateZeroPool (ReallocateSize);
+  AltCfgRespBackup = (EFI_STRING) AllocateZeroPool(ReallocateSize);
   if (AltCfgRespBackup == NULL) {
     goto Exit;
   }
@@ -979,7 +979,7 @@ CompareAndMergeDefaultString (
     StrCatS (AltCfgRespBackup, ReallocateSize / sizeof (CHAR16), StringPtrNext);
   }
 
-  FreePool (*AltCfgResp);
+  FreePool(*AltCfgResp);
   *AltCfgResp = AltCfgRespBackup;
 
   Status = EFI_SUCCESS;
@@ -1067,7 +1067,7 @@ MergeDefaultString (
   //                                  |1| StrLen (ConfigHdr) | 8 | 4 | 1 |
   //
   MaxLen = 1 + HeaderLength + 8 + 4 + 1;
-  AltConfigHdr = AllocateZeroPool (MaxLen * sizeof (CHAR16));
+  AltConfigHdr = AllocateZeroPool(MaxLen * sizeof (CHAR16));
   if (AltConfigHdr == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
@@ -1101,7 +1101,7 @@ MergeDefaultString (
                                      (VOID *) (*AltCfgResp)
                                      );
         if (*AltCfgResp == NULL) {
-          FreePool (AltConfigHdr);
+          FreePool(AltConfigHdr);
           return EFI_OUT_OF_RESOURCES;
         }
         StrCatS (*AltCfgResp, TotalSize / sizeof (CHAR16), StringPtrDefault);
@@ -1116,7 +1116,7 @@ MergeDefaultString (
                                      (VOID *) (*AltCfgResp)
                                      );
         if (*AltCfgResp == NULL) {
-          FreePool (AltConfigHdr);
+          FreePool(AltConfigHdr);
           return EFI_OUT_OF_RESOURCES;
         }
         StrCatS (*AltCfgResp, TotalSize / sizeof (CHAR16), StringPtrDefault);
@@ -1138,7 +1138,7 @@ MergeDefaultString (
     StringPtrDefault = StrStr (StringPtrDefault + 1, AltConfigHdr);
   }
 
-  FreePool (AltConfigHdr);
+  FreePool(AltConfigHdr);
   return EFI_SUCCESS;
 }
 
@@ -1172,7 +1172,7 @@ InsertDefaultValue (
         //
         // Update the default value array in BlockData.
         //
-        CopyMem (&DefaultValueArray->Value, &DefaultValueData->Value, sizeof (EFI_IFR_TYPE_VALUE));
+        CopyMem(&DefaultValueArray->Value, &DefaultValueData->Value, sizeof (EFI_IFR_TYPE_VALUE));
         DefaultValueArray->Type  = DefaultValueData->Type;
         DefaultValueArray->Cleaned = DefaultValueData->Cleaned;
       }
@@ -1183,9 +1183,9 @@ InsertDefaultValue (
   //
   // Insert new default value data in tail.
   //
-  DefaultValueArray = AllocateZeroPool (sizeof (IFR_DEFAULT_DATA));
+  DefaultValueArray = AllocateZeroPool(sizeof (IFR_DEFAULT_DATA));
   ASSERT (DefaultValueArray != NULL);
-  CopyMem (DefaultValueArray, DefaultValueData, sizeof (IFR_DEFAULT_DATA));
+  CopyMem(DefaultValueArray, DefaultValueData, sizeof (IFR_DEFAULT_DATA));
   InsertTailList (Link, &DefaultValueArray->Entry);
 }
 
@@ -1232,7 +1232,7 @@ InsertBlockData (
         // The same block array has been added.
         //
         if (BlockSingleData != BlockArray) {
-          FreePool (BlockSingleData);
+          FreePool(BlockSingleData);
           *BlockData = BlockArray;
         }
         return;
@@ -1304,7 +1304,7 @@ GetSupportedLanguages (
   //
   // Allocate the supported languages buffer.
   //
-  SupportedLanguages = AllocateZeroPool (LanguageSize);
+  SupportedLanguages = AllocateZeroPool(LanguageSize);
   if (SupportedLanguages == NULL) {
     //
     // Return NULL if allocation fails.
@@ -1316,11 +1316,11 @@ GetSupportedLanguages (
   // Retrieve the supported languages string
   //
   Status = mPrivate.HiiString.GetLanguages (&mPrivate.HiiString, HiiHandle, SupportedLanguages, &LanguageSize);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     //
     // Free the buffer and return NULL if the supported languages can not be retrieved.
     //
-    FreePool (SupportedLanguages);
+    FreePool(SupportedLanguages);
     return NULL;
   }
 
@@ -1425,7 +1425,7 @@ InternalGetString (
   //
   // Allocate a buffer for the return string
   //
-  String = AllocateZeroPool (StringSize);
+  String = AllocateZeroPool(StringSize);
   if (String == NULL) {
     goto Error;
   }
@@ -1442,11 +1442,11 @@ InternalGetString (
                          &StringSize,
                          NULL
                          );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     //
     // Free the buffer and return NULL if the supported languages can not be retrieved.
     //
-    FreePool (String);
+    FreePool(String);
     String = NULL;
   }
 
@@ -1455,13 +1455,13 @@ Error:
   // Free allocated buffers
   //
   if (SupportedLanguages != NULL) {
-    FreePool (SupportedLanguages);
+    FreePool(SupportedLanguages);
   }
   if (PlatformLanguage != NULL) {
-    FreePool (PlatformLanguage);
+    FreePool(PlatformLanguage);
   }
   if (BestLanguage != NULL) {
-    FreePool (BestLanguage);
+    FreePool(BestLanguage);
   }
 
   //
@@ -1513,10 +1513,10 @@ BlockArrayCheck (
       ASSERT (Name != NULL);
 
       if (StrnCmp (BlockData->Name, Name, StrLen (Name)) == 0) {
-        FreePool (Name);
+        FreePool(Name);
         return TRUE;
       }
-      FreePool (Name);
+      FreePool(Name);
     } else {
       if ((VarOffset >= BlockData->Offset) && ((VarOffset + VarWidth) <= (BlockData->Offset + BlockData->Width))) {
         return TRUE;
@@ -1564,7 +1564,7 @@ GetFormPackageData (
              HiiFormPackage,
              &ResultSize
            );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -1588,8 +1588,8 @@ GetFormPackageData (
              *HiiFormPackage,
              &ResultSize
            );
-  if (EFI_ERROR (Status)) {
-    FreePool (*HiiFormPackage);
+  if (EFI_ERROR(Status)) {
+    FreePool(*HiiFormPackage);
   }
 
   *PackageSize = Size;
@@ -1639,7 +1639,7 @@ GetVarStoreType (
   *IsEfiVarstore   = FALSE;
 
   Status = GetFormPackageData(DataBaseRecord, &HiiFormPackage, &PackageSize);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -1676,7 +1676,7 @@ GetVarStoreType (
       }
 
       NameSize = AsciiStrSize ((CHAR8 *)IfrEfiVarStore->Name);
-      VarStoreName = AllocateZeroPool (NameSize * sizeof (CHAR16));
+      VarStoreName = AllocateZeroPool(NameSize * sizeof (CHAR16));
       if (VarStoreName == NULL) {
         Status = EFI_OUT_OF_RESOURCES;
         goto Done;
@@ -1687,37 +1687,37 @@ GetVarStoreType (
       GenerateSubStr (L"NAME=", StrLen (VarStoreName) * sizeof (CHAR16), (VOID *) VarStoreName, 2, &NameStr);
       LengthString = StrLen (GuidStr);
       LengthString = LengthString + StrLen (NameStr) + 1;
-      TempStr = AllocateZeroPool (LengthString * sizeof (CHAR16));
+      TempStr = AllocateZeroPool(LengthString * sizeof (CHAR16));
       if (TempStr == NULL) {
-        FreePool (GuidStr);
-        FreePool (NameStr);
-        FreePool (VarStoreName);
+        FreePool(GuidStr);
+        FreePool(NameStr);
+        FreePool(VarStoreName);
         Status = EFI_OUT_OF_RESOURCES;
         goto Done;
       }
       StrCpyS (TempStr, LengthString, GuidStr);
       StrCatS (TempStr, LengthString, NameStr);
       if (ConfigHdr == NULL || StrnCmp (ConfigHdr, TempStr, StrLen (TempStr)) == 0) {
-        *EfiVarStore = (EFI_IFR_VARSTORE_EFI *) AllocateZeroPool (IfrOpHdr->Length);
+        *EfiVarStore = (EFI_IFR_VARSTORE_EFI *) AllocateZeroPool(IfrOpHdr->Length);
         if (*EfiVarStore == NULL) {
-          FreePool (VarStoreName);
-          FreePool (GuidStr);
-          FreePool (NameStr);
-          FreePool (TempStr);
+          FreePool(VarStoreName);
+          FreePool(GuidStr);
+          FreePool(NameStr);
+          FreePool(TempStr);
           Status = EFI_OUT_OF_RESOURCES;
           goto Done;
         }
         *IsEfiVarstore = TRUE;
-        CopyMem (*EfiVarStore, IfrEfiVarStore, IfrOpHdr->Length);
+        CopyMem(*EfiVarStore, IfrEfiVarStore, IfrOpHdr->Length);
       }
 
       //
       // Free allocated temp string.
       //
-      FreePool (VarStoreName);
-      FreePool (GuidStr);
-      FreePool (NameStr);
-      FreePool (TempStr);
+      FreePool(VarStoreName);
+      FreePool(GuidStr);
+      FreePool(NameStr);
+      FreePool(TempStr);
 
       //
       // Already found the varstore, break;
@@ -1729,7 +1729,7 @@ GetVarStoreType (
   }
 Done:
   if (HiiFormPackage != NULL) {
-    FreePool (HiiFormPackage);
+    FreePool(HiiFormPackage);
   }
 
   return Status;
@@ -1806,7 +1806,7 @@ IsThisVarstore (
   }
   LengthString = StrLen (GuidStr);
   LengthString = LengthString + StrLen (NameStr) + 1;
-  TempStr = AllocateZeroPool (LengthString * sizeof (CHAR16));
+  TempStr = AllocateZeroPool(LengthString * sizeof (CHAR16));
   if (TempStr == NULL) {
     goto Done;
   }
@@ -1820,15 +1820,15 @@ IsThisVarstore (
 
 Done:
   if (GuidStr != NULL) {
-    FreePool (GuidStr);
+    FreePool(GuidStr);
   }
 
   if (NameStr != NULL) {
-    FreePool (NameStr);
+    FreePool(NameStr);
   }
 
   if (TempStr != NULL) {
-    FreePool (TempStr);
+    FreePool(TempStr);
   }
 
   return RetVal;
@@ -1869,7 +1869,7 @@ IsThisPackageList (
   FindVarstore     = FALSE;
 
   Status = GetFormPackageData(DataBaseRecord, &HiiFormPackage, &PackageSize);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return FALSE;
   }
 
@@ -1900,7 +1900,7 @@ IsThisPackageList (
       IfrVarStore = (EFI_IFR_VARSTORE *) IfrOpHdr;
 
       NameSize = AsciiStrSize ((CHAR8 *)IfrVarStore->Name);
-      VarStoreName = AllocateZeroPool (NameSize * sizeof (CHAR16));
+      VarStoreName = AllocateZeroPool(NameSize * sizeof (CHAR16));
       if (VarStoreName == NULL) {
         goto Done;
       }
@@ -1910,7 +1910,7 @@ IsThisPackageList (
         FindVarstore = TRUE;
         goto Done;
       } else {
-        FreePool (VarStoreName);
+        FreePool(VarStoreName);
         VarStoreName = NULL;
       }
       break;
@@ -1918,7 +1918,7 @@ IsThisPackageList (
     case EFI_IFR_VARSTORE_EFI_OP:
       IfrEfiVarStore = (EFI_IFR_VARSTORE_EFI *) IfrOpHdr;
       NameSize = AsciiStrSize ((CHAR8 *)IfrEfiVarStore->Name);
-      VarStoreName = AllocateZeroPool (NameSize * sizeof (CHAR16));
+      VarStoreName = AllocateZeroPool(NameSize * sizeof (CHAR16));
       if (VarStoreName == NULL) {
         goto Done;
       }
@@ -1928,7 +1928,7 @@ IsThisPackageList (
         FindVarstore = TRUE;
         goto Done;
       } else {
-        FreePool (VarStoreName);
+        FreePool(VarStoreName);
         VarStoreName = NULL;
       }
       break;
@@ -1955,11 +1955,11 @@ IsThisPackageList (
   }
 Done:
   if (HiiFormPackage != NULL) {
-    FreePool (HiiFormPackage);
+    FreePool(HiiFormPackage);
   }
 
   if (VarStoreName != NULL) {
-    FreePool (VarStoreName);
+    FreePool(VarStoreName);
   }
 
   return FindVarstore;
@@ -2055,7 +2055,7 @@ IsThisOpcodeRequired (
     }
   }
 
-  BlockData = (IFR_BLOCK_DATA *) AllocateZeroPool (sizeof (IFR_BLOCK_DATA));
+  BlockData = (IFR_BLOCK_DATA *) AllocateZeroPool(sizeof (IFR_BLOCK_DATA));
   if (BlockData == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
@@ -2200,7 +2200,7 @@ ParseIfrData (
       IfrVarStore = (EFI_IFR_VARSTORE *) IfrOpHdr;
 
       NameSize = AsciiStrSize ((CHAR8 *)IfrVarStore->Name);
-      VarStoreName = AllocateZeroPool (NameSize * sizeof (CHAR16));
+      VarStoreName = AllocateZeroPool(NameSize * sizeof (CHAR16));
       if (VarStoreName == NULL) {
         Status = EFI_OUT_OF_RESOURCES;
         goto Done;
@@ -2217,7 +2217,7 @@ ParseIfrData (
         VarStorageData->Type       = EFI_HII_VARSTORE_BUFFER;
         VarStoreId                 = IfrVarStore->VarStoreId;
       } else {
-        FreePool (VarStoreName);
+        FreePool(VarStoreName);
         VarStoreName = NULL;
       }
       break;
@@ -2242,7 +2242,7 @@ ParseIfrData (
       }
 
       NameSize = AsciiStrSize ((CHAR8 *)IfrEfiVarStore->Name);
-      VarStoreName = AllocateZeroPool (NameSize * sizeof (CHAR16));
+      VarStoreName = AllocateZeroPool(NameSize * sizeof (CHAR16));
       if (VarStoreName == NULL) {
         Status = EFI_OUT_OF_RESOURCES;
         goto Done;
@@ -2259,7 +2259,7 @@ ParseIfrData (
         VarStorageData->Type       = EFI_HII_VARSTORE_EFI_VARIABLE_BUFFER;
         VarStoreId                 = IfrEfiVarStore->VarStoreId;
       } else {
-        FreePool (VarStoreName);
+        FreePool(VarStoreName);
         VarStoreName = NULL;
       }
       break;
@@ -2288,7 +2288,7 @@ ParseIfrData (
       //
       // Add new the map between default id and default name.
       //
-      DefaultDataPtr = (IFR_DEFAULT_DATA *) AllocateZeroPool (sizeof (IFR_DEFAULT_DATA));
+      DefaultDataPtr = (IFR_DEFAULT_DATA *) AllocateZeroPool(sizeof (IFR_DEFAULT_DATA));
       if (DefaultDataPtr == NULL) {
         Status = EFI_OUT_OF_RESOURCES;
         goto Done;
@@ -2334,7 +2334,7 @@ ParseIfrData (
       }
 
       Status = IsThisOpcodeRequired(RequestBlockArray, HiiHandle, VarStorageData, IfrOpHdr, VarWidth, &BlockData, FALSE);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         if (Status == EFI_NOT_FOUND){
           //
           //The opcode is not required,exit and parse other opcode.
@@ -2380,7 +2380,7 @@ ParseIfrData (
       }
 
       Status = IsThisOpcodeRequired(RequestBlockArray, HiiHandle, VarStorageData, IfrOpHdr, VarWidth, &BlockData, QuestionReferBitField);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         if (Status == EFI_NOT_FOUND){
           //
           //The opcode is not required,exit and parse other opcode.
@@ -2409,7 +2409,7 @@ ParseIfrData (
           //
           // Since default value in bit field was stored as UINT32 type.
           //
-          CopyMem (&DefaultData.Value.u32, &IfrOneOf->data.u32.MinValue, sizeof (UINT32));
+          CopyMem(&DefaultData.Value.u32, &IfrOneOf->data.u32.MinValue, sizeof (UINT32));
         } else {
           switch (IfrOneOf->Flags & EFI_IFR_NUMERIC_SIZE) {
           case EFI_IFR_NUMERIC_SIZE_1:
@@ -2417,15 +2417,15 @@ ParseIfrData (
             break;
 
           case EFI_IFR_NUMERIC_SIZE_2:
-           CopyMem (&DefaultData.Value.u16, &IfrOneOf->data.u16.MinValue, sizeof (UINT16));
+           CopyMem(&DefaultData.Value.u16, &IfrOneOf->data.u16.MinValue, sizeof (UINT16));
            break;
 
           case EFI_IFR_NUMERIC_SIZE_4:
-            CopyMem (&DefaultData.Value.u32, &IfrOneOf->data.u32.MinValue, sizeof (UINT32));
+            CopyMem(&DefaultData.Value.u32, &IfrOneOf->data.u32.MinValue, sizeof (UINT32));
             break;
 
           case EFI_IFR_NUMERIC_SIZE_8:
-            CopyMem (&DefaultData.Value.u64, &IfrOneOf->data.u64.MinValue, sizeof (UINT64));
+            CopyMem(&DefaultData.Value.u64, &IfrOneOf->data.u64.MinValue, sizeof (UINT64));
             break;
 
           default:
@@ -2476,7 +2476,7 @@ ParseIfrData (
       }
 
       Status = IsThisOpcodeRequired(RequestBlockArray, HiiHandle, VarStorageData, IfrOpHdr, VarWidth, &BlockData, FALSE);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         if (Status == EFI_NOT_FOUND){
           //
           //The opcode is not required,exit and parse other opcode.
@@ -2524,7 +2524,7 @@ ParseIfrData (
         VarWidth = 1;
       }
       Status = IsThisOpcodeRequired(RequestBlockArray, HiiHandle, VarStorageData, IfrOpHdr, VarWidth, &BlockData, QuestionReferBitField);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         if (Status == EFI_NOT_FOUND){
           //
           //The opcode is not required,exit and parse other opcode.
@@ -2668,7 +2668,7 @@ ParseIfrData (
 
       VarWidth  = (UINT16) sizeof (EFI_HII_DATE);
       Status = IsThisOpcodeRequired(RequestBlockArray, HiiHandle, VarStorageData, IfrOpHdr, VarWidth, &BlockData, FALSE);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         if (Status == EFI_NOT_FOUND){
           //
           //The opcode is not required,exit and parse other opcode.
@@ -2710,7 +2710,7 @@ ParseIfrData (
 
       VarWidth  = (UINT16) sizeof (EFI_HII_TIME);
       Status = IsThisOpcodeRequired(RequestBlockArray, HiiHandle, VarStorageData, IfrOpHdr, VarWidth, &BlockData, FALSE);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         if (Status == EFI_NOT_FOUND){
           //
           //The opcode is not required,exit and parse other opcode.
@@ -2752,7 +2752,7 @@ ParseIfrData (
 
       VarWidth  = (UINT16) (IfrString->MaxSize * sizeof (UINT16));
       Status = IsThisOpcodeRequired(RequestBlockArray, HiiHandle, VarStorageData, IfrOpHdr, VarWidth, &BlockData, FALSE);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         if (Status == EFI_NOT_FOUND){
           //
           //The opcode is not required,exit and parse other opcode.
@@ -2794,7 +2794,7 @@ ParseIfrData (
 
       VarWidth  = (UINT16) (IfrPassword->MaxSize * sizeof (UINT16));
       Status = IsThisOpcodeRequired(RequestBlockArray, HiiHandle, VarStorageData, IfrOpHdr, VarWidth, &BlockData, FALSE);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         if (Status == EFI_NOT_FOUND){
           //
           //The opcode is not required,exit and parse other opcode.
@@ -2841,9 +2841,9 @@ ParseIfrData (
           //
           Status = EFI_INVALID_PARAMETER;
           if (BlockData->Name != NULL) {
-            FreePool (BlockData->Name);
+            FreePool(BlockData->Name);
           }
-          FreePool (BlockData);
+          FreePool(BlockData);
           goto Done;
         }
 
@@ -2859,9 +2859,9 @@ ParseIfrData (
           // This question is not in the requested string. Skip it.
           //
           if (BlockData->Name != NULL) {
-            FreePool (BlockData->Name);
+            FreePool(BlockData->Name);
           }
-          FreePool (BlockData);
+          FreePool(BlockData);
           BlockData = NULL;
           break;
         }
@@ -2871,9 +2871,9 @@ ParseIfrData (
         if ((BlockData->Name == NULL) && ((BlockData->Offset + BlockData->Width) > VarStorageData->Size)) {
           Status = EFI_INVALID_PARAMETER;
           if (BlockData->Name != NULL) {
-            FreePool (BlockData->Name);
+            FreePool(BlockData->Name);
           }
-          FreePool (BlockData);
+          FreePool(BlockData);
           goto Done;
         }
         //
@@ -2903,7 +2903,7 @@ ParseIfrData (
         // Prepare new DefaultValue
         //
         DefaultData.Type     = DefaultValueFromFlag;
-        CopyMem (&DefaultData.Value, &IfrOneOfOption->Value, IfrOneOfOption->Header.Length - OFFSET_OF (EFI_IFR_ONE_OF_OPTION, Value));
+        CopyMem(&DefaultData.Value, &IfrOneOfOption->Value, IfrOneOfOption->Header.Length - OFFSET_OF (EFI_IFR_ONE_OF_OPTION, Value));
         if ((IfrOneOfOption->Flags & EFI_IFR_OPTION_DEFAULT) == EFI_IFR_OPTION_DEFAULT) {
           DefaultData.DefaultId = EFI_HII_DEFAULT_CLASS_STANDARD;
           InsertDefaultValue (BlockData, &DefaultData);
@@ -2955,7 +2955,7 @@ ParseIfrData (
         // Prepare new DefaultValue
         //
         DefaultData.Type     = DefaultValueFromDefault;
-        CopyMem (&DefaultData.Value, &IfrOneOfOption->Value, IfrOneOfOption->Header.Length - OFFSET_OF (EFI_IFR_ONE_OF_OPTION, Value));
+        CopyMem(&DefaultData.Value, &IfrOneOfOption->Value, IfrOneOfOption->Header.Length - OFFSET_OF (EFI_IFR_ONE_OF_OPTION, Value));
         for (LinkData = DefaultIdArray->Entry.ForwardLink; LinkData != &DefaultIdArray->Entry; LinkData = LinkData->ForwardLink) {
           DefaultDataPtr = BASE_CR (LinkData, IFR_DEFAULT_DATA, Entry);
           DefaultData.DefaultId   = DefaultDataPtr->DefaultId;
@@ -2986,9 +2986,9 @@ ParseIfrData (
       DefaultData.Type        = DefaultValueFromOpcode;
       DefaultData.DefaultId   = VarDefaultId;
       if (QuestionReferBitField) {
-        CopyMem (&DefaultData.Value.u32, &IfrDefault->Value.u32, sizeof (UINT32));
+        CopyMem(&DefaultData.Value.u32, &IfrDefault->Value.u32, sizeof (UINT32));
       } else {
-        CopyMem (&DefaultData.Value, &IfrDefault->Value, IfrDefault->Header.Length - OFFSET_OF (EFI_IFR_DEFAULT, Value));
+        CopyMem(&DefaultData.Value, &IfrDefault->Value, IfrDefault->Header.Length - OFFSET_OF (EFI_IFR_DEFAULT, Value));
       }
 
       // If the value field is expression, set the cleaned flag.
@@ -3087,7 +3087,7 @@ Done:
       LinkDefault = LinkDefault->ForwardLink;
       if (DefaultDataPtr->Cleaned == TRUE) {
         RemoveEntryList (&DefaultDataPtr->Entry);
-        FreePool (DefaultDataPtr);
+        FreePool(DefaultDataPtr);
       }
     }
   }
@@ -3125,7 +3125,7 @@ GetBlockElement (
   //
   // Init RequestBlockArray
   //
-  RequestBlockArray = (IFR_BLOCK_DATA *) AllocateZeroPool (sizeof (IFR_BLOCK_DATA));
+  RequestBlockArray = (IFR_BLOCK_DATA *) AllocateZeroPool(sizeof (IFR_BLOCK_DATA));
   if (RequestBlockArray == NULL) {
     goto Done;
   }
@@ -3152,16 +3152,16 @@ GetBlockElement (
     // Get Offset
     //
     Status = GetValueOfNumber (StringPtr, &TmpBuffer, &Length);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       goto Done;
     }
     Offset = 0;
-    CopyMem (
+    CopyMem(
       &Offset,
       TmpBuffer,
       (((Length + 1) / 2) < sizeof (UINT16)) ? ((Length + 1) / 2) : sizeof (UINT16)
       );
-    FreePool (TmpBuffer);
+    FreePool(TmpBuffer);
 
     StringPtr += Length;
     if (StrnCmp (StringPtr, L"&WIDTH=", StrLen (L"&WIDTH=")) != 0) {
@@ -3173,16 +3173,16 @@ GetBlockElement (
     // Get Width
     //
     Status = GetValueOfNumber (StringPtr, &TmpBuffer, &Length);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       goto Done;
     }
     Width = 0;
-    CopyMem (
+    CopyMem(
       &Width,
       TmpBuffer,
       (((Length + 1) / 2) < sizeof (UINT16)) ? ((Length + 1) / 2) : sizeof (UINT16)
       );
-    FreePool (TmpBuffer);
+    FreePool(TmpBuffer);
 
     StringPtr += Length;
     if (*StringPtr != 0 && *StringPtr != L'&') {
@@ -3192,7 +3192,7 @@ GetBlockElement (
     //
     // Set Block Data
     //
-    BlockData = (IFR_BLOCK_DATA *) AllocateZeroPool (sizeof (IFR_BLOCK_DATA));
+    BlockData = (IFR_BLOCK_DATA *) AllocateZeroPool(sizeof (IFR_BLOCK_DATA));
     if (BlockData == NULL) {
       goto Done;
     }
@@ -3210,10 +3210,10 @@ GetBlockElement (
       // Get Value
       //
       Status = GetValueOfNumber (StringPtr, &TmpBuffer, &Length);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         goto Done;
       }
-      FreePool (TmpBuffer);
+      FreePool(TmpBuffer);
       StringPtr += Length;
       if (*StringPtr != 0 && *StringPtr != L'&') {
         goto Done;
@@ -3239,7 +3239,7 @@ GetBlockElement (
         BlockData->Width = (UINT16) (NextBlockData->Offset + NextBlockData->Width - BlockData->Offset);
       }
       RemoveEntryList (Link->ForwardLink);
-      FreePool (NextBlockData);
+      FreePool(NextBlockData);
       continue;
     }
     Link = Link->ForwardLink;
@@ -3255,10 +3255,10 @@ Done:
     while (!IsListEmpty (&RequestBlockArray->Entry)) {
       BlockData = BASE_CR (RequestBlockArray->Entry.ForwardLink, IFR_BLOCK_DATA, Entry);
       RemoveEntryList (&BlockData->Entry);
-      FreePool (BlockData);
+      FreePool(BlockData);
     }
 
-    FreePool (RequestBlockArray);
+    FreePool(RequestBlockArray);
   }
 
   return NULL;
@@ -3289,7 +3289,7 @@ GetNameElement (
   //
   // Init RequestBlockArray
   //
-  RequestBlockArray = (IFR_BLOCK_DATA *) AllocateZeroPool (sizeof (IFR_BLOCK_DATA));
+  RequestBlockArray = (IFR_BLOCK_DATA *) AllocateZeroPool(sizeof (IFR_BLOCK_DATA));
   if (RequestBlockArray == NULL) {
     goto Done;
   }
@@ -3323,7 +3323,7 @@ GetNameElement (
     //
     // Set Block Data
     //
-    BlockData = (IFR_BLOCK_DATA *) AllocateZeroPool (sizeof (IFR_BLOCK_DATA));
+    BlockData = (IFR_BLOCK_DATA *) AllocateZeroPool(sizeof (IFR_BLOCK_DATA));
     if (BlockData == NULL) {
       goto Done;
     }
@@ -3361,12 +3361,12 @@ Done:
       BlockData = BASE_CR (RequestBlockArray->Entry.ForwardLink, IFR_BLOCK_DATA, Entry);
       RemoveEntryList (&BlockData->Entry);
       if (BlockData->Name != NULL) {
-        FreePool (BlockData->Name);
+        FreePool(BlockData->Name);
       }
-      FreePool (BlockData);
+      FreePool(BlockData);
     }
 
-    FreePool (RequestBlockArray);
+    FreePool(RequestBlockArray);
   }
 
   return NULL;
@@ -3447,7 +3447,7 @@ GenerateConfigRequest (
   //
   // Allocate buffer for the entire <ConfigRequest>
   //
-  FullConfigRequest = AllocateZeroPool (Length * sizeof (CHAR16));
+  FullConfigRequest = AllocateZeroPool(Length * sizeof (CHAR16));
   if (FullConfigRequest == NULL) {
     *Status = EFI_OUT_OF_RESOURCES;
     return FALSE;
@@ -3495,7 +3495,7 @@ GenerateConfigRequest (
   HiiToLower (FullConfigRequest);
 
   if (*ConfigRequest != NULL) {
-    FreePool (*ConfigRequest);
+    FreePool(*ConfigRequest);
   }
   *ConfigRequest = FullConfigRequest;
 
@@ -3551,7 +3551,7 @@ GenerateHdr (
     Length += 1;
   }
 
-  *ConfigHdr = AllocateZeroPool (Length * sizeof (CHAR16));
+  *ConfigHdr = AllocateZeroPool(Length * sizeof (CHAR16));
   if (*ConfigHdr == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Done;
@@ -3570,15 +3570,15 @@ GenerateHdr (
 
 Done:
   if (GuidStr != NULL) {
-    FreePool (GuidStr);
+    FreePool(GuidStr);
   }
 
   if (NameStr != NULL) {
-    FreePool (NameStr);
+    FreePool(NameStr);
   }
 
   if (PathStr != NULL) {
-    FreePool (PathStr);
+    FreePool(PathStr);
   }
 
   return Status;
@@ -3881,7 +3881,7 @@ GenerateAltConfigResp (
   //
   // Allocate buffer for the entire <DefaultAltCfgResp>
   //
-  *DefaultAltCfgResp = AllocateZeroPool (Length * sizeof (CHAR16));
+  *DefaultAltCfgResp = AllocateZeroPool(Length * sizeof (CHAR16));
   if (*DefaultAltCfgResp == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
@@ -3945,14 +3945,14 @@ GenerateAltConfigResp (
         //
         if (BlockData->OpCode == EFI_IFR_STRING_OP){
           DefaultString   = InternalGetString(HiiHandle, DefaultValueData->Value.string);
-          TmpBuffer = AllocateZeroPool (Width);
+          TmpBuffer = AllocateZeroPool(Width);
           ASSERT (TmpBuffer != NULL);
           if (DefaultString != NULL) {
             StrSize = StrLen(DefaultString)* sizeof (CHAR16);
             if (StrSize > Width) {
               StrSize = Width;
             }
-            CopyMem (TmpBuffer, (UINT8 *) DefaultString, StrSize);
+            CopyMem(TmpBuffer, (UINT8 *) DefaultString, StrSize);
           }
         } else {
           TmpBuffer = (UINT8 *) &(DefaultValueData->Value);
@@ -4068,7 +4068,7 @@ GetFullStringFromHiiFormPackages (
   Progress          = *Request;
 
   Status = GetFormPackageData (DataBaseRecord, &HiiFormPackage, &PackageSize);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto Done;
   }
 
@@ -4133,7 +4133,7 @@ GetFullStringFromHiiFormPackages (
   //
   // Initialize DefaultIdArray to store the map between DeaultId and DefaultName
   //
-  DefaultIdArray   = (IFR_DEFAULT_DATA *) AllocateZeroPool (sizeof (IFR_DEFAULT_DATA));
+  DefaultIdArray   = (IFR_DEFAULT_DATA *) AllocateZeroPool(sizeof (IFR_DEFAULT_DATA));
   if (DefaultIdArray == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Done;
@@ -4143,7 +4143,7 @@ GetFullStringFromHiiFormPackages (
   //
   // Initialize VarStorageData to store the var store Block and Default value information.
   //
-  VarStorageData = (IFR_VARSTORAGE_DATA *) AllocateZeroPool (sizeof (IFR_VARSTORAGE_DATA));
+  VarStorageData = (IFR_VARSTORAGE_DATA *) AllocateZeroPool(sizeof (IFR_VARSTORAGE_DATA));
   if (VarStorageData == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Done;
@@ -4165,7 +4165,7 @@ GetFullStringFromHiiFormPackages (
                          RequestBlockArray,
                          VarStorageData,
                          DefaultIdArray);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto Done;
   }
 
@@ -4181,7 +4181,7 @@ GetFullStringFromHiiFormPackages (
   // 3. Construct Request Element (Block Name) for 2.1 and 2.2 case.
   //
   Status = GenerateHdr (VarStorageData, DevicePath, &ConfigHdr);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto Done;
   }
 
@@ -4197,7 +4197,7 @@ GetFullStringFromHiiFormPackages (
   // Then construct them all to : ConfigHdr AltConfigHdr ConfigBody AltConfigHdr ConfigBody
   //
   Status = GenerateAltConfigResp (DataBaseRecord->Handle,ConfigHdr, VarStorageData, DefaultIdArray, &DefaultAltCfgResp);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto Done;
   }
 
@@ -4206,7 +4206,7 @@ GetFullStringFromHiiFormPackages (
   //
   if (*AltCfgResp != NULL && DefaultAltCfgResp != NULL) {
     Status = MergeDefaultString (AltCfgResp, DefaultAltCfgResp);
-    FreePool (DefaultAltCfgResp);
+    FreePool(DefaultAltCfgResp);
   } else if (*AltCfgResp == NULL) {
     *AltCfgResp = DefaultAltCfgResp;
   }
@@ -4220,12 +4220,12 @@ Done:
       BlockData = BASE_CR (RequestBlockArray->Entry.ForwardLink, IFR_BLOCK_DATA, Entry);
       RemoveEntryList (&BlockData->Entry);
       if (BlockData->Name != NULL) {
-        FreePool (BlockData->Name);
+        FreePool(BlockData->Name);
       }
-      FreePool (BlockData);
+      FreePool(BlockData);
     }
 
-    FreePool (RequestBlockArray);
+    FreePool(RequestBlockArray);
   }
 
   if (VarStorageData != NULL) {
@@ -4236,7 +4236,7 @@ Done:
       BlockData = BASE_CR (VarStorageData->BlockEntry.ForwardLink, IFR_BLOCK_DATA, Entry);
       RemoveEntryList (&BlockData->Entry);
       if (BlockData->Name != NULL) {
-        FreePool (BlockData->Name);
+        FreePool(BlockData->Name);
       }
       //
       // Free default value link array
@@ -4244,15 +4244,15 @@ Done:
       while (!IsListEmpty (&BlockData->DefaultValueEntry)) {
         DefaultValueData = BASE_CR (BlockData->DefaultValueEntry.ForwardLink, IFR_DEFAULT_DATA, Entry);
         RemoveEntryList (&DefaultValueData->Entry);
-        FreePool (DefaultValueData);
+        FreePool(DefaultValueData);
       }
-      FreePool (BlockData);
+      FreePool(BlockData);
     }
     if (VarStorageData ->Name != NULL) {
-      FreePool (VarStorageData ->Name);
+      FreePool(VarStorageData ->Name);
       VarStorageData ->Name = NULL;
     }
-    FreePool (VarStorageData);
+    FreePool(VarStorageData);
   }
 
   if (DefaultIdArray != NULL) {
@@ -4262,29 +4262,29 @@ Done:
     while (!IsListEmpty (&DefaultIdArray->Entry)) {
       DefaultId = BASE_CR (DefaultIdArray->Entry.ForwardLink, IFR_DEFAULT_DATA, Entry);
       RemoveEntryList (&DefaultId->Entry);
-      FreePool (DefaultId);
+      FreePool(DefaultId);
     }
-    FreePool (DefaultIdArray);
+    FreePool(DefaultIdArray);
   }
 
   //
   // Free the allocated string
   //
   if (ConfigHdr != NULL) {
-    FreePool (ConfigHdr);
+    FreePool(ConfigHdr);
   }
 
   //
   // Free Package data
   //
   if (HiiFormPackage != NULL) {
-    FreePool (HiiFormPackage);
+    FreePool(HiiFormPackage);
   }
 
   if (PointerProgress != NULL) {
     if (*Request == NULL) {
       *PointerProgress = NULL;
-    } else if (EFI_ERROR (Status)) {
+    } else if (EFI_ERROR(Status)) {
       *PointerProgress = *Request;
     } else {
       *PointerProgress = *Request + StrLen (*Request);
@@ -4342,7 +4342,7 @@ GetConfigRespFromEfiVarStore (
   *AccessProgress = Request;
 
   NameSize = AsciiStrSize ((CHAR8 *)EfiVarStoreInfo->Name);
-  VarStoreName = AllocateZeroPool (NameSize * sizeof (CHAR16));
+  VarStoreName = AllocateZeroPool(NameSize * sizeof (CHAR16));
   if (VarStoreName == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Done;
@@ -4355,25 +4355,25 @@ GetConfigRespFromEfiVarStore (
     goto Done;
   }
 
-  VarStore = AllocateZeroPool (BufferSize);
+  VarStore = AllocateZeroPool(BufferSize);
   ASSERT (VarStore != NULL);
   Status = gRT->GetVariable (VarStoreName, &EfiVarStoreInfo->Guid, NULL, &BufferSize, VarStore);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto Done;
   }
 
   Status = HiiBlockToConfig(This, Request, VarStore, BufferSize, RequestResp, AccessProgress);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto Done;
   }
 
 Done:
   if (VarStoreName != NULL) {
-    FreePool (VarStoreName);
+    FreePool(VarStoreName);
   }
 
   if (VarStore != NULL) {
-    FreePool (VarStore);
+    FreePool(VarStore);
   }
 
   return Status;
@@ -4420,7 +4420,7 @@ RouteConfigRespForEfiVarStore (
   *Result = RequestResp;
 
   NameSize = AsciiStrSize ((CHAR8 *)EfiVarStoreInfo->Name);
-  VarStoreName = AllocateZeroPool (NameSize * sizeof (CHAR16));
+  VarStoreName = AllocateZeroPool(NameSize * sizeof (CHAR16));
   if (VarStoreName == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Done;
@@ -4434,31 +4434,31 @@ RouteConfigRespForEfiVarStore (
   }
 
   BlockSize = BufferSize;
-  VarStore = AllocateZeroPool (BufferSize);
+  VarStore = AllocateZeroPool(BufferSize);
   ASSERT (VarStore != NULL);
   Status = gRT->GetVariable (VarStoreName, &EfiVarStoreInfo->Guid, NULL, &BufferSize, VarStore);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto Done;
   }
 
   Status = HiiConfigToBlock(This, RequestResp, VarStore, &BlockSize, Result);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto Done;
   }
 
   Status = gRT->SetVariable (VarStoreName, &EfiVarStoreInfo->Guid, EfiVarStoreInfo->Attributes, BufferSize, VarStore);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     *Result = RequestResp;
     goto Done;
   }
 
 Done:
   if (VarStoreName != NULL) {
-    FreePool (VarStoreName);
+    FreePool(VarStoreName);
   }
 
   if (VarStore != NULL) {
-    FreePool (VarStore);
+    FreePool(VarStore);
   }
 
   return Status;
@@ -4724,7 +4724,7 @@ HiiConfigRoutingExtractConfig (
   // Allocate a fix length of memory to store Results. Reallocate memory for
   // Results if this fix length is insufficient.
   //
-  *Results = (EFI_STRING) AllocateZeroPool (MAX_STRING_LENGTH);
+  *Results = (EFI_STRING) AllocateZeroPool(MAX_STRING_LENGTH);
   if (*Results == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
@@ -4744,7 +4744,7 @@ HiiConfigRoutingExtractConfig (
     // Process each <ConfigRequest> of <MultiConfigRequest>
     //
     Length = CalculateConfigStringLen (StringPtr);
-    ConfigRequest = AllocateCopyPool ((Length + 1) * sizeof (CHAR16), StringPtr);
+    ConfigRequest = AllocateCopyPool((Length + 1) * sizeof (CHAR16), StringPtr);
     if (ConfigRequest == NULL) {
       Status = EFI_OUT_OF_RESOURCES;
       goto Done;
@@ -4755,7 +4755,7 @@ HiiConfigRoutingExtractConfig (
     // Get the UEFI device path
     //
     Status = GetDevicePath (ConfigRequest, (UINT8 **) &DevicePath);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       goto Done;
     }
 
@@ -4791,7 +4791,7 @@ HiiConfigRoutingExtractConfig (
                       &TempDevicePath,
                       &DriverHandle
                       );
-      if (EFI_ERROR (Status) || (DriverHandle == NULL)) {
+      if (EFI_ERROR(Status) || (DriverHandle == NULL)) {
         //
         // Routing data does not match any known driver.
         // Set Progress to the 'G' in "GUID" of the routing header.
@@ -4822,7 +4822,7 @@ HiiConfigRoutingExtractConfig (
       //
       IfrDataParsedFlag = TRUE;
       Status = GetFullStringFromHiiFormPackages (Database, DevicePath, &ConfigRequest, &DefaultResults, &AccessProgress);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         //
         // AccessProgress indicates the parsing progress on <ConfigRequest>.
         // Map it to the progress on <MultiConfigRequest> then return it.
@@ -4835,7 +4835,7 @@ HiiConfigRoutingExtractConfig (
       // Not any request block is found.
       //
       if (!GetElementsFromRequest(ConfigRequest)) {
-        AccessResults = AllocateCopyPool (StrSize (ConfigRequest), ConfigRequest);
+        AccessResults = AllocateCopyPool(StrSize (ConfigRequest), ConfigRequest);
         goto NextConfigString;
       }
     }
@@ -4844,7 +4844,7 @@ HiiConfigRoutingExtractConfig (
     // Check whether this ConfigRequest is search from Efi varstore type storage.
     //
     Status = GetVarStoreType(Database, ConfigRequest, &IsEfiVarStore, &EfiVarStoreInfo);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       goto Done;
     }
 
@@ -4853,8 +4853,8 @@ HiiConfigRoutingExtractConfig (
       // Call the GetVariable function to extract settings.
       //
       Status = GetConfigRespFromEfiVarStore(This, EfiVarStoreInfo, ConfigRequest, &AccessResults, &AccessProgress);
-      FreePool (EfiVarStoreInfo);
-      if (EFI_ERROR (Status)) {
+      FreePool(EfiVarStoreInfo);
+      if (EFI_ERROR(Status)) {
         //
         // AccessProgress indicates the parsing progress on <ConfigRequest>.
         // Map it to the progress on <MultiConfigRequest> then return it.
@@ -4871,7 +4871,7 @@ HiiConfigRoutingExtractConfig (
                       &gEfiHiiConfigAccessProtocolGuid,
                       (VOID **) &ConfigAccess
                       );
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         //
         // The driver has EfiVarStore, may not install ConfigAccess protocol.
         // So ignore the error status in this case.
@@ -4906,7 +4906,7 @@ HiiConfigRoutingExtractConfig (
           Status = EFI_SUCCESS;
         }
         if (AccessResultsBackup != NULL) {
-          FreePool (AccessResultsBackup);
+          FreePool(AccessResultsBackup);
           AccessResultsBackup = NULL;
         }
       }
@@ -4919,7 +4919,7 @@ HiiConfigRoutingExtractConfig (
                       &gEfiHiiConfigAccessProtocolGuid,
                       (VOID **) &ConfigAccess
                       );
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         goto Done;
       }
 
@@ -4930,7 +4930,7 @@ HiiConfigRoutingExtractConfig (
                                &AccessResults
                                );
     }
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       //
       // AccessProgress indicates the parsing progress on <ConfigRequest>.
       // Map it to the progress on <MultiConfigRequest> then return it.
@@ -4950,33 +4950,33 @@ HiiConfigRoutingExtractConfig (
     //
     if (!IfrDataParsedFlag && HiiHandle != NULL) {
       Status = GetFullStringFromHiiFormPackages (Database, DevicePath, &ConfigRequest, &DefaultResults, NULL);
-      ASSERT_EFI_ERROR (Status);
+      ASSERT_EFI_ERROR(Status);
     }
 
-    FreePool (DevicePath);
+    FreePool(DevicePath);
     DevicePath = NULL;
 
     if (DefaultResults != NULL) {
       Status = MergeDefaultString (&AccessResults, DefaultResults);
-      ASSERT_EFI_ERROR (Status);
-      FreePool (DefaultResults);
+      ASSERT_EFI_ERROR(Status);
+      FreePool(DefaultResults);
       DefaultResults = NULL;
     }
 
 NextConfigString:
     if (!FirstElement) {
       Status = AppendToMultiString (Results, L"&");
-      ASSERT_EFI_ERROR (Status);
+      ASSERT_EFI_ERROR(Status);
     }
 
     Status = AppendToMultiString (Results, AccessResults);
-    ASSERT_EFI_ERROR (Status);
+    ASSERT_EFI_ERROR(Status);
 
     FirstElement = FALSE;
 
-    FreePool (AccessResults);
+    FreePool(AccessResults);
     AccessResults = NULL;
-    FreePool (ConfigRequest);
+    FreePool(ConfigRequest);
     ConfigRequest = NULL;
 
     //
@@ -4992,25 +4992,25 @@ NextConfigString:
   }
 
 Done:
-  if (EFI_ERROR (Status)) {
-    FreePool (*Results);
+  if (EFI_ERROR(Status)) {
+    FreePool(*Results);
     *Results = NULL;
   }
 
   if (ConfigRequest != NULL) {
-    FreePool (ConfigRequest);
+    FreePool(ConfigRequest);
   }
 
   if (AccessResults != NULL) {
-    FreePool (AccessResults);
+    FreePool(AccessResults);
   }
 
   if (DefaultResults != NULL) {
-    FreePool (DefaultResults);
+    FreePool(DefaultResults);
   }
 
   if (DevicePath != NULL) {
-    FreePool (DevicePath);
+    FreePool(DevicePath);
   }
 
   return Status;
@@ -5076,7 +5076,7 @@ HiiConfigRoutingExportConfig (
   // Allocate a fix length of memory to store Results. Reallocate memory for
   // Results if this fix length is insufficient.
   //
-  *Results = (EFI_STRING) AllocateZeroPool (MAX_STRING_LENGTH);
+  *Results = (EFI_STRING) AllocateZeroPool(MAX_STRING_LENGTH);
   if (*Results == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
@@ -5089,7 +5089,7 @@ HiiConfigRoutingExportConfig (
              &NumberConfigAccessHandles,
              &ConfigAccessHandles
              );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -5101,7 +5101,7 @@ HiiConfigRoutingExportConfig (
                     &gEfiHiiConfigAccessProtocolGuid,
                     (VOID **) &ConfigAccess
                     );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       continue;
     }
 
@@ -5141,7 +5141,7 @@ HiiConfigRoutingExportConfig (
                              &Progress,
                              &AccessResults
                              );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       //
       // Update AccessResults by getting default setting from IFR when HiiPackage is registered to HiiHandle
       //
@@ -5151,21 +5151,21 @@ HiiConfigRoutingExportConfig (
         //
         // Get the full request string to get the Current setting again.
         //
-        if (!EFI_ERROR (Status) && ConfigRequest != NULL) {
+        if (!EFI_ERROR(Status) && ConfigRequest != NULL) {
           Status = ConfigAccess->ExtractConfig (
                                    ConfigAccess,
                                    ConfigRequest,
                                    &Progress,
                                    &AccessResults
                                    );
-          FreePool (ConfigRequest);
+          FreePool(ConfigRequest);
         } else {
           Status = EFI_NOT_FOUND;
         }
       }
     }
 
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       //
       // Update AccessResults by getting default setting from IFR when HiiPackage is registered to HiiHandle
       //
@@ -5176,7 +5176,7 @@ HiiConfigRoutingExportConfig (
         }
         if (GetElementsFromRequest (AccessResults)) {
           Status = GetFullStringFromHiiFormPackages (Database, DevicePath, &AccessResults, &DefaultResults, NULL);
-          ASSERT_EFI_ERROR (Status);
+          ASSERT_EFI_ERROR(Status);
         }
         if (StringPtr != NULL) {
           *StringPtr = L'&';
@@ -5187,8 +5187,8 @@ HiiConfigRoutingExportConfig (
       //
       if (DefaultResults != NULL) {
         Status = MergeDefaultString (&AccessResults, DefaultResults);
-        ASSERT_EFI_ERROR (Status);
-        FreePool (DefaultResults);
+        ASSERT_EFI_ERROR(Status);
+        FreePool(DefaultResults);
         DefaultResults = NULL;
       }
 
@@ -5198,19 +5198,19 @@ HiiConfigRoutingExportConfig (
       //
       if (!FirstElement) {
         Status = AppendToMultiString (Results, L"&");
-        ASSERT_EFI_ERROR (Status);
+        ASSERT_EFI_ERROR(Status);
       }
 
       Status = AppendToMultiString (Results, AccessResults);
-      ASSERT_EFI_ERROR (Status);
+      ASSERT_EFI_ERROR(Status);
 
       FirstElement = FALSE;
 
-      FreePool (AccessResults);
+      FreePool(AccessResults);
       AccessResults = NULL;
     }
   }
-  FreePool (ConfigAccessHandles);
+  FreePool(ConfigAccessHandles);
 
   return EFI_SUCCESS;
 }
@@ -5307,7 +5307,7 @@ HiiConfigRoutingRouteConfig (
     // Process each <ConfigResp> of <MultiConfigResp>
     //
     Length = CalculateConfigStringLen (StringPtr);
-    ConfigResp = AllocateCopyPool ((Length + 1) * sizeof (CHAR16), StringPtr);
+    ConfigResp = AllocateCopyPool((Length + 1) * sizeof (CHAR16), StringPtr);
     if (ConfigResp == NULL) {
       return EFI_OUT_OF_RESOURCES;
     }
@@ -5320,8 +5320,8 @@ HiiConfigRoutingRouteConfig (
     // Get the UEFI device path
     //
     Status = GetDevicePath (ConfigResp, (UINT8 **) &DevicePath);
-    if (EFI_ERROR (Status)) {
-      FreePool (ConfigResp);
+    if (EFI_ERROR(Status)) {
+      FreePool(ConfigResp);
       return Status;
     }
 
@@ -5355,25 +5355,25 @@ HiiConfigRoutingRouteConfig (
                       &TempDevicePath,
                       &DriverHandle
                       );
-      if (EFI_ERROR (Status) || (DriverHandle == NULL)) {
+      if (EFI_ERROR(Status) || (DriverHandle == NULL)) {
         //
         // Routing data does not match any known driver.
         // Set Progress to the 'G' in "GUID" of the routing header.
         //
-        FreePool (DevicePath);
+        FreePool(DevicePath);
         *Progress = StringPtr;
-        FreePool (ConfigResp);
+        FreePool(ConfigResp);
         return EFI_NOT_FOUND;
       }
     }
 
-    FreePool (DevicePath);
+    FreePool(DevicePath);
 
     //
     // Check whether this ConfigRequest is search from Efi varstore type storage.
     //
     Status = GetVarStoreType(Database, ConfigResp, &IsEfiVarstore, &EfiVarStoreInfo);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
 
@@ -5382,7 +5382,7 @@ HiiConfigRoutingRouteConfig (
       // Call the SetVariable function to route settings.
       //
       Status = RouteConfigRespForEfiVarStore(This, EfiVarStoreInfo, ConfigResp, &AccessProgress);
-      FreePool (EfiVarStoreInfo);
+      FreePool(EfiVarStoreInfo);
     } else {
       //
       // Call corresponding ConfigAccess protocol to route settings
@@ -5392,9 +5392,9 @@ HiiConfigRoutingRouteConfig (
                       &gEfiHiiConfigAccessProtocolGuid,
                       (VOID **)  &ConfigAccess
                       );
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         *Progress = StringPtr;
-        FreePool (ConfigResp);
+        FreePool(ConfigResp);
         return EFI_NOT_FOUND;
       }
 
@@ -5404,7 +5404,7 @@ HiiConfigRoutingRouteConfig (
                                &AccessProgress
                                );
     }
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       ASSERT (AccessProgress != NULL);
       //
       // AccessProgress indicates the parsing progress on <ConfigResp>.
@@ -5412,11 +5412,11 @@ HiiConfigRoutingRouteConfig (
       //
       *Progress = StrStr (StringPtr, AccessProgress);
 
-      FreePool (ConfigResp);
+      FreePool(ConfigResp);
       return Status;
     }
 
-    FreePool (ConfigResp);
+    FreePool(ConfigResp);
     ConfigResp = NULL;
 
     //
@@ -5522,7 +5522,7 @@ HiiBlockToConfig (
   // Allocate a fix length of memory to store Results. Reallocate memory for
   // Results if this fix length is insufficient.
   //
-  *Config = (EFI_STRING) AllocateZeroPool (MAX_STRING_LENGTH);
+  *Config = (EFI_STRING) AllocateZeroPool(MAX_STRING_LENGTH);
   if (*Config == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
@@ -5584,17 +5584,17 @@ HiiBlockToConfig (
     // Get Offset
     //
     Status = GetValueOfNumber (StringPtr, &TmpBuffer, &Length);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       *Progress = TmpPtr - 1;
       goto Exit;
     }
     Offset = 0;
-    CopyMem (
+    CopyMem(
       &Offset,
       TmpBuffer,
       (((Length + 1) / 2) < sizeof (UINTN)) ? ((Length + 1) / 2) : sizeof (UINTN)
       );
-    FreePool (TmpBuffer);
+    FreePool(TmpBuffer);
 
     StringPtr += Length;
     if (StrnCmp (StringPtr, L"&WIDTH=", StrLen (L"&WIDTH=")) != 0) {
@@ -5608,17 +5608,17 @@ HiiBlockToConfig (
     // Get Width
     //
     Status = GetValueOfNumber (StringPtr, &TmpBuffer, &Length);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       *Progress =  TmpPtr - 1;
       goto Exit;
     }
     Width = 0;
-    CopyMem (
+    CopyMem(
       &Width,
       TmpBuffer,
       (((Length + 1) / 2) < sizeof (UINTN)) ? ((Length + 1) / 2) : sizeof (UINTN)
       );
-    FreePool (TmpBuffer);
+    FreePool(TmpBuffer);
 
     StringPtr += Length;
     if (*StringPtr != 0 && *StringPtr != L'&') {
@@ -5636,17 +5636,17 @@ HiiBlockToConfig (
       goto Exit;
     }
 
-    Value = (UINT8 *) AllocateZeroPool (Width);
+    Value = (UINT8 *) AllocateZeroPool(Width);
     if (Value == NULL) {
       *Progress = ConfigRequest;
       Status = EFI_OUT_OF_RESOURCES;
       goto Exit;
     }
 
-    CopyMem (Value, (UINT8 *) Block + Offset, Width);
+    CopyMem(Value, (UINT8 *) Block + Offset, Width);
 
     Length = Width * 2 + 1;
-    ValueStr = (EFI_STRING) AllocateZeroPool (Length  * sizeof (CHAR16));
+    ValueStr = (EFI_STRING) AllocateZeroPool(Length  * sizeof (CHAR16));
     if (ValueStr == NULL) {
       *Progress = ConfigRequest;
       Status = EFI_OUT_OF_RESOURCES;
@@ -5666,19 +5666,19 @@ HiiBlockToConfig (
       TemString += StrnLenS (TemString, Length - ((UINTN)TemString - (UINTN)ValueStr) / sizeof (CHAR16));
     }
 
-    FreePool (Value);
+    FreePool(Value);
     Value = NULL;
 
     //
     // Build a ConfigElement
     //
     Length += StringPtr - TmpPtr + 1 + StrLen (L"VALUE=");
-    ConfigElement = (EFI_STRING) AllocateZeroPool (Length * sizeof (CHAR16));
+    ConfigElement = (EFI_STRING) AllocateZeroPool(Length * sizeof (CHAR16));
     if (ConfigElement == NULL) {
       Status = EFI_OUT_OF_RESOURCES;
       goto Exit;
     }
-    CopyMem (ConfigElement, TmpPtr, (StringPtr - TmpPtr + 1) * sizeof (CHAR16));
+    CopyMem(ConfigElement, TmpPtr, (StringPtr - TmpPtr + 1) * sizeof (CHAR16));
     if (*StringPtr == 0) {
       *(ConfigElement + (StringPtr - TmpPtr)) = L'&';
     }
@@ -5688,8 +5688,8 @@ HiiBlockToConfig (
 
     AppendToMultiString (Config, ConfigElement);
 
-    FreePool (ConfigElement);
-    FreePool (ValueStr);
+    FreePool(ConfigElement);
+    FreePool(ValueStr);
     ConfigElement = NULL;
     ValueStr = NULL;
 
@@ -5716,17 +5716,17 @@ HiiBlockToConfig (
 
 Exit:
   if (*Config != NULL) {
-  FreePool (*Config);
+  FreePool(*Config);
   *Config = NULL;
   }
   if (ValueStr != NULL) {
-    FreePool (ValueStr);
+    FreePool(ValueStr);
   }
   if (Value != NULL) {
-    FreePool (Value);
+    FreePool(Value);
   }
   if (ConfigElement != NULL) {
-    FreePool (ConfigElement);
+    FreePool(ConfigElement);
   }
 
   return Status;
@@ -5860,17 +5860,17 @@ HiiConfigToBlock (
     // Get Offset
     //
     Status = GetValueOfNumber (StringPtr, &TmpBuffer, &Length);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       *Progress = TmpPtr;
       goto Exit;
     }
     Offset = 0;
-    CopyMem (
+    CopyMem(
       &Offset,
       TmpBuffer,
       (((Length + 1) / 2) < sizeof (UINTN)) ? ((Length + 1) / 2) : sizeof (UINTN)
       );
-    FreePool (TmpBuffer);
+    FreePool(TmpBuffer);
 
     StringPtr += Length;
     if (StrnCmp (StringPtr, L"&WIDTH=", StrLen (L"&WIDTH=")) != 0) {
@@ -5884,17 +5884,17 @@ HiiConfigToBlock (
     // Get Width
     //
     Status = GetValueOfNumber (StringPtr, &TmpBuffer, &Length);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       *Progress = TmpPtr;
       goto Exit;
     }
     Width = 0;
-    CopyMem (
+    CopyMem(
       &Width,
       TmpBuffer,
       (((Length + 1) / 2) < sizeof (UINTN)) ? ((Length + 1) / 2) : sizeof (UINTN)
       );
-    FreePool (TmpBuffer);
+    FreePool(TmpBuffer);
 
     StringPtr += Length;
     if (StrnCmp (StringPtr, L"&VALUE=", StrLen (L"&VALUE=")) != 0) {
@@ -5908,7 +5908,7 @@ HiiConfigToBlock (
     // Get Value
     //
     Status = GetValueOfNumber (StringPtr, &Value, &Length);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       *Progress = TmpPtr;
       goto Exit;
     }
@@ -5924,13 +5924,13 @@ HiiConfigToBlock (
     // Update the Block with configuration info
     //
     if ((Block != NULL) && (Offset + Width <= BufferSize)) {
-      CopyMem (Block + Offset, Value, Width);
+      CopyMem(Block + Offset, Value, Width);
     }
     if (Offset + Width > MaxBlockSize) {
       MaxBlockSize = Offset + Width;
     }
 
-    FreePool (Value);
+    FreePool(Value);
     Value = NULL;
 
     //
@@ -5970,7 +5970,7 @@ HiiConfigToBlock (
 Exit:
 
   if (Value != NULL) {
-    FreePool (Value);
+    FreePool(Value);
   }
   return Status;
 }
@@ -6192,12 +6192,12 @@ HiiGetAltCfg (
 
 Exit:
   *AltCfgResp = NULL;
-  if (!EFI_ERROR (Status) && (Result != NULL)) {
+  if (!EFI_ERROR(Status) && (Result != NULL)) {
     //
     // Copy the <ConfigHdr> and <ConfigBody>
     //
     Length = HdrEnd - HdrStart + StrLen (Result) + 1;
-    *AltCfgResp = AllocateZeroPool (Length * sizeof (CHAR16));
+    *AltCfgResp = AllocateZeroPool(Length * sizeof (CHAR16));
     if (*AltCfgResp == NULL) {
       Status = EFI_OUT_OF_RESOURCES;
     } else {
@@ -6208,19 +6208,19 @@ Exit:
   }
 
   if (GuidStr != NULL) {
-    FreePool (GuidStr);
+    FreePool(GuidStr);
   }
   if (NameStr != NULL) {
-    FreePool (NameStr);
+    FreePool(NameStr);
   }
   if (PathStr != NULL) {
-    FreePool (PathStr);
+    FreePool(PathStr);
   }
   if (AltIdStr != NULL) {
-    FreePool (AltIdStr);
+    FreePool(AltIdStr);
   }
   if (Result != NULL) {
-    FreePool (Result);
+    FreePool(Result);
   }
 
   return Status;

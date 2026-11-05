@@ -69,7 +69,7 @@ InternalReportStatusCode (
                                );
     if (Status == EFI_NOT_AVAILABLE_YET) {
       Status = OemHookStatusCodeInitialize ();
-      if (!EFI_ERROR (Status)) {
+      if (!EFI_ERROR(Status)) {
         return OemHookStatusCodeReport (Type, Value, Instance, (EFI_GUID *) CallerId, Data);
       }
     }
@@ -183,7 +183,7 @@ ReportStatusCodeExtractAssertInfo (
       ((Value    & EFI_STATUS_CODE_OPERATION_MASK) == EFI_SW_EC_ILLEGAL_SOFTWARE_STATE)) {
     AssertData   = (EFI_DEBUG_ASSERT_DATA *)(Data + 1);
     *Filename    = (CHAR8 *)(AssertData + 1);
-    *Description = *Filename + AsciiStrLen (*Filename) + 1;
+    *Description = *Filename + AsciiStrLen(*Filename) + 1;
     *LineNumber  = AssertData->LineNumber;
     return TRUE;
   }
@@ -479,7 +479,7 @@ ReportStatusCodeEx (
   }
   CopyGuid (&StatusCodeData->Type, ExtendedDataGuid);
   if (ExtendedData != NULL) {
-    CopyMem (StatusCodeData + 1, ExtendedData, ExtendedDataSize);
+    CopyMem(StatusCodeData + 1, ExtendedData, ExtendedDataSize);
   }
   if (CallerId == NULL) {
     CallerId = &gEfiCallerIdGuid;

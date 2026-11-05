@@ -258,7 +258,7 @@ SmmCopyMemToSmram (
     DEBUG ((EFI_D_ERROR, "SmmCopyMemToSmram: Security Violation: Source (0x%x), Length (0x%x)\n", SourceBuffer, Length));
     return EFI_SECURITY_VIOLATION;
   }
-  CopyMem (DestinationBuffer, SourceBuffer, Length);
+  CopyMem(DestinationBuffer, SourceBuffer, Length);
   return EFI_SUCCESS;
 }
 
@@ -291,7 +291,7 @@ SmmCopyMemFromSmram (
     DEBUG ((EFI_D_ERROR, "SmmCopyMemFromSmram: Security Violation: Destination (0x%x), Length (0x%x)\n", DestinationBuffer, Length));
     return EFI_SECURITY_VIOLATION;
   }
-  CopyMem (DestinationBuffer, SourceBuffer, Length);
+  CopyMem(DestinationBuffer, SourceBuffer, Length);
   return EFI_SUCCESS;
 }
 
@@ -315,7 +315,7 @@ SmmCopyMemFromSmram (
 **/
 EFI_STATUS
 EFIAPI
-SmmCopyMem (
+SmmCopyMem(
   OUT VOID       *DestinationBuffer,
   IN CONST VOID  *SourceBuffer,
   IN UINTN       Length
@@ -329,7 +329,7 @@ SmmCopyMem (
     DEBUG ((EFI_D_ERROR, "SmmCopyMem: Security Violation: Source (0x%x), Length (0x%x)\n", SourceBuffer, Length));
     return EFI_SECURITY_VIOLATION;
   }
-  CopyMem (DestinationBuffer, SourceBuffer, Length);
+  CopyMem(DestinationBuffer, SourceBuffer, Length);
   return EFI_SUCCESS;
 }
 
@@ -351,7 +351,7 @@ SmmCopyMem (
 **/
 EFI_STATUS
 EFIAPI
-SmmSetMem (
+SmmSetMem(
   OUT VOID  *Buffer,
   IN UINTN  Length,
   IN UINT8  Value
@@ -361,7 +361,7 @@ SmmSetMem (
     DEBUG ((EFI_D_ERROR, "SmmSetMem: Security Violation: Source (0x%x), Length (0x%x)\n", Buffer, Length));
     return EFI_SECURITY_VIOLATION;
   }
-  SetMem (Buffer, Length, Value);
+  SetMem(Buffer, Length, Value);
   return EFI_SUCCESS;
 }
 
@@ -380,7 +380,7 @@ SmmMemLibInternalGetGcdMemoryMap (
   UINTN                            Index;
 
   Status = gDS->GetMemorySpaceMap (&NumberOfDescriptors, &MemSpaceMap);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return ;
   }
 
@@ -394,11 +394,11 @@ SmmMemLibInternalGetGcdMemoryMap (
     }
   }
 
-  mSmmMemLibGcdMemSpace = AllocateZeroPool (mSmmMemLibGcdMemNumberOfDesc * sizeof (EFI_GCD_MEMORY_SPACE_DESCRIPTOR));
+  mSmmMemLibGcdMemSpace = AllocateZeroPool(mSmmMemLibGcdMemNumberOfDesc * sizeof (EFI_GCD_MEMORY_SPACE_DESCRIPTOR));
   ASSERT (mSmmMemLibGcdMemSpace != NULL);
   if (mSmmMemLibGcdMemSpace == NULL) {
     mSmmMemLibGcdMemNumberOfDesc = 0;
-    gBS->FreePool (MemSpaceMap);
+    gBS->FreePool(MemSpaceMap);
     return ;
   }
 
@@ -408,7 +408,7 @@ SmmMemLibInternalGetGcdMemoryMap (
         (MemSpaceMap[Index].Capabilities & (EFI_MEMORY_PRESENT | EFI_MEMORY_INITIALIZED | EFI_MEMORY_TESTED)) ==
           (EFI_MEMORY_PRESENT | EFI_MEMORY_INITIALIZED)
           ) {
-      CopyMem (
+      CopyMem(
         &mSmmMemLibGcdMemSpace[mSmmMemLibGcdMemNumberOfDesc],
         &MemSpaceMap[Index],
         sizeof(EFI_GCD_MEMORY_SPACE_DESCRIPTOR)
@@ -417,7 +417,7 @@ SmmMemLibInternalGetGcdMemoryMap (
     }
   }
 
-  gBS->FreePool (MemSpaceMap);
+  gBS->FreePool(MemSpaceMap);
 }
 
 /**
@@ -433,9 +433,9 @@ SmmMemLibInternalGetUefiMemoryAttributesTable (
   UINTN                        MemoryAttributesTableSize;
 
   Status = EfiGetSystemConfigurationTable (&gEfiMemoryAttributesTableGuid, (VOID **)&MemoryAttributesTable);
-  if (!EFI_ERROR (Status) && (MemoryAttributesTable != NULL)) {
+  if (!EFI_ERROR(Status) && (MemoryAttributesTable != NULL)) {
     MemoryAttributesTableSize = sizeof(EFI_MEMORY_ATTRIBUTES_TABLE) + MemoryAttributesTable->DescriptorSize * MemoryAttributesTable->NumberOfEntries;
-    mSmmMemLibMemoryAttributesTable = AllocateCopyPool (MemoryAttributesTableSize, MemoryAttributesTable);
+    mSmmMemLibMemoryAttributesTable = AllocateCopyPool(MemoryAttributesTableSize, MemoryAttributesTable);
     ASSERT (mSmmMemLibMemoryAttributesTable != NULL);
   }
 }
@@ -490,8 +490,8 @@ SmmLibInternalEndOfDxeNotify (
                &DescriptorSize,
                &DescriptorVersion
                );
-    if (EFI_ERROR (Status)) {
-      gBS->FreePool (MemoryMap);
+    if (EFI_ERROR(Status)) {
+      gBS->FreePool(MemoryMap);
     }
   } while (Status == EFI_BUFFER_TOO_SMALL);
 
@@ -527,7 +527,7 @@ SmmLibInternalEndOfDxeNotify (
     case EfiRuntimeServicesCode:
     case EfiRuntimeServicesData:
     case EfiACPIMemoryNVS:
-      CopyMem (mMemoryMap, MemoryMap, DescriptorSize);
+      CopyMem(mMemoryMap, MemoryMap, DescriptorSize);
       mMemoryMap = NEXT_MEMORY_DESCRIPTOR(mMemoryMap, DescriptorSize);
       break;
     }
@@ -536,7 +536,7 @@ SmmLibInternalEndOfDxeNotify (
   mMemoryMap = SmmMemoryMapStart;
   MemoryMap = MemoryMapStart;
 
-  gBS->FreePool (MemoryMap);
+  gBS->FreePool(MemoryMap);
 
   //
   // Get additional information from GCD memory map.
@@ -595,7 +595,7 @@ SmmMemLibConstructor (
   // Get SMRAM information
   //
   Status = gBS->LocateProtocol (&gEfiSmmAccess2ProtocolGuid, NULL, (VOID **)&SmmAccess);
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   Size = 0;
   Status = SmmAccess->GetCapabilities (SmmAccess, &Size, NULL);
@@ -605,7 +605,7 @@ SmmMemLibConstructor (
   ASSERT (mSmmMemLibInternalSmramRanges != NULL);
 
   Status = SmmAccess->GetCapabilities (SmmAccess, &Size, mSmmMemLibInternalSmramRanges);
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   mSmmMemLibInternalSmramCount = Size / sizeof (EFI_SMRAM_DESCRIPTOR);
 
@@ -618,13 +618,13 @@ SmmMemLibConstructor (
   // Register EndOfDxe to get UEFI memory map
   //
   Status = gSmst->SmmRegisterProtocolNotify (&gEfiSmmEndOfDxeProtocolGuid, SmmLibInternalEndOfDxeNotify, &mRegistrationEndOfDxe);
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   //
   // Register ready to lock so that we can know when to check valid SMRAM region
   //
   Status = gSmst->SmmRegisterProtocolNotify (&gEfiSmmReadyToLockProtocolGuid, SmmLibInternalReadyToLockNotify, &mRegistrationReadyToLock);
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   return EFI_SUCCESS;
 }
@@ -644,7 +644,7 @@ SmmMemLibDestructor (
   IN EFI_SYSTEM_TABLE  *SystemTable
   )
 {
-  FreePool (mSmmMemLibInternalSmramRanges);
+  FreePool(mSmmMemLibInternalSmramRanges);
 
   gSmst->SmmRegisterProtocolNotify (&gEfiSmmEndOfDxeProtocolGuid, NULL, &mRegistrationEndOfDxe);
   gSmst->SmmRegisterProtocolNotify (&gEfiSmmReadyToLockProtocolGuid, NULL, &mRegistrationReadyToLock);

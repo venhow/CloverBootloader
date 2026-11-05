@@ -250,14 +250,14 @@ CompareHiiValue (
 
     Str2 = GetToken (Value2->Value.string, HiiHandle);
     if (Str2 == NULL) {
-      FreePool (Str1);
+      FreePool(Str1);
       return EFI_NOT_FOUND;
     }
 
     *Result = StrCmp (Str1, Str2);
 
-    FreePool (Str1);
-    FreePool (Str2);
+    FreePool(Str1);
+    FreePool(Str2);
 
     return EFI_SUCCESS;
   }
@@ -326,7 +326,7 @@ ValueToOption (
 
     ZeroMem (&Value, sizeof (EFI_HII_VALUE));
     Value.Type = Option->OptionOpCode->Type;
-    CopyMem (&Value.Value, &Option->OptionOpCode->Value, Option->OptionOpCode->Header.Length - OFFSET_OF (EFI_IFR_ONE_OF_OPTION, Value));
+    CopyMem(&Value.Value, &Option->OptionOpCode->Value, Option->OptionOpCode->Header.Length - OFFSET_OF (EFI_IFR_ONE_OF_OPTION, Value));
 
     if ((CompareHiiValue (&Value, OptionValue, &Result, NULL) == EFI_SUCCESS) && (Result == 0)) {
       return Option;
@@ -796,7 +796,7 @@ PasswordProcess (
   Maximum      = PasswordInfo->MaxSize;
   Status       = EFI_SUCCESS;
 
-  StringPtr = AllocateZeroPool ((Maximum + 1) * sizeof (CHAR16));
+  StringPtr = AllocateZeroPool((Maximum + 1) * sizeof (CHAR16));
   ASSERT (StringPtr);
 
   //
@@ -813,17 +813,17 @@ PasswordProcess (
         CreateDialog (&Key, gEmptyString, gPasswordUnsupported, gPressEnter, gEmptyString, NULL);
       } while (Key.UnicodeChar != CHAR_CARRIAGE_RETURN);
     }
-    FreePool (StringPtr);
+    FreePool(StringPtr);
     return EFI_SUCCESS;
   }
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     //
     // Old password exist, ask user for the old password
     //
     Status = ReadString (MenuOption, gPromptForPassword, StringPtr);
-    if (EFI_ERROR (Status)) {
-      FreePool (StringPtr);
+    if (EFI_ERROR(Status)) {
+      FreePool(StringPtr);
       return Status;
     }
 
@@ -831,7 +831,7 @@ PasswordProcess (
     // Check user input old password
     //
     Status = Question->PasswordCheck (gFormData, Question, StringPtr);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       if (Status == EFI_NOT_READY) {
         //
         // Typed in old password incorrect
@@ -841,7 +841,7 @@ PasswordProcess (
         Status = EFI_SUCCESS;
       }
 
-      FreePool (StringPtr);
+      FreePool(StringPtr);
       return Status;
     }
   }
@@ -851,28 +851,28 @@ PasswordProcess (
   //
   ZeroMem (StringPtr, (Maximum + 1) * sizeof (CHAR16));
   Status = ReadString (MenuOption, gPromptForNewPassword, StringPtr);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     //
     // Reset state machine for password
     //
     Question->PasswordCheck (gFormData, Question, NULL);
-    FreePool (StringPtr);
+    FreePool(StringPtr);
     return Status;
   }
 
   //
   // Confirm new password
   //
-  TempString = AllocateZeroPool ((Maximum + 1) * sizeof (CHAR16));
+  TempString = AllocateZeroPool((Maximum + 1) * sizeof (CHAR16));
   ASSERT (TempString);
   Status = ReadString (MenuOption, gConfirmPassword, TempString);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     //
     // Reset state machine for password
     //
     Question->PasswordCheck (gFormData, Question, NULL);
-    FreePool (StringPtr);
-    FreePool (TempString);
+    FreePool(StringPtr);
+    FreePool(TempString);
     return Status;
   }
 
@@ -880,7 +880,7 @@ PasswordProcess (
   // Compare two typed-in new passwords
   //
   if (StrCmp (StringPtr, TempString) == 0) {
-    gUserInput->InputValue.Buffer = AllocateCopyPool (Question->CurrentValue.BufferLen, StringPtr);
+    gUserInput->InputValue.Buffer = AllocateCopyPool(Question->CurrentValue.BufferLen, StringPtr);
     gUserInput->InputValue.BufferLen = Question->CurrentValue.BufferLen;
     gUserInput->InputValue.Type = Question->CurrentValue.Type;
     gUserInput->InputValue.Value.string = HiiSetString(gFormData->HiiHandle, gUserInput->InputValue.Value.string, StringPtr, NULL);
@@ -903,8 +903,8 @@ PasswordProcess (
   }
   ZeroMem (TempString, (Maximum + 1) * sizeof (CHAR16));
   ZeroMem (StringPtr, (Maximum + 1) * sizeof (CHAR16));
-  FreePool (TempString);
-  FreePool (StringPtr);
+  FreePool(TempString);
+  FreePool(StringPtr);
 
   return Status;
 }
@@ -992,7 +992,7 @@ ProcessOptions (
       // space required for the array or strings.
       //
       MaxLen = OrderList->MaxContainers * BufferSize / sizeof (CHAR16);
-      *OptionString = AllocateZeroPool (MaxLen * sizeof (CHAR16));
+      *OptionString = AllocateZeroPool(MaxLen * sizeof (CHAR16));
       ASSERT (*OptionString);
 
       HiiValue.Type = ValueType;
@@ -1028,7 +1028,7 @@ ProcessOptions (
           //
           gUserInput->SelectedStatement = Question;
           gMisMatch = TRUE;
-          ValueArray = AllocateZeroPool (Question->CurrentValue.BufferLen);
+          ValueArray = AllocateZeroPool(Question->CurrentValue.BufferLen);
           ASSERT (ValueArray != NULL);
           gUserInput->InputValue.Buffer    = ValueArray;
           gUserInput->InputValue.BufferLen = Question->CurrentValue.BufferLen;
@@ -1044,7 +1044,7 @@ ProcessOptions (
           }
           SetArrayData (ValueArray, ValueType, Index2, 0);
 
-          FreePool (*OptionString);
+          FreePool(*OptionString);
           *OptionString = NULL;
           return EFI_NOT_FOUND;
         }
@@ -1058,7 +1058,7 @@ ProcessOptions (
         NewStrCat (OptionString[0], MaxLen, Character);
         Character[0] = CHAR_CARRIAGE_RETURN;
         NewStrCat (OptionString[0], MaxLen, Character);
-        FreePool (StringPtr);
+        FreePool(StringPtr);
       }
 
       //
@@ -1093,7 +1093,7 @@ ProcessOptions (
           NewStrCat (OptionString[0], MaxLen, Character);
           Character[0] = CHAR_CARRIAGE_RETURN;
           NewStrCat (OptionString[0], MaxLen, Character);
-          FreePool (StringPtr);
+          FreePool(StringPtr);
 
           continue;
         }
@@ -1113,7 +1113,7 @@ ProcessOptions (
           //
           gUserInput->SelectedStatement = Question;
           gMisMatch = TRUE;
-          ValueArray = AllocateCopyPool (Question->CurrentValue.BufferLen, Question->CurrentValue.Buffer);
+          ValueArray = AllocateCopyPool(Question->CurrentValue.BufferLen, Question->CurrentValue.Buffer);
           ASSERT (ValueArray != NULL);
           gUserInput->InputValue.Buffer    = ValueArray;
           gUserInput->InputValue.BufferLen = Question->CurrentValue.BufferLen;
@@ -1124,7 +1124,7 @@ ProcessOptions (
       }
 
       if (ValueInvalid) {
-        FreePool (*OptionString);
+        FreePool(*OptionString);
         *OptionString = NULL;
         return EFI_NOT_FOUND;
       }
@@ -1145,7 +1145,7 @@ ProcessOptions (
       Status = GetSelectionInputPopUp (MenuOption);
     } else {
       MaxLen = BufferSize / sizeof(CHAR16);
-      *OptionString = AllocateZeroPool (BufferSize);
+      *OptionString = AllocateZeroPool(BufferSize);
       ASSERT (*OptionString);
 
       OneOfOption = ValueToOption (Question, QuestionValue);
@@ -1177,13 +1177,13 @@ ProcessOptions (
             gUserInput->InputValue.Value.u8 = Option->OptionOpCode->Value.u8;
             break;
           case EFI_IFR_TYPE_NUM_SIZE_16:
-            CopyMem (&gUserInput->InputValue.Value.u16, &Option->OptionOpCode->Value.u16, sizeof (UINT16));
+            CopyMem(&gUserInput->InputValue.Value.u16, &Option->OptionOpCode->Value.u16, sizeof (UINT16));
             break;
           case EFI_IFR_TYPE_NUM_SIZE_32:
-            CopyMem (&gUserInput->InputValue.Value.u32, &Option->OptionOpCode->Value.u32, sizeof (UINT32));
+            CopyMem(&gUserInput->InputValue.Value.u32, &Option->OptionOpCode->Value.u32, sizeof (UINT32));
             break;
           case EFI_IFR_TYPE_NUM_SIZE_64:
-            CopyMem (&gUserInput->InputValue.Value.u64, &Option->OptionOpCode->Value.u64, sizeof (UINT64));
+            CopyMem(&gUserInput->InputValue.Value.u64, &Option->OptionOpCode->Value.u64, sizeof (UINT64));
             break;
           default:
             ASSERT (FALSE);
@@ -1191,7 +1191,7 @@ ProcessOptions (
           }
           gUserInput->SelectedStatement = Question;
           gMisMatch = TRUE;
-          FreePool (*OptionString);
+          FreePool(*OptionString);
           *OptionString = NULL;
           return EFI_NOT_FOUND;
         }
@@ -1205,7 +1205,7 @@ ProcessOptions (
       Character[0] = RIGHT_ONEOF_DELIMITER;
       NewStrCat (OptionString[0], MaxLen, Character);
 
-      FreePool (StringPtr);
+      FreePool(StringPtr);
     }
     break;
 
@@ -1222,7 +1222,7 @@ ProcessOptions (
       //
       return EFI_SUCCESS;
     } else {
-      *OptionString = AllocateZeroPool (BufferSize);
+      *OptionString = AllocateZeroPool(BufferSize);
       ASSERT (*OptionString);
 
       *OptionString[0] = LEFT_CHECKBOX_DELIMITER;
@@ -1243,7 +1243,7 @@ ProcessOptions (
       //
       Status = GetNumericInput (MenuOption);
     } else {
-      *OptionString = AllocateZeroPool (BufferSize);
+      *OptionString = AllocateZeroPool(BufferSize);
       ASSERT (*OptionString);
 
       *OptionString[0] = LEFT_NUMERIC_DELIMITER;
@@ -1253,7 +1253,7 @@ ProcessOptions (
       //
       PrintFormattedNumber (Question, FormattedNumber, 21 * sizeof (CHAR16));
       Number = (UINT16) GetStringWidth (FormattedNumber);
-      CopyMem (OptionString[0] + 1, FormattedNumber, Number);
+      CopyMem(OptionString[0] + 1, FormattedNumber, Number);
 
       *(OptionString[0] + Number / 2) = RIGHT_NUMERIC_DELIMITER;
     }
@@ -1266,7 +1266,7 @@ ProcessOptions (
       //
       Status = GetNumericInput (MenuOption);
     } else {
-      *OptionString = AllocateZeroPool (BufferSize);
+      *OptionString = AllocateZeroPool(BufferSize);
       ASSERT (*OptionString);
 
       switch (MenuOption->Sequence) {
@@ -1310,7 +1310,7 @@ ProcessOptions (
       //
       Status = GetNumericInput (MenuOption);
     } else {
-      *OptionString = AllocateZeroPool (BufferSize);
+      *OptionString = AllocateZeroPool(BufferSize);
       ASSERT (*OptionString);
 
       switch (MenuOption->Sequence) {
@@ -1349,24 +1349,24 @@ ProcessOptions (
 
   case EFI_IFR_STRING_OP:
     if (Selected) {
-      StringPtr = AllocateZeroPool (Question->CurrentValue.BufferLen + sizeof (CHAR16));
+      StringPtr = AllocateZeroPool(Question->CurrentValue.BufferLen + sizeof (CHAR16));
       ASSERT (StringPtr);
       CopyMem(StringPtr, Question->CurrentValue.Buffer, Question->CurrentValue.BufferLen);
 
       Status = ReadString (MenuOption, gPromptForData, StringPtr);
-      if (EFI_ERROR (Status)) {
-        FreePool (StringPtr);
+      if (EFI_ERROR(Status)) {
+        FreePool(StringPtr);
         return Status;
       }
 
-      gUserInput->InputValue.Buffer = AllocateCopyPool (Question->CurrentValue.BufferLen, StringPtr);
+      gUserInput->InputValue.Buffer = AllocateCopyPool(Question->CurrentValue.BufferLen, StringPtr);
       gUserInput->InputValue.BufferLen = Question->CurrentValue.BufferLen;
       gUserInput->InputValue.Type = Question->CurrentValue.Type;
       gUserInput->InputValue.Value.string = HiiSetString(gFormData->HiiHandle, gUserInput->InputValue.Value.string, StringPtr, NULL);
-      FreePool (StringPtr);
+      FreePool(StringPtr);
       return EFI_SUCCESS;
     } else {
-      *OptionString = AllocateZeroPool (BufferSize);
+      *OptionString = AllocateZeroPool(BufferSize);
       ASSERT (*OptionString);
 
       if (((CHAR16 *) Question->CurrentValue.Buffer)[0] == 0x0000) {
@@ -1375,7 +1375,7 @@ ProcessOptions (
         if (Question->CurrentValue.BufferLen < BufferSize) {
           BufferSize = Question->CurrentValue.BufferLen;
         }
-        CopyMem (OptionString[0], (CHAR16 *) Question->CurrentValue.Buffer, BufferSize);
+        CopyMem(OptionString[0], (CHAR16 *) Question->CurrentValue.Buffer, BufferSize);
       }
     }
     break;
@@ -1442,11 +1442,11 @@ ProcessHelpString (
     }
 
     TotalRowNum ++;
-    FreePool (OutputString);
+    FreePool(OutputString);
   }
   *EachLineWidth = MaxStringLen;
 
-  *FormattedString = AllocateZeroPool (TotalRowNum * MaxStringLen * sizeof (CHAR16));
+  *FormattedString = AllocateZeroPool(TotalRowNum * MaxStringLen * sizeof (CHAR16));
   ASSERT (*FormattedString != NULL);
 
   //
@@ -1455,9 +1455,9 @@ ProcessHelpString (
   GlyphWidth  = 1;
   Index       = 0;
   while((StringLen = GetLineByWidth (StringPtr, LineWidth, &GlyphWidth, &Index, &OutputString)) != 0) {
-    CopyMem (*FormattedString + CheckedNum * MaxStringLen, OutputString, StringLen * sizeof (CHAR16));
+    CopyMem(*FormattedString + CheckedNum * MaxStringLen, OutputString, StringLen * sizeof (CHAR16));
     CheckedNum ++;
-    FreePool (OutputString);
+    FreePool(OutputString);
   }
 
   return TotalRowNum;

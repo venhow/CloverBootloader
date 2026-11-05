@@ -286,7 +286,7 @@ SdBlockIoPeimReadBlocks (
     } else {
       Status = SdPeimRwSingleBlock (&Private->Slot[DeviceIndex - 1], StartLBA, BlockSize, Buffer, BufferSize, TRUE);
     }
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
 
@@ -394,11 +394,11 @@ SdBlockIoPeimGetMediaInfo2 (
               DeviceIndex,
               &Media
               );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
-  CopyMem (MediaInfo, &(Private->Slot[DeviceIndex - 1].Media), sizeof (EFI_PEI_BLOCK_IO2_MEDIA));
+  CopyMem(MediaInfo, &(Private->Slot[DeviceIndex - 1].Media), sizeof (EFI_PEI_BLOCK_IO2_MEDIA));
   return EFI_SUCCESS;
 }
 
@@ -531,7 +531,7 @@ InitializeSdBlockIoPeim (
   //
   // Shadow this PEIM to run from memory
   //
-  if (!EFI_ERROR (PeiServicesRegisterForShadow (FileHandle))) {
+  if (!EFI_ERROR(PeiServicesRegisterForShadow (FileHandle))) {
     return EFI_SUCCESS;
   }
 
@@ -544,7 +544,7 @@ InitializeSdBlockIoPeim (
              NULL,
              (VOID **) &SdMmcHcPpi
              );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return EFI_DEVICE_ERROR;
   }
 
@@ -557,7 +557,7 @@ InitializeSdBlockIoPeim (
     //
     // When status is error, meant no controller is found
     //
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       break;
     }
 
@@ -566,7 +566,7 @@ InitializeSdBlockIoPeim (
       continue;
     }
 
-    Private = AllocateCopyPool (sizeof (SD_PEIM_HC_PRIVATE_DATA), &gSdHcPrivateTemplate);
+    Private = AllocateCopyPool(sizeof (SD_PEIM_HC_PRIVATE_DATA), &gSdHcPrivateTemplate);
     if (Private == NULL) {
       Status = EFI_OUT_OF_RESOURCES;
       break;
@@ -577,14 +577,14 @@ InitializeSdBlockIoPeim (
     // Initialize the memory pool which will be used in all transactions.
     //
     Status = SdPeimInitMemPool (Private);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       Status = EFI_OUT_OF_RESOURCES;
       break;
     }
 
     for (Index = 0; Index < BarNum; Index++) {
       Status = SdPeimHcGetCapability (MmioBase[Index], &Capability);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         continue;
       }
       if (Capability.SlotType != 0x1) {
@@ -594,27 +594,27 @@ InitializeSdBlockIoPeim (
       }
 
       Status = SdPeimHcReset (MmioBase[Index]);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         continue;
       }
       Status = SdPeimHcCardDetect (MmioBase[Index]);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         continue;
       }
       Status = SdPeimHcInitHost (MmioBase[Index]);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         continue;
       }
 
       SlotNum = Private->SlotNum;
       Slot    = &Private->Slot[SlotNum];
-      CopyMem (Slot, &gSdHcSlotTemplate, sizeof (SD_PEIM_HC_SLOT));
+      CopyMem(Slot, &gSdHcSlotTemplate, sizeof (SD_PEIM_HC_SLOT));
       Slot->Private  = Private;
       Slot->SdHcBase = MmioBase[Index];
-      CopyMem (&Slot->Capability, &Capability, sizeof (Capability));
+      CopyMem(&Slot->Capability, &Capability, sizeof (Capability));
 
       Status = SdPeimIdentification (Slot);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         continue;
       }
 
@@ -639,7 +639,7 @@ InitializeSdBlockIoPeim (
     }
 
     Controller++;
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       PeiServicesInstallPpi (&Private->BlkIoPpiList);
       PeiServicesNotifyPpi (&Private->EndOfPeiNotifyList);
     } else {

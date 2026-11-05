@@ -18,36 +18,6 @@ Abstract:
 #ifndef _LEGACY_BIOS_THUNK_H_
 #define _LEGACY_BIOS_THUNK_H_
 
-#include <Uefi.h>
-
-//
-// Driver Consumed Protocol Prototypes
-//
-#include <Protocol/DevicePath.h>
-#include <Protocol/PciIo.h>
-#include <Protocol/DriverBinding.h>
-#include <Protocol/ComponentName.h>
-#include <Protocol/ComponentName2.h>
-#include <Protocol/UgaDraw.h>
-#include <Protocol/VgaMiniPort.h>
-#include <Protocol/Legacy8259.h>
-#include <Protocol/EdidActive.h>
-#include <Protocol/EdidDiscovered.h>
-#include <Protocol/DevicePath.h>
-#include <Protocol/Timer.h>
-
-#include <Library/UefiLib.h>
-#include <Library/DebugLib.h>
-#include <Library/PrintLib.h>
-#include <Library/BaseLib.h>
-#include <Library/UefiBootServicesTableLib.h>
-#include <Library/BaseMemoryLib.h>
-#include <Library/MemoryAllocationLib.h>
-#include <Library/DevicePathLib.h>
-#include <Library/GenericBdsLib.h>
-#include <Library/IoLib.h>
-
-#include <IndustryStandard/Pci.h>
 
 #define EFI_SEGMENT(_Adr)     (UINT16) ((UINT16) (((UINTN) (_Adr)) >> 4) & 0xf000)
 #define EFI_OFFSET(_Adr)      (UINT16) (((UINT16) ((UINTN) (_Adr))) & 0xffff)
@@ -86,7 +56,7 @@ InitializeInterruptRedirection (
 //  IN  EFI_LEGACY_8259_PROTOCOL  *Legacy8259
   );
 
-BOOLEAN
+XBool
 EFIAPI
 LegacyBiosInt86 (
 //  IN  EFI_LEGACY_BIOS_THUNK_PROTOCOL  *This,
@@ -94,14 +64,14 @@ LegacyBiosInt86 (
   IN  IA32_REGISTER_SET				*Regs
   );
 
-BOOLEAN
+XBool
 EFIAPI
 LegacyBiosFarCall86 (
 //  IN  EFI_LEGACY_BIOS_THUNK_PROTOCOL  *This,
   IN  UINT16                        Segment,
   IN  UINT16                        Offset,
   IN  IA32_REGISTER_SET				*Regs //,
-//  IN  VOID                          *Stack,
+//  IN  void                          *Stack,
 //  IN  UINTN                         StackSize
   );
 

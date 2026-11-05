@@ -180,7 +180,7 @@ BootThisFile (
 
   Option = (BDS_COMMON_OPTION *) AllocatePool (sizeof (BDS_COMMON_OPTION));
   ASSERT (Option != NULL);
-  Option->Description     = (CHAR16 *) AllocateCopyPool (StrSize (FileContext->FileName), FileContext->FileName);
+  Option->Description     = (CHAR16 *) AllocateCopyPool(StrSize (FileContext->FileName), FileContext->FileName);
   Option->DevicePath      = FileContext->DevicePath;
   Option->LoadOptionsSize = 0;
   Option->LoadOptions     = NULL;
@@ -799,7 +799,7 @@ UpdateConModePage (
   //
   for (Mode = 0; Mode < MaxMode; Mode++) {
     Status = ConOut->QueryMode (ConOut, Mode, &Col, &Row);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       continue;
     }
     ValidMode++;
@@ -813,7 +813,7 @@ UpdateConModePage (
 //  ASSERT (OptionsOpCodeHandle != NULL);
   if (!OptionsOpCodeHandle) return;
 
-  ModeToken           = AllocateZeroPool (sizeof (EFI_STRING_ID) * ValidMode);
+  ModeToken           = AllocateZeroPool(sizeof (EFI_STRING_ID) * ValidMode);
 //  ASSERT(ModeToken != NULL);
   if (!ModeToken) return;
 
@@ -827,18 +827,18 @@ UpdateConModePage (
   //
   for (Mode = 0; Mode < MaxMode; Mode++) {
     Status = ConOut->QueryMode (ConOut, Mode, &Col, &Row);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       continue;
     }
     
     //
     // Build mode string Column x Row
     //
-    UnicodeValueToString (ModeString, 0, Col, 0);
+    UnicodeValueToStringS(ModeString, 50, 0, Col, 0);
     PStr = &ModeString[0];
     StrnCatS (PStr, 50, L" x ", StrLen(L" x ") + 1);
     PStr = PStr + StrLen (PStr);
-    UnicodeValueToString (PStr , 0, Row, 0);
+    UnicodeValueToStringS(PStr, 50, 0, Row, 0);
 
     ModeToken[Index] = HiiSetString (CallbackData->BmmHiiHandle, 0, ModeString, NULL);
 
@@ -876,7 +876,7 @@ UpdateConModePage (
     );
 
   HiiFreeOpCodeHandle (OptionsOpCodeHandle);
-  FreePool (ModeToken);
+  FreePool(ModeToken);
 
   UpdatePageEnd (CallbackData);
 }
@@ -1227,14 +1227,14 @@ GetLegacyBootOptionVar (
         (BBS_BBS_DP == DevicePath->SubType)
         ) {
       *OptionIndex = OrderBuffer[Index];
-      FreePool (OrderBuffer);
+      FreePool(OrderBuffer);
       return OptionBuffer;
     } else {
-      FreePool (OptionBuffer);
+      FreePool(OptionBuffer);
     }
   }
 
-  FreePool (OrderBuffer);
+  FreePool(OrderBuffer);
   return NULL;
 }
 
@@ -1438,7 +1438,7 @@ UpdateSetLegacyDeviceOrderPage (
     }
   }
 
-  CopyMem (OldData, LegacyOrder, 100);
+  CopyMem(OldData, LegacyOrder, 100);
 
   HiiFreeOpCodeHandle (OptionsOpCodeHandle);
 

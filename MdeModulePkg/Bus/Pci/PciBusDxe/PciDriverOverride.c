@@ -49,7 +49,7 @@ LocateImageHandle (
                   &HandleNum,
                   &Handles
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return NULL;
   }
 
@@ -58,7 +58,7 @@ LocateImageHandle (
 
   for (Index = 0; Index < HandleNum; Index++) {
     Status = gBS->HandleProtocol (Handles[Index], &gEfiLoadedImageDevicePathProtocolGuid, (VOID **) &DevicePath);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       continue;
     }
     if ((ImagePathSize == GetDevicePathSize (DevicePath)) &&
@@ -69,7 +69,7 @@ LocateImageHandle (
     }
   }
 
-  FreePool (Handles);
+  FreePool(Handles);
   return ImageHandle;
 }
 
@@ -171,7 +171,7 @@ AddDriver (
   //
   ASSERT ((DriverImageHandle == NULL) || (DriverImagePath == NULL));
 
-  Node = AllocateZeroPool (sizeof (PCI_DRIVER_OVERRIDE_LIST));
+  Node = AllocateZeroPool(sizeof (PCI_DRIVER_OVERRIDE_LIST));
   if (Node == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }

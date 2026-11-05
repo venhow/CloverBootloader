@@ -58,7 +58,8 @@ OvrReadData (IN  APPLE_SMC_IO_PROTOCOL  *This,
   AsciiSPrint(Str, 512, "--> data=:");
   Ptr = &Str[10];
   *Ptr++ = ' ';
-  for (i=0; i<MIN(Size, 500); i++) {
+  ASSERT(Size < sizeof(Str)-15);
+  for (i=0; i<Size; i++) { // Jief : it was "MIN(Size, 500)", but it's always true because Size is 8 bits
     AsciiSPrint(StrSmall, 10, "%02x ", Value[i]);
     *Ptr++ = StrSmall[0];
     *Ptr++ = StrSmall[1];
@@ -88,7 +89,8 @@ OvrWriteValue (IN  APPLE_SMC_IO_PROTOCOL  *This,
   AsciiSPrint(Str, 512, "--> data=:");
   Ptr = &Str[10];
   *Ptr++ = ' ';
-  for (i=0; i<MIN(Size, 500); i++) {
+  ASSERT(Size < sizeof(Str)-15);
+  for (i=0; i<Size; i++) { // Jief : it was "MIN(Size, 500)", but it's always true because Size is 8 bits
     AsciiSPrint(StrSmall, 10, "%02x ", Value[i]);
     *Ptr++ = StrSmall[0];
     *Ptr++ = StrSmall[1];
@@ -396,7 +398,7 @@ EFIAPI
 OvrReadKeyState (IN APPLE_KEY_STATE_PROTOCOL *This,
                  OUT UINT16 *ModifyFlags,
                  OUT UINTN  *PressedKeyStatesCount,
-                 OUT APPLE_KEY *PressedKeyStates)
+                 OUT APPLE_KEY_CODE *PressedKeyStates)
 {
   EFI_STATUS				Status;
 
@@ -417,7 +419,7 @@ EFIAPI
 OvrSearchKeyStroke (APPLE_KEY_STATE_PROTOCOL* This,
                  IN UINT16 ModifyFlags,
                  IN UINTN PressedKeyStatesCount,
-                 IN OUT APPLE_KEY *PressedKeyStates,
+                 IN OUT APPLE_KEY_CODE *PressedKeyStates,
                  IN BOOLEAN ExactMatch)
 {
   EFI_STATUS				Status;
@@ -491,12 +493,22 @@ OvrOSVendor (
 
 VOID
 EFIAPI
-OvrOSEmpty (
-           IN CHAR8 *Name)
+OvrOSGetVtd (
+           OUT UINTN  *BootVTdEnabled)
 {
   //  EFI_STATUS				Status;
-  gOrgOSInfo.OSName(Name);
-  PRINT("->OSInfo.OSEmpty=%a\n", Name);
+  gOrgOSInfo.GetBootVTdEnabled(BootVTdEnabled);
+  PRINT("->OSInfo.GetVtd=0x%x\n", *BootVTdEnabled);
+}
+
+VOID
+EFIAPI
+OvrOSSetVtd (
+            IN UINTN  *BootVTdEnabled)
+{
+  //  EFI_STATUS        Status;
+  gOrgOSInfo.SetBootVTdEnabled(BootVTdEnabled);
+  PRINT("->OSInfo.SetVtd=0x%x\n", *BootVTdEnabled);
 }
 
 
@@ -520,7 +532,9 @@ OvrOSInfo(VOID)
   // Override with our implementation
   gOSInfo->OSVendor = OvrOSVendor;
   gOSInfo->OSName = OvrOSName;
-  gOSInfo->OSEmpty = OvrOSEmpty;
+//  gOSInfo->OSEmpty = OvrOSEmpty;
+  gOSInfo->SetBootVTdEnabled = OvrOSSetVtd;
+  gOSInfo->GetBootVTdEnabled = OvrOSGetVtd;
   
   PRINT("EfiOSInfo overriden!\n");
   return EFI_SUCCESS;
@@ -733,14 +747,15 @@ OvrSetKeyStrokeBufferKeys (
                               IN UINTN                            Index,
                               IN APPLE_MODIFIER_MAP               Modifiers,
                               IN UINTN                            NumberOfKeys,
-                              IN APPLE_KEY                        *Keys
+                              IN APPLE_KEY_CODE                        *Keys
                               )
 {
   EFI_STATUS               Status;
   Status = gOrgAppleKeyMapDb.SetKeyStrokeBufferKeys(This, Index, Modifiers, NumberOfKeys, Keys);
+#if SET_KEY_STROKE
   PRINT("->SetKeyStrokeBufferKeys => Index=%d, Modifiers=%x, NoKeys=%d, Keys={%x, %x}, Status=%r\n",
         Index, Modifiers, NumberOfKeys, Keys?*Keys:0, (Keys && NumberOfKeys>1)?Keys[1]:0, Status);
-  
+#endif
   return Status;
 }
 

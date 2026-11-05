@@ -82,10 +82,37 @@ typedef enum {
 // If all memory has the same reliability, then this bit is not used.
 //
 #define EFI_MEMORY_MORE_RELIABLE    0x0000000000010000ULL
+
+//
+// Note: UEFI spec 2.8 and following:
+//
+// Specific-purpose memory (SPM). The memory is earmarked for
+// specific purposes such as for specific device drivers or applications.
+// The SPM attribute serves as a hint to the OS to avoid allocating this
+// memory for core OS data or code that can not be relocated.
+//
+#define EFI_MEMORY_SP               0x0000000000040000ULL
+//
+// If this flag is set, the memory region is capable of being
+// protected with the CPU?s memory cryptographic
+// capabilities. If this flag is clear, the memory region is not
+// capable of being protected with the CPU?s memory
+// cryptographic capabilities or the CPU does not support CPU
+// memory cryptographic capabilities.
+//
+#define EFI_MEMORY_CPU_CRYPTO       0x0000000000080000ULL
+
 //
 // Runtime memory attribute
 //
 #define EFI_MEMORY_RUNTIME          0x8000000000000000ULL
+
+
+//
+// Attributes bitmasks, grouped by type
+//
+#define EFI_CACHE_ATTRIBUTE_MASK (EFI_MEMORY_UC | EFI_MEMORY_WC | EFI_MEMORY_WT | EFI_MEMORY_WB | EFI_MEMORY_UCE | EFI_MEMORY_WP)
+#define EFI_MEMORY_ATTRIBUTE_MASK (EFI_MEMORY_RP | EFI_MEMORY_XP | EFI_MEMORY_RO | EFI_MEMORY_SP | EFI_MEMORY_CPU_CRYPTO)
 
 ///
 /// Memory descriptor version number.
@@ -645,8 +672,8 @@ VOID
 typedef
 EFI_STATUS
 (EFIAPI *EFI_GET_VARIABLE)(
-  IN     CHAR16                      *VariableName,
-  IN     EFI_GUID                    *VendorGuid,
+  IN     JCONST CHAR16                      *VariableName,
+  JCONST_EFI_GUID_PTR_T              VendorGuid,
   OUT    UINT32                      *Attributes,    OPTIONAL
   IN OUT UINTN                       *DataSize,
   OUT    VOID                        *Data           OPTIONAL
@@ -723,11 +750,11 @@ EFI_STATUS
 typedef
 EFI_STATUS
 (EFIAPI *EFI_SET_VARIABLE)(
-  IN  CHAR16                       *VariableName,
-  IN  EFI_GUID                     *VendorGuid,
+  IN  JCONST CHAR16                       *VariableName,
+  JCONST_EFI_GUID_PTR_T            VendorGuid,
   IN  UINT32                       Attributes,
   IN  UINTN                        DataSize,
-  IN  VOID                         *Data
+  IN  JCONST VOID                         *Data
   );
 
 
@@ -1308,7 +1335,7 @@ typedef
 EFI_STATUS
 (EFIAPI *EFI_OPEN_PROTOCOL)(
   IN  EFI_HANDLE                Handle,
-  IN  EFI_GUID                  *Protocol,
+  JCONST_EFI_GUID_PTR_T         Protocol,
   OUT VOID                      **Interface, OPTIONAL
   IN  EFI_HANDLE                AgentHandle,
   IN  EFI_HANDLE                ControllerHandle,
@@ -1341,7 +1368,7 @@ typedef
 EFI_STATUS
 (EFIAPI *EFI_CLOSE_PROTOCOL)(
   IN EFI_HANDLE               Handle,
-  IN EFI_GUID                 *Protocol,
+  JCONST_EFI_GUID_PTR_T       Protocol,
   IN EFI_HANDLE               AgentHandle,
   IN EFI_HANDLE               ControllerHandle
   );
@@ -1503,7 +1530,7 @@ typedef
 EFI_STATUS
 (EFIAPI *EFI_LOCATE_DEVICE_PATH)(
   IN     EFI_GUID                         *Protocol,
-  IN OUT EFI_DEVICE_PATH_PROTOCOL         **DevicePath,
+  IN OUT EFI_DEVICE_PATH_PROTOCOL         * JCONST *DevicePath,
   OUT    EFI_HANDLE                       *Device
   );
 
@@ -1576,7 +1603,7 @@ EFI_STATUS
 typedef
 EFI_STATUS
 (EFIAPI *EFI_LOCATE_PROTOCOL)(
-  IN  EFI_GUID  *Protocol,
+  JCONST_EFI_GUID_PTR_T Protocol,
   IN  VOID      *Registration, OPTIONAL
   OUT VOID      **Interface
   );
@@ -1761,11 +1788,13 @@ EFI_STATUS
 #define EFI_OS_INDICATIONS_FMP_CAPSULE_SUPPORTED            0x0000000000000008
 #define EFI_OS_INDICATIONS_CAPSULE_RESULT_VAR_SUPPORTED     0x0000000000000010
 #define EFI_OS_INDICATIONS_START_PLATFORM_RECOVERY          0x0000000000000040
+#define EFI_OS_INDICATIONS_JSON_CONFIG_DATA_REFRESH         0x0000000000000080
 
 //
 // EFI Runtime Services Table
 //
 #define EFI_SYSTEM_TABLE_SIGNATURE      SIGNATURE_64 ('I','B','I',' ','S','Y','S','T')
+#define EFI_2_80_SYSTEM_TABLE_REVISION  ((2 << 16) | (80))
 #define EFI_2_70_SYSTEM_TABLE_REVISION  ((2 << 16) | (70))
 #define EFI_2_60_SYSTEM_TABLE_REVISION  ((2 << 16) | (60))
 #define EFI_2_50_SYSTEM_TABLE_REVISION  ((2 << 16) | (50))
@@ -2178,6 +2207,7 @@ typedef struct {
 #define EFI_REMOVABLE_MEDIA_FILE_NAME_X64     L"\\EFI\\BOOT\\BOOTX64.EFI"
 #define EFI_REMOVABLE_MEDIA_FILE_NAME_ARM     L"\\EFI\\BOOT\\BOOTARM.EFI"
 #define EFI_REMOVABLE_MEDIA_FILE_NAME_AARCH64 L"\\EFI\\BOOT\\BOOTAA64.EFI"
+#define EFI_REMOVABLE_MEDIA_FILE_NAME_RISCV64 L"\\EFI\\BOOT\\BOOTRISCV64.EFI"
 
 #if   defined (MDE_CPU_IA32)
   #define EFI_REMOVABLE_MEDIA_FILE_NAME   EFI_REMOVABLE_MEDIA_FILE_NAME_IA32
@@ -2188,6 +2218,9 @@ typedef struct {
   #define EFI_REMOVABLE_MEDIA_FILE_NAME   EFI_REMOVABLE_MEDIA_FILE_NAME_ARM
 #elif defined (MDE_CPU_AARCH64)
   #define EFI_REMOVABLE_MEDIA_FILE_NAME   EFI_REMOVABLE_MEDIA_FILE_NAME_AARCH64
+
+#elif defined (MDE_CPU_RISCV64)
+  #define EFI_REMOVABLE_MEDIA_FILE_NAME   EFI_REMOVABLE_MEDIA_FILE_NAME_RISCV64
 #else
   #error Unknown Processor Type
 #endif

@@ -47,6 +47,12 @@ SECTIONS {
     *(.bss .bss.*)
   }
 
+  .ctors ALIGN(CONSTANT(COMMONPAGESIZE)) : {
+    __beginning_of_section_ctors = .;  /* create symbol for start of section */
+    KEEP (*(.ctors .init_array))  /* .ctors is used on macOS, .init_array on Linux */
+    __end_of_section_ctors = .;  /* create symbol for end of section */
+  }
+  
   .eh_frame ALIGN(CONSTANT(COMMONPAGESIZE)) : {
     KEEP (*(.eh_frame))
   }

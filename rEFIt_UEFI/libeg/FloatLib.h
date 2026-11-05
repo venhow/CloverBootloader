@@ -8,19 +8,12 @@
 #ifndef FloatLib_h
 #define FloatLib_h
 
-#include <Uefi.h>
-#include <Library/UefiBootServicesTableLib.h>
-#include <Library/BaseMemoryLib.h>
-#include <Library/BaseLib.h>
-#include <Library/MemoryAllocationLib.h>
-#include <Library/PrintLib.h>
-
-#define PI (3.1415926536f)
-#define PI2 (6.283185307179586f)
-#define PI5 (1.570796326794897f)
-#define PI4 (0.78539816339745f)
-#define FLT_MAX (1.0e38f)
-#define FLT_MIN (1.0e-37f)
+const float PI = 3.1415926536f;
+const float PI2 = 6.283185307179586f;
+const float PI5 = 1.570796326794897f;
+const float PI4 = 0.78539816339745f;
+const float FLT_MAX = 1.0e38f;
+const float FLT_MIN = 1.0e-37f;
 
 float SqrtF(float X);
 float PowF(float X, INTN N);
@@ -31,22 +24,28 @@ float CeilF(float X);
 float FloorF(float X);
 float ModF(float X, float Y);
 float AcosF(float X);
-float Atan2F(float X, float Y);
+float Atan2F(float Y, float X); //y=sin(A), x=cos(A), atan2(y,x) == A
 float FabsF(float X);
 float rndf(void);  //random number from 0 to 1.0f
 int dither(float x, int level);
-float nsvg__vmag(float x, float y); //sqrt(x*x+y*y)
+//float nsvg__vmag(float x, float y); //sqrt(x*x+y*y)
+
+inline float FabsF(float x) {
+  if (x < 0.f) return -x;
+  return x;
+}
+
+inline float SqrF(float x) { return x*x; }
+
 
 RETURN_STATUS
 AsciiStrToFloat(IN  CONST CHAR8              *String,
                 OUT       CHAR8              **EndPointer,  OPTIONAL
                 OUT       float              *Data);
-#if 0
-VOID AsciiSPrintFloat(CHAR8* S, INTN N, CHAR8* F, float X);
 
-VOID QuickSort(VOID* Array, INTN Low, INTN High, INTN Size,
-               INTN (*compare)(CONST VOID* a, CONST VOID* b));
-#endif
-CHAR16* PoolPrintFloat(float X);
+void QuickSort(void* Array, INTN Number, INTN Size, int(*compare)(CONST void* a, CONST void* b));
+
+
+float hypot(float x, float y);
 
 #endif /* FloatLib_h */

@@ -261,7 +261,7 @@ GetDriverNameString (
               (VOID **) &NameString,
               &StringSize
               );
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       //
       // Method 2: Get the name string from FFS UI section
       //
@@ -269,7 +269,7 @@ GetDriverNameString (
         NameString[PROFILE_NAME_STRING_LENGTH] = 0;
       }
       UnicodeStrToAsciiStrS (NameString, mNameString, sizeof (mNameString));
-      FreePool (NameString);
+      FreePool(NameString);
       return mNameString;
     }
   }
@@ -997,11 +997,11 @@ DestroyContextSummaryData (
       AllocSummaryLink = AllocSummaryLink->ForwardLink;
 
       RemoveEntryList (&AllocSummaryInfoData->Link);
-      FreePool (AllocSummaryInfoData);
+      FreePool(AllocSummaryInfoData);
     }
 
     RemoveEntryList (&DriverSummaryInfoData->Link);
-    FreePool (DriverSummaryInfoData);
+    FreePool(DriverSummaryInfoData);
   }
   return ;
 }
@@ -1026,7 +1026,7 @@ GetUefiMemoryProfileData (
   BOOLEAN                             RecordingState;
 
   Status = gBS->LocateProtocol (&gEdkiiMemoryProfileGuid, NULL, (VOID **) &ProfileProtocol);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG ((EFI_D_ERROR, "UefiMemoryProfile: Locate MemoryProfile protocol - %r\n", Status));
     return Status;
   }
@@ -1052,10 +1052,10 @@ GetUefiMemoryProfileData (
     goto Done;
   }
 
-  Data = AllocateZeroPool ((UINTN) Size);
+  Data = AllocateZeroPool((UINTN) Size);
   if (Data == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
-    Print (L"UefiMemoryProfile: AllocateZeroPool (0x%x) - %r\n", Size, Status);
+    Print (L"UefiMemoryProfile: AllocateZeroPool(0x%x) - %r\n", Size, Status);
     return Status;
   }
 
@@ -1064,7 +1064,7 @@ GetUefiMemoryProfileData (
                               &Size,
                               Data
                               );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     Print (L"UefiMemoryProfile: GetData - %r\n", Status);
     goto Done;
   }
@@ -1087,7 +1087,7 @@ GetUefiMemoryProfileData (
 
 Done:
   if (Data != NULL) {
-    FreePool (Data);
+    FreePool(Data);
   }
 
   //
@@ -1135,7 +1135,7 @@ GetSmramProfileData (
   ProfileBuffer = NULL;
 
   Status = gBS->LocateProtocol (&gEfiSmmCommunicationProtocolGuid, NULL, (VOID **) &SmmCommunication);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG ((EFI_D_ERROR, "SmramProfile: Locate SmmCommunication protocol - %r\n", Status));
     return Status;
   }
@@ -1156,7 +1156,7 @@ GetSmramProfileData (
              &gEdkiiPiSmmCommunicationRegionTableGuid,
              (VOID **) &PiSmmCommunicationRegionTable
              );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG ((EFI_D_ERROR, "SmramProfile: Get PiSmmCommunicationRegionTable - %r\n", Status));
     return Status;
   }
@@ -1181,7 +1181,7 @@ GetSmramProfileData (
   RecordingState = MEMORY_PROFILE_RECORDING_DISABLE;
 
   CommHeader = (EFI_SMM_COMMUNICATE_HEADER *) &CommBuffer[0];
-  CopyMem (&CommHeader->HeaderGuid, &gEdkiiMemoryProfileGuid, sizeof (gEdkiiMemoryProfileGuid));
+  CopyMem(&CommHeader->HeaderGuid, &gEdkiiMemoryProfileGuid, sizeof (gEdkiiMemoryProfileGuid));
   CommHeader->MessageLength = sizeof (SMRAM_PROFILE_PARAMETER_RECORDING_STATE);
 
   CommRecordingState = (SMRAM_PROFILE_PARAMETER_RECORDING_STATE *) &CommBuffer[OFFSET_OF (EFI_SMM_COMMUNICATE_HEADER, Data)];
@@ -1192,7 +1192,7 @@ GetSmramProfileData (
 
   CommSize = sizeof (EFI_GUID) + sizeof (UINTN) + CommHeader->MessageLength;
   Status = SmmCommunication->Communicate (SmmCommunication, CommBuffer, &CommSize);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG ((EFI_D_ERROR, "SmramProfile: SmmCommunication - %r\n", Status));
     return Status;
   }
@@ -1204,7 +1204,7 @@ GetSmramProfileData (
   RecordingState = CommRecordingState->RecordingState;
   if (RecordingState == MEMORY_PROFILE_RECORDING_ENABLE) {
     CommHeader = (EFI_SMM_COMMUNICATE_HEADER *) &CommBuffer[0];
-    CopyMem (&CommHeader->HeaderGuid, &gEdkiiMemoryProfileGuid, sizeof (gEdkiiMemoryProfileGuid));
+    CopyMem(&CommHeader->HeaderGuid, &gEdkiiMemoryProfileGuid, sizeof (gEdkiiMemoryProfileGuid));
     CommHeader->MessageLength = sizeof (SMRAM_PROFILE_PARAMETER_RECORDING_STATE);
 
     CommRecordingState = (SMRAM_PROFILE_PARAMETER_RECORDING_STATE *) &CommBuffer[OFFSET_OF (EFI_SMM_COMMUNICATE_HEADER, Data)];
@@ -1221,7 +1221,7 @@ GetSmramProfileData (
   // Get Size
   //
   CommHeader = (EFI_SMM_COMMUNICATE_HEADER *) &CommBuffer[0];
-  CopyMem (&CommHeader->HeaderGuid, &gEdkiiMemoryProfileGuid, sizeof (gEdkiiMemoryProfileGuid));
+  CopyMem(&CommHeader->HeaderGuid, &gEdkiiMemoryProfileGuid, sizeof (gEdkiiMemoryProfileGuid));
   CommHeader->MessageLength = sizeof (SMRAM_PROFILE_PARAMETER_GET_PROFILE_INFO);
 
   CommGetProfileInfo = (SMRAM_PROFILE_PARAMETER_GET_PROFILE_INFO *) &CommBuffer[OFFSET_OF (EFI_SMM_COMMUNICATE_HEADER, Data)];
@@ -1232,7 +1232,7 @@ GetSmramProfileData (
 
   CommSize = sizeof (EFI_GUID) + sizeof (UINTN) + CommHeader->MessageLength;
   Status = SmmCommunication->Communicate (SmmCommunication, CommBuffer, &CommSize);
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   if (CommGetProfileInfo->Header.ReturnStatus != 0) {
     Status = EFI_SUCCESS;
@@ -1245,15 +1245,15 @@ GetSmramProfileData (
   //
   // Get Data
   //
-  ProfileBuffer = AllocateZeroPool (ProfileSize);
+  ProfileBuffer = AllocateZeroPool(ProfileSize);
   if (ProfileBuffer == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
-    Print (L"SmramProfile: AllocateZeroPool (0x%x) for profile buffer - %r\n", ProfileSize, Status);
+    Print (L"SmramProfile: AllocateZeroPool(0x%x) for profile buffer - %r\n", ProfileSize, Status);
     goto Done;
   }
 
   CommHeader = (EFI_SMM_COMMUNICATE_HEADER *) &CommBuffer[0];
-  CopyMem (&CommHeader->HeaderGuid, &gEdkiiMemoryProfileGuid, sizeof(gEdkiiMemoryProfileGuid));
+  CopyMem(&CommHeader->HeaderGuid, &gEdkiiMemoryProfileGuid, sizeof(gEdkiiMemoryProfileGuid));
   CommHeader->MessageLength = sizeof (SMRAM_PROFILE_PARAMETER_GET_PROFILE_DATA_BY_OFFSET);
 
   CommGetProfileData = (SMRAM_PROFILE_PARAMETER_GET_PROFILE_DATA_BY_OFFSET *) &CommBuffer[OFFSET_OF (EFI_SMM_COMMUNICATE_HEADER, Data)];
@@ -1275,14 +1275,14 @@ GetSmramProfileData (
       CommGetProfileData->ProfileSize = (UINT64) (ProfileSize - CommGetProfileData->ProfileOffset);
     }
     Status = SmmCommunication->Communicate (SmmCommunication, CommBuffer, &CommSize);
-    ASSERT_EFI_ERROR (Status);
+    ASSERT_EFI_ERROR(Status);
 
     if (CommGetProfileData->Header.ReturnStatus != 0) {
       Status = EFI_SUCCESS;
       Print (L"GetProfileData - 0x%x\n", CommGetProfileData->Header.ReturnStatus);
       goto Done;
     }
-    CopyMem ((UINT8 *) ProfileBuffer + Offset, (VOID *) (UINTN) CommGetProfileData->ProfileBuffer, (UINTN) CommGetProfileData->ProfileSize);
+    CopyMem((UINT8 *) ProfileBuffer + Offset, (VOID *) (UINTN) CommGetProfileData->ProfileBuffer, (UINTN) CommGetProfileData->ProfileSize);
   }
 
 
@@ -1303,7 +1303,7 @@ GetSmramProfileData (
 
 Done:
   if (ProfileBuffer != NULL) {
-    FreePool (ProfileBuffer);
+    FreePool(ProfileBuffer);
   }
 
   //
@@ -1311,7 +1311,7 @@ Done:
   //
   if (RecordingState == MEMORY_PROFILE_RECORDING_ENABLE) {
     CommHeader = (EFI_SMM_COMMUNICATE_HEADER *) &CommBuffer[0];
-    CopyMem (&CommHeader->HeaderGuid, &gEdkiiMemoryProfileGuid, sizeof (gEdkiiMemoryProfileGuid));
+    CopyMem(&CommHeader->HeaderGuid, &gEdkiiMemoryProfileGuid, sizeof (gEdkiiMemoryProfileGuid));
     CommHeader->MessageLength = sizeof (SMRAM_PROFILE_PARAMETER_RECORDING_STATE);
 
     CommRecordingState = (SMRAM_PROFILE_PARAMETER_RECORDING_STATE *) &CommBuffer[OFFSET_OF (EFI_SMM_COMMUNICATE_HEADER, Data)];
@@ -1348,12 +1348,12 @@ UefiMain (
   EFI_STATUS                     Status;
 
   Status = GetUefiMemoryProfileData ();
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG ((EFI_D_ERROR, "GetUefiMemoryProfileData - %r\n", Status));
   }
 
   Status = GetSmramProfileData ();
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG ((EFI_D_ERROR, "GetSmramProfileData - %r\n", Status));
   }
 

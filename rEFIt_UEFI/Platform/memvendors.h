@@ -39,8 +39,7 @@
 #define SMB_MEM_CHANNEL_TRIPLE		3
 
 /* Maximum number of ram slots */
-//#define MAX_RAM_SLOTS			8
-#define RAM_SLOT_ENUMERATOR		{0, 2, 4, 1, 3, 5, 6, 8, 10, 7, 9, 11}
+//#define RAM_SLOT_ENUMERATOR		{0, 2, 4, 1, 3, 5, 6, 8, 10, 7, 9, 11}
 
 /* Maximum number of SPD bytes */
 #define MAX_SPD_SIZE			0x1E7  /* end of DDR4 XMP 2.0 */
@@ -48,7 +47,7 @@
 typedef struct _vidTag {
     UINT8			bank;
     UINT8			code;
-    CHAR8*			name;
+    CONST CHAR8*			name;
 } VenIdName;
 
 VenIdName vendorMap[] = {

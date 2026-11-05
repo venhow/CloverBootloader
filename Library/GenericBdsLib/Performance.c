@@ -107,7 +107,7 @@ GetNameFromHandle (
                   (VOID **) &Image
                   );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     Status = gBS->OpenProtocol (
                     Handle,
                     &gEfiDriverBindingProtocolGuid,
@@ -116,7 +116,7 @@ GetNameFromHandle (
                     NULL,
                     EFI_OPEN_PROTOCOL_GET_PROTOCOL
                     );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return ;
     }
     //
@@ -161,7 +161,7 @@ AllocateMemoryForPerformanceData (
                     EFI_SIZE_TO_PAGES (mAcpiLowMemoryLength),
                     &mAcpiLowMemoryBase
                     );
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       gRT->SetVariable (
              L"PerfDataMemAddr",
              &gPerformanceProtocolGuid,
@@ -252,7 +252,7 @@ WriteBootToOsPerformanceData (
                     &VarSize,
                     &mAcpiLowMemoryBase
                     );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       //
       // Fail to get the variable, return.
       //
@@ -271,7 +271,7 @@ WriteBootToOsPerformanceData (
                   &NoHandles,
                   &Handles
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return ;
   }
 
@@ -289,7 +289,7 @@ WriteBootToOsPerformanceData (
                           &EndTicker)) != 0) {
     NumPerfEntries++;
   }
-  PerfEntriesAsDxeHandle = AllocateZeroPool (NumPerfEntries * sizeof (BOOLEAN));
+  PerfEntriesAsDxeHandle = AllocateZeroPool(NumPerfEntries * sizeof (BOOLEAN));
 //  ASSERT (PerfEntriesAsDxeHandle != NULL);
   
   //
@@ -330,7 +330,7 @@ WriteBootToOsPerformanceData (
       AsciiStrCpyS (mPerfData.Token, PERF_TOKEN_LENGTH+1, GaugeString);
       mPerfData.Duration = Duration;
 
-      CopyMem (Ptr, &mPerfData, sizeof (PERF_DATA));
+      CopyMem(Ptr, &mPerfData, sizeof (PERF_DATA));
       Ptr += sizeof (PERF_DATA);
 
       mPerfHeader.Count++;
@@ -367,7 +367,7 @@ WriteBootToOsPerformanceData (
 
       mPerfData.Duration = (UINT32) DivU64x32 (Ticker, (UINT32) Freq);
 
-      CopyMem (Ptr, &mPerfData, sizeof (PERF_DATA));
+      CopyMem(Ptr, &mPerfData, sizeof (PERF_DATA));
       Ptr += sizeof (PERF_DATA);
 
       mPerfHeader.Count++;
@@ -380,15 +380,15 @@ WriteBootToOsPerformanceData (
 
 Done:
 
-  FreePool (Handles);
-  FreePool (PerfEntriesAsDxeHandle);
+  FreePool(Handles);
+  FreePool(PerfEntriesAsDxeHandle);
 
   mPerfHeader.Signiture = PERFORMANCE_SIGNATURE;
 
   //
   // Put performance data to Reserved memory
   //
-  CopyMem (
+  CopyMem(
     (UINTN *) (UINTN) mAcpiLowMemoryBase,
     &mPerfHeader,
     sizeof (PERF_HEADER)

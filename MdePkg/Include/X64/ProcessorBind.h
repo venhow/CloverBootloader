@@ -153,7 +153,14 @@
   /// 2-byte Character.  Unless otherwise specified all strings are stored in the
   /// UTF-16 encoding format as defined by Unicode 2.1 and ISO/IEC 10646 standards.
   ///
+  //  typedef unsigned short      CHAR16; 
+ // typedef wchar_t             CHAR16;
+#ifdef __cplusplus
+#define CHAR16 wchar_t
+#else
   typedef unsigned short      CHAR16;
+#endif
+
   ///
   /// 2-byte signed value
   ///
@@ -200,7 +207,33 @@
   /// 2-byte Character.  Unless otherwise specified all strings are stored in the
   /// UTF-16 encoding format as defined by Unicode 2.1 and ISO/IEC 10646 standards.
   ///
+#ifdef __cplusplus
+  #if __WCHAR_MAX__ <= 0xFFFF
+    #define CHAR16 wchar_t
+  #else
+  // Here, we are compiling with wchar_t as 4 bytes. So CHAR16 is equivalent to wchar_t.
+  // To work with edk2 library, you need to compile them without -short-wchar.
+  // And of course that cannot be used to create a launchable efi file !
+  // But that works for unit tests that run on macOS, Linux, Windows...
+  // Slice: ???
+  // STATIC_ASSERT (˙sizeof (CHAR16)  == 2, "sizeof (CHAR16) does not meet UEFI Specification Data Type requirements");
+    #define CHAR16 wchar_t
+  //   #define CHAR16 short
+  #endif
+#else
+  #if __WCHAR_MAX__ <= 0xFFFF
   typedef unsigned short      CHAR16;
+  typedef UINT16      wchar_t;
+  #else
+  // Here, we are compiling with wchar_t as 4 bytes. So CHAR16 is equivalent to wchar_t.
+  // To work with edk2 library, you need to compile them without -short-wchar.
+  // And of course that cannot be used to create a launchable efi file !
+  // But that works for unit tests that run on macOS, Linux, Windows...
+  typedef int         CHAR16;
+  #endif
+  typedef UINT16      char16_t;
+  typedef UINT32      char32_t;
+#endif
   ///
   /// 2-byte signed value
   ///

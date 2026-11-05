@@ -145,7 +145,7 @@ AtaAhciPeimEntry (
   // Get the current boot mode.
   //
   Status = PeiServicesGetBootMode (&BootMode);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG ((DEBUG_ERROR, "%a: Fail to get the current boot mode.\n", __FUNCTION__));
     return Status;
   }
@@ -159,7 +159,7 @@ AtaAhciPeimEntry (
              NULL,
              (VOID **) &AhciHcPpi
              );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG ((DEBUG_ERROR, "%a: Failed to locate AtaAhciHostControllerPpi.\n", __FUNCTION__));
     return EFI_UNSUPPORTED;
   }
@@ -175,7 +175,7 @@ AtaAhciPeimEntry (
     //
     // When status is error, meant no controller is found.
     //
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       break;
     }
 
@@ -185,7 +185,7 @@ AtaAhciPeimEntry (
                           &DevicePathLength,
                           &DevicePath
                           );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       DEBUG ((
         DEBUG_ERROR, "%a: Fail to allocate get the device path for Controller %d.\n",
         __FUNCTION__, Controller
@@ -197,7 +197,7 @@ AtaAhciPeimEntry (
     // Check validity of the device path of the ATA AHCI controller.
     //
     Status = AhciIsHcDevicePathValid (DevicePath, DevicePathLength);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       DEBUG ((
         DEBUG_ERROR, "%a: The device path is invalid for Controller %d.\n",
         __FUNCTION__, Controller
@@ -228,7 +228,7 @@ AtaAhciPeimEntry (
     //
     // Memory allocation for controller private data.
     //
-    Private = AllocateZeroPool (sizeof (PEI_AHCI_CONTROLLER_PRIVATE_DATA));
+    Private = AllocateZeroPool(sizeof (PEI_AHCI_CONTROLLER_PRIVATE_DATA));
     if (Private == NULL) {
       DEBUG ((
         DEBUG_ERROR, "%a: Fail to allocate private data for Controller %d.\n",
@@ -248,7 +248,7 @@ AtaAhciPeimEntry (
     InitializeListHead (&Private->DeviceList);
 
     Status = AhciModeInitialization (Private);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       DEBUG ((
         DEBUG_ERROR,
         "%a: Controller initialization fail for Controller %d with Status - %r.\n",
@@ -269,7 +269,7 @@ AtaAhciPeimEntry (
     Private->AtaPassThruPpi.GetNextPort   = AhciAtaPassThruGetNextPort;
     Private->AtaPassThruPpi.GetNextDevice = AhciAtaPassThruGetNextDevice;
     Private->AtaPassThruPpi.GetDevicePath = AhciAtaPassThruGetDevicePath;
-    CopyMem (
+    CopyMem(
       &Private->AtaPassThruPpiList,
       &mAhciAtaPassThruPpiListTemplate,
       sizeof (EFI_PEI_PPI_DESCRIPTOR)
@@ -280,7 +280,7 @@ AtaAhciPeimEntry (
     Private->BlkIoPpi.GetNumberOfBlockDevices  = AhciBlockIoGetDeviceNo;
     Private->BlkIoPpi.GetBlockDeviceMediaInfo  = AhciBlockIoGetMediaInfo;
     Private->BlkIoPpi.ReadBlocks               = AhciBlockIoReadBlocks;
-    CopyMem (
+    CopyMem(
       &Private->BlkIoPpiList,
       &mAhciBlkIoPpiListTemplate,
       sizeof (EFI_PEI_PPI_DESCRIPTOR)
@@ -292,7 +292,7 @@ AtaAhciPeimEntry (
     Private->BlkIo2Ppi.GetNumberOfBlockDevices = AhciBlockIoGetDeviceNo2;
     Private->BlkIo2Ppi.GetBlockDeviceMediaInfo = AhciBlockIoGetMediaInfo2;
     Private->BlkIo2Ppi.ReadBlocks              = AhciBlockIoReadBlocks2;
-    CopyMem (
+    CopyMem(
       &Private->BlkIo2PpiList,
       &mAhciBlkIo2PpiListTemplate,
       sizeof (EFI_PEI_PPI_DESCRIPTOR)
@@ -311,7 +311,7 @@ AtaAhciPeimEntry (
       Private->StorageSecurityPpi.GetDevicePath      = AhciStorageSecurityGetDevicePath;
       Private->StorageSecurityPpi.ReceiveData        = AhciStorageSecurityReceiveData;
       Private->StorageSecurityPpi.SendData           = AhciStorageSecuritySendData;
-      CopyMem (
+      CopyMem(
         &Private->StorageSecurityPpiList,
         &mAhciStorageSecurityPpiListTemplate,
         sizeof (EFI_PEI_PPI_DESCRIPTOR)
@@ -320,7 +320,7 @@ AtaAhciPeimEntry (
       PeiServicesInstallPpi (&Private->StorageSecurityPpiList);
     }
 
-    CopyMem (
+    CopyMem(
       &Private->EndOfPeiNotifyList,
       &mAhciEndOfPeiNotifyListTemplate,
       sizeof (EFI_PEI_NOTIFY_DESCRIPTOR)

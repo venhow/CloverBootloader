@@ -105,8 +105,8 @@ typedef struct {
   EFI_LOAD_FILE_PROTOCOL        *LoadFile;        // Information valid for l#:
   
   EFI_IP_ADDRESS                ServerIp;         // Information valid for t:
-  BOOLEAN                       IsDirty;
-  BOOLEAN                       IsBufferValid;
+  XBool                         IsDirty;
+  XBool                         IsBufferValid;
                            
 } EFI_OPEN_FILE;
 
@@ -250,7 +250,7 @@ EfiSeek (
 EFI_STATUS
 EfiRead (
   IN  EFI_OPEN_FILE     *Stream,
-  OUT VOID              *Buffer,
+  OUT void              *Buffer,
   OUT UINTN             *BufferSize
   );
 
@@ -277,7 +277,7 @@ EfiRead (
 EFI_STATUS
 EfiReadAllocatePool (
   IN  EFI_OPEN_FILE     *Stream,
-  OUT VOID              **Buffer,
+  OUT void              **Buffer,
   OUT UINTN             *BufferSize
   );
 
@@ -300,7 +300,7 @@ EfiReadAllocatePool (
 EFI_STATUS
 EfiWrite (
   IN  EFI_OPEN_FILE   *Stream,
-  OUT VOID            *Buffer,
+  OUT void            *Buffer,
   OUT UINTN           *BufferSize
   );
 
@@ -348,7 +348,7 @@ EfiSetCwd (
 **/
 CHAR8 *
 EfiGetCwd (
-  VOID
+  void
   );  
 
 #endif

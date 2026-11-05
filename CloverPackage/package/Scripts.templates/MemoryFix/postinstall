@@ -12,21 +12,22 @@ echo "preinstall: Root of system folder... $4"
 
 #############################################################################
 
-DEST_VOL="${3}"
-EFI_ROOT_DIR=$(cd "${DEST_VOL}"/EFIROOTDIR; pwd -P)
-install_log="${DEST_VOL}/Clover_Install_Log.txt"
+DEST_VOL="$3"
+EFI_ROOT_DIR=$(cd "${DEST_VOL}"/Private/tmp/EFIROOTDIR; pwd -P)
+install_log="${DEST_VOL}/Private/tmp/Clover_Install_Log.txt"
 driver_dir="@DRIVER_DIR@"
 driver_name="@DRIVER_NAME@"
 
 if [[ -d "$EFI_ROOT_DIR/EFI/CLOVER/drivers/$driver_dir" ]]; then
   cd "$EFI_ROOT_DIR/EFI/CLOVER/drivers/$driver_dir"
-  for driver in *.efi
-  do
-    low=$(echo "${driver}" | tr '[:upper:]' '[:lower:]')
-    if [[ "$driver" != $driver_name ]] && \
-       [[ "$low" == *aptiofix* || "$low" == *memfix*  || "$low" == *memoryfix* ]]; then
-      echo "Removing ${driver_dir}/${driver} because $driver_name is installed" >> "$install_log"
-      rm -f "${driver}"
-    fi
-  done
+    for driver in *.efi
+    do
+      low=$(echo "${driver}" | tr '[:upper:]' '[:lower:]')
+      if [[ "$driver" != $driver_name ]] && \
+      [[ "$low" == *aptiofix* || "$low" == *memfix*  || "$low" == *memoryfix* \
+      || "$low" == *ocquirks* || "$low" == *openruntime* ]]; then
+        echo "Removing ${driver_dir}/${driver} because $driver_name is installed" >> "$install_log"
+        rm -f "${driver}"
+      fi
+    done
 fi

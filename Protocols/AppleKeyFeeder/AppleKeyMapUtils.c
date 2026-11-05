@@ -25,7 +25,7 @@
 //  gEfiMdePkgTokenSpaceGuid.PcdDebugPrintErrorLevel|0xFFFFFFFF
 // in package DSC file
 
-#ifdef CLOVER_DEBUG
+#ifdef JIEF_DEBUG
 #define DBG_APPLEKEYFEEDER 2
 #endif
 
@@ -54,14 +54,14 @@ static EFI_STATUS getAppleKeyMapDb()
                   NULL,
                   (VOID **)&AppleKeyMapDb
                   );
-	if (!EFI_ERROR (Status))
+	if (!EFI_ERROR(Status))
 	{
 		Status = AppleKeyMapDb->CreateKeyStrokesBuffer (
 								AppleKeyMapDb,
 								6,
 								&AppleKeyMapDbIndex
 								);
-		if (EFI_ERROR (Status)) {
+		if (EFI_ERROR(Status)) {
 			DBG("AppleKeyFeederEntrypoint: CreateKeyStrokesBuffer failed, Status=%x\n", Status);
 		}
 	}else{
@@ -84,7 +84,7 @@ SendKeyRelease (
   EFI_STATUS Status;
 //DBG("SendKeyRelease\n");
 
-  APPLE_KEY appleKey; // APPLE_KEY is UINT16
+  APPLE_KEY_CODE appleKey; // APPLE_KEY_CODE is UINT16
     	Status = AppleKeyMapDb->SetKeyStrokeBufferKeys (
 							   AppleKeyMapDb,
 							   AppleKeyMapDbIndex,
@@ -92,7 +92,7 @@ SendKeyRelease (
 							   0,
 							   &appleKey
 							   );
-		if (EFI_ERROR (Status)) {
+		if (EFI_ERROR(Status)) {
     		DBG("SendKeyRelease: SetKeyStrokeBufferKeys failed, Status=%x\n", Status);
 		}
 
@@ -101,14 +101,14 @@ SendKeyRelease (
 					  TimerCancel,
 					  10*1000
 					  );
-		if (EFI_ERROR (Status)) {
+		if (EFI_ERROR(Status)) {
     		DBG("SendKeyRelease: SetTimer failed, Status=%x\n", Status);
 		}
 }
 
 
 
-static int MapKeyData2AppleKey(EFI_KEY_DATA* KeyData, APPLE_KEY* pKey, UINT8* pCurModifierMap)
+static int MapKeyData2AppleKey(EFI_KEY_DATA* KeyData, APPLE_KEY_CODE* pKey, UINT8* pCurModifierMap)
 {
 	if ( KeyData->Key.UnicodeChar == 0 )
 	{
@@ -121,10 +121,10 @@ static int MapKeyData2AppleKey(EFI_KEY_DATA* KeyData, APPLE_KEY* pKey, UINT8* pC
 				*pKey = 0x7051;
 				return 1;
 			case 0x03: // left arrow
-				*pKey = 0x7050;
+				*pKey = 0x704F;
 				return 1;
 			case 0x04: // right arrow
-				*pKey = 0x704F;
+				*pKey = 0x7050;
 				return 1;
 		}
 		return 0;
@@ -306,11 +306,11 @@ SendDataToAppleMap(IN EFI_KEY_DATA *KeyData)
   EFI_STATUS Status;
   UINT8 CurModifierMap  = 0;
   UINTN NumberOfKeys = 1;
-  APPLE_KEY appleKey; // APPLE_KEY is UINT16
+  APPLE_KEY_CODE appleKey; // APPLE_KEY_CODE is UINT16
 
 	if ( !AppleKeyMapDb ) {
 		Status = getAppleKeyMapDb();
-    	if (EFI_ERROR (Status)) {
+    	if (EFI_ERROR(Status)) {
     		DBG("SendDataToAppleMap: getAppleKeyMapDb() failed, Status=%x\n", Status);
     	}
 	}
@@ -328,7 +328,7 @@ SendDataToAppleMap(IN EFI_KEY_DATA *KeyData)
 							   NumberOfKeys,
 							   &appleKey
 							   );
-    	if (EFI_ERROR (Status)) {
+    	if (EFI_ERROR(Status)) {
     		DBG("SendDataToAppleMap: SetKeyStrokeBufferKeys failed, Status=%x\n", Status);
     		return Status;
     	}
@@ -339,7 +339,7 @@ SendDataToAppleMap(IN EFI_KEY_DATA *KeyData)
 					  TimerPeriodic,
 					  10*1000*15 // 15 ms
 					  );
-		if (EFI_ERROR (Status)) {
+		if (EFI_ERROR(Status)) {
 			// if this fail, we end up having the key repeated.
     		DBG("SendDataToAppleMap: SetTimer failed, Status=%x\n", Status);
     		return Status;
@@ -376,7 +376,7 @@ DBG("AppleKeyMapUtilsInit\n");
 				  NULL,
 				  &eventKeyRelease
 				  );
-	if ( EFI_ERROR (Status) ) {
+	if ( EFI_ERROR(Status) ) {
 		DBG("AppleKeyMapUtilsInit: CreateEvent failed, Status=%x\n", Status);
 	}
 

@@ -70,7 +70,7 @@ InternalGetVarErrorFlag (
                   &Size,
                   &ErrorFlag
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG ((EFI_D_INFO, "%s - not found\n", VAR_ERROR_FLAG_NAME));
     return VAR_ERROR_FLAG_NO_ERROR;
   }
@@ -111,7 +111,7 @@ IsUserVariable (
                         Guid,
                         &Property
                         );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     //
     // No property, it is user variable.
     //
@@ -161,7 +161,7 @@ FindUserVariableNodeByGuid (
   //
   // Create new one if not found.
   //
-  UserVariableNode = AllocateZeroPool (sizeof (*UserVariableNode));
+  UserVariableNode = AllocateZeroPool(sizeof (*UserVariableNode));
   ASSERT (UserVariableNode != NULL);
   UserVariableNode->Signature = USER_VARIABLE_NODE_SIGNATURE;
   CopyGuid (&UserVariableNode->Guid, Guid);
@@ -204,14 +204,14 @@ CreateUserVariableNode (
   // Initialize 128 * sizeof (CHAR16) variable name size.
   //
   MaxVarNameSize = 128 * sizeof (CHAR16);
-  VarName = AllocateZeroPool (MaxVarNameSize);
+  VarName = AllocateZeroPool(MaxVarNameSize);
   ASSERT (VarName != NULL);
 
   //
   // Initialize 0x1000 variable data size.
   //
   MaxDataSize = 0x1000;
-  Data = AllocateZeroPool (MaxDataSize);
+  Data = AllocateZeroPool(MaxDataSize);
   ASSERT (Data != NULL);
 
   Index = 0;
@@ -225,7 +225,7 @@ CreateUserVariableNode (
       Status = gRT->GetNextVariableName (&VarNameSize, VarName, &Guid);
     }
 
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       if (IsUserVariable (VarName, &Guid)) {
         DataSize = MaxDataSize;
         GetVariableStatus = gRT->GetVariable (VarName, &Guid, &Attributes, &DataSize, Data);
@@ -235,7 +235,7 @@ CreateUserVariableNode (
           MaxDataSize = DataSize;
           GetVariableStatus = gRT->GetVariable (VarName, &Guid, &Attributes, &DataSize, Data);
         }
-        ASSERT_EFI_ERROR (GetVariableStatus);
+        ASSERT_EFI_ERROR(GetVariableStatus);
 
         if ((Attributes & EFI_VARIABLE_NON_VOLATILE) != 0) {
           UserVariableNode = FindUserVariableNodeByGuid (&Guid);
@@ -244,10 +244,10 @@ CreateUserVariableNode (
           //
           // Different variables that have same variable GUID share same user variable node.
           //
-          UserVariableNameNode = AllocateZeroPool (sizeof (*UserVariableNameNode));
+          UserVariableNameNode = AllocateZeroPool(sizeof (*UserVariableNameNode));
           ASSERT (UserVariableNameNode != NULL);
           UserVariableNameNode->Signature = USER_VARIABLE_NAME_NODE_SIGNATURE;
-          UserVariableNameNode->Name = AllocateCopyPool (VarNameSize, VarName);
+          UserVariableNameNode->Name = AllocateCopyPool(VarNameSize, VarName);
           UserVariableNameNode->Attributes = Attributes;
           UserVariableNameNode->DataSize = DataSize;
           UserVariableNameNode->Index = Index;
@@ -278,8 +278,8 @@ CreateUserVariableNode (
   ASSERT (mUserVariableCount <= MAX_USER_VARIABLE_COUNT);
   DEBUG ((EFI_D_INFO, "PlatformVarCleanup - User variable count: 0x%04x\n", mUserVariableCount));
 
-  FreePool (VarName);
-  FreePool (Data);
+  FreePool(VarName);
+  FreePool(Data);
 }
 
 /**
@@ -308,14 +308,14 @@ DestroyUserVariableNode (
 
       RemoveEntryList (&UserVariableNameNode->Link);
 
-      FreePool (UserVariableNameNode->Name);
-      FreePool (UserVariableNameNode->PromptString);
-      FreePool (UserVariableNameNode->HelpString);
-      FreePool (UserVariableNameNode);
+      FreePool(UserVariableNameNode->Name);
+      FreePool(UserVariableNameNode->PromptString);
+      FreePool(UserVariableNameNode->HelpString);
+      FreePool(UserVariableNameNode);
     }
 
-    FreePool (UserVariableNode->PromptString);
-    FreePool (UserVariableNode);
+    FreePool(UserVariableNode->PromptString);
+    FreePool(UserVariableNode);
   }
 }
 
@@ -365,21 +365,21 @@ CreateTimeBasedPayload (
   PayloadSize = *DataSize;
 
   DescriptorSize = OFFSET_OF (EFI_VARIABLE_AUTHENTICATION_2, AuthInfo) + OFFSET_OF (WIN_CERTIFICATE_UEFI_GUID, CertData);
-  NewData = (UINT8 *) AllocateZeroPool (DescriptorSize + PayloadSize);
+  NewData = (UINT8 *) AllocateZeroPool(DescriptorSize + PayloadSize);
   if (NewData == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
 
   if ((Payload != NULL) && (PayloadSize != 0)) {
-    CopyMem (NewData + DescriptorSize, Payload, PayloadSize);
+    CopyMem(NewData + DescriptorSize, Payload, PayloadSize);
   }
 
   DescriptorData = (EFI_VARIABLE_AUTHENTICATION_2 *) (NewData);
 
   ZeroMem (&Time, sizeof (EFI_TIME));
   Status = gRT->GetTime (&Time, NULL);
-  if (EFI_ERROR (Status)) {
-    FreePool (NewData);
+  if (EFI_ERROR(Status)) {
+    FreePool(NewData);
     return Status;
   }
   Time.Pad1       = 0;
@@ -387,7 +387,7 @@ CreateTimeBasedPayload (
   Time.TimeZone   = 0;
   Time.Daylight   = 0;
   Time.Pad2       = 0;
-  CopyMem (&DescriptorData->TimeStamp, &Time, sizeof (EFI_TIME));
+  CopyMem(&DescriptorData->TimeStamp, &Time, sizeof (EFI_TIME));
 
   DescriptorData->AuthInfo.Hdr.dwLength         = OFFSET_OF (WIN_CERTIFICATE_UEFI_GUID, CertData);
   DescriptorData->AuthInfo.Hdr.wRevision        = 0x0200;
@@ -395,7 +395,7 @@ CreateTimeBasedPayload (
   CopyGuid (&DescriptorData->AuthInfo.CertType, &gEfiCertPkcs7Guid);
 
   if (Payload != NULL) {
-    FreePool (Payload);
+    FreePool(Payload);
   }
 
   *DataSize = DescriptorSize + PayloadSize;
@@ -451,20 +451,20 @@ CreateCounterBasedPayload (
   DescriptorSize = (OFFSET_OF (EFI_VARIABLE_AUTHENTICATION, AuthInfo)) + \
                    (OFFSET_OF (WIN_CERTIFICATE_UEFI_GUID, CertData)) + \
                    sizeof (EFI_CERT_BLOCK_RSA_2048_SHA256);
-  NewData = (UINT8 *) AllocateZeroPool (DescriptorSize + PayloadSize);
+  NewData = (UINT8 *) AllocateZeroPool(DescriptorSize + PayloadSize);
   if (NewData == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
 
   if ((Payload != NULL) && (PayloadSize != 0)) {
-    CopyMem (NewData + DescriptorSize, Payload, PayloadSize);
+    CopyMem(NewData + DescriptorSize, Payload, PayloadSize);
   }
 
   DescriptorData = (EFI_VARIABLE_AUTHENTICATION *) (NewData);
 
   Status = gBS->GetNextMonotonicCount (&MonotonicCount);
-  if (EFI_ERROR (Status)) {
-    FreePool (NewData);
+  if (EFI_ERROR(Status)) {
+    FreePool(NewData);
     return Status;
   }
   DescriptorData->MonotonicCount = MonotonicCount;
@@ -475,7 +475,7 @@ CreateCounterBasedPayload (
   CopyGuid (&DescriptorData->AuthInfo.CertType, &gEfiCertTypeRsa2048Sha256Guid);
 
   if (Payload != NULL) {
-    FreePool (Payload);
+    FreePool(Payload);
   }
 
   *DataSize = DescriptorSize + PayloadSize;
@@ -520,22 +520,22 @@ DeleteUserVariable (
           DataSize = 0;
           Data = NULL;
           Status = CreateTimeBasedPayload (&DataSize, &Data);
-          if (!EFI_ERROR (Status)) {
+          if (!EFI_ERROR(Status)) {
             Status = gRT->SetVariable (UserVariableNameNode->Name, &UserVariableNode->Guid, UserVariableNameNode->Attributes, DataSize, Data);
-            FreePool (Data);
+            FreePool(Data);
           }
         } else if ((UserVariableNameNode->Attributes & EFI_VARIABLE_AUTHENTICATED_WRITE_ACCESS) != 0) {
           DataSize = 0;
           Data = NULL;
           Status = CreateCounterBasedPayload (&DataSize, &Data);
-          if (!EFI_ERROR (Status)) {
+          if (!EFI_ERROR(Status)) {
             Status = gRT->SetVariable (UserVariableNameNode->Name, &UserVariableNode->Guid, UserVariableNameNode->Attributes, DataSize, Data);
-            FreePool (Data);
+            FreePool(Data);
           }
         } else {
           Status = gRT->SetVariable (UserVariableNameNode->Name, &UserVariableNode->Guid, 0, 0, NULL);
         }
-        if (!EFI_ERROR (Status)) {
+        if (!EFI_ERROR(Status)) {
           UserVariableNameNode->Deleted = TRUE;
         } else {
           DEBUG ((EFI_D_INFO, "PlatformVarCleanup - Delete variable fail: %g:%s\n", &UserVariableNode->Guid, UserVariableNameNode->Name));
@@ -611,11 +611,11 @@ VariableCleanupHiiExtractConfig (
     //
     ConfigRequestHdr = HiiConstructConfigHdr (&mVariableCleanupHiiGuid, mVarStoreName, Private->HiiHandle);
     Size = (StrLen (ConfigRequestHdr) + 32 + 1) * sizeof (CHAR16);
-    ConfigRequest = AllocateZeroPool (Size);
+    ConfigRequest = AllocateZeroPool(Size);
     ASSERT (ConfigRequest != NULL);
     AllocatedRequest = TRUE;
     UnicodeSPrint (ConfigRequest, Size, L"%s&OFFSET=0&WIDTH=%016LX", ConfigRequestHdr, (UINT64)BufferSize);
-    FreePool (ConfigRequestHdr);
+    FreePool(ConfigRequestHdr);
   }
 
   Status = Private->ConfigRouting->BlockToConfig (
@@ -626,13 +626,13 @@ VariableCleanupHiiExtractConfig (
                                      Results,
                                      Progress
                                      );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   //
   // Free the allocated config request string.
   //
   if (AllocatedRequest) {
-    FreePool (ConfigRequest);
+    FreePool(ConfigRequest);
     ConfigRequest = NULL;
   }
   //
@@ -863,7 +863,7 @@ VariableCleanupHiiRouteConfig (
                             &BufferSize,
                             Progress
                             );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   DeleteUserVariable (FALSE, &Private->VariableCleanupData);
   //
@@ -964,13 +964,13 @@ VariableCleanupHiiCallback (
             //
             // Means the SelectAll checkbox is marked to delete all user variables but not press F10 or "Commit Changes and Exit" menu.
             //
-            SetMem (VariableCleanupData->UserVariable, sizeof (VariableCleanupData->UserVariable), TRUE);
+            SetMem(VariableCleanupData->UserVariable, sizeof (VariableCleanupData->UserVariable), TRUE);
             mMarkedUserVariableCount = mUserVariableCount;
           } else {
             //
             // Means the SelectAll checkbox is unmarked.
             //
-            SetMem (VariableCleanupData->UserVariable, sizeof (VariableCleanupData->UserVariable), FALSE);
+            SetMem(VariableCleanupData->UserVariable, sizeof (VariableCleanupData->UserVariable), FALSE);
             mMarkedUserVariableCount = 0;
           }
           break;
@@ -1077,11 +1077,11 @@ PlatformVarCleanup (
       // Locate FormBrowser2 protocol.
       //
       Status = gBS->LocateProtocol (&gEfiFormBrowser2ProtocolGuid, NULL, (VOID **) &FormBrowser2);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         return Status;
       }
 
-      Private = AllocateZeroPool (sizeof (VARIABLE_CLEANUP_HII_PRIVATE_DATA));
+      Private = AllocateZeroPool(sizeof (VARIABLE_CLEANUP_HII_PRIVATE_DATA));
       if (Private == NULL) {
         return EFI_OUT_OF_RESOURCES;
       }
@@ -1096,7 +1096,7 @@ PlatformVarCleanup (
                       NULL,
                       (VOID **) &Private->ConfigRouting
                       );
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         goto Done;
       }
 
@@ -1111,7 +1111,7 @@ PlatformVarCleanup (
                       &Private->ConfigAccess,
                       NULL
                       );
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         goto Done;
       }
 
@@ -1163,7 +1163,7 @@ Done:
     HiiRemovePackages (Private->HiiHandle);
   }
 
-  FreePool (Private);
+  FreePool(Private);
 
   //
   // Destroyed the created user variable nodes
@@ -1241,7 +1241,7 @@ PlatformVarCleanupLibConstructor (
                   &gEfiEndOfDxeEventGroupGuid,
                   &mPlatVarCleanupLibEndOfDxeEvent
                   );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   return EFI_SUCCESS;
 }
@@ -1268,7 +1268,7 @@ PlatformVarCleanupLibDestructor (
   // Close the End of DXE event.
   //
   Status = gBS->CloseEvent (mPlatVarCleanupLibEndOfDxeEvent);
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   return EFI_SUCCESS;
 }

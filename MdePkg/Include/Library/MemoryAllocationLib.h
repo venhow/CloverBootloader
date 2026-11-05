@@ -263,7 +263,7 @@ AllocateReservedPool (
 **/
 VOID *
 EFIAPI
-AllocateZeroPool (
+AllocateZeroPool(
   IN UINTN  AllocationSize
   );
 
@@ -324,7 +324,7 @@ AllocateReservedZeroPool (
 **/
 VOID *
 EFIAPI
-AllocateCopyPool (
+AllocateCopyPool(
   IN UINTN       AllocationSize,
   IN CONST VOID  *Buffer
   );
@@ -478,9 +478,12 @@ ReallocateReservedPool (
   @param  Buffer                Pointer to the buffer to free.
 
 **/
+/*
+ * Jief : One day, I put JCONST. This is wrong !!! You must never free a ptr that's const.
+ */
 VOID
 EFIAPI
-FreePool (
+FreePool(
   IN VOID   *Buffer
   );
 

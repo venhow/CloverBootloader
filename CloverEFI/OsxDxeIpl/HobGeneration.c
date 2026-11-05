@@ -399,9 +399,39 @@ HOB_TEMPLATE  gHobTemplate = {
       EFI_ACPI_DESCRIPTION_GUID
     },
     {
-      {
-        0,
-      },
+      { 0, }, // PM_TMR_BLK
+      0,
+      0,
+      0,
+      0,
+      0,
+      { 0, 0, 0, 0, 0, }, // RESET_REG
+      0,
+      { 0, 0, 0, 0, 0, }, // PM1a_EVT_BLK
+      { 0, 0, 0, 0, 0, }, // PM1b_EVT_BLK
+      { 0, 0, 0, 0, 0, }, // PM1a_CNT_BLK
+      { 0, 0, 0, 0, 0, }, // PM1b_CNT_BLK
+      { 0, 0, 0, 0, 0, }, // PM2_CNT_BLK
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      { 0, 0, 0, 0, 0, }, // GPE0_BLK
+      { 0, 0, 0, 0, 0, }, // GPE1_BLK
+      0,
+      0,
+      0,
+      0,
+      0,
     }
   },
   { // NV Storage FV Resource
@@ -622,8 +652,9 @@ Return:
   // Allocate memory only up to EBDA (EBDA boundry speicifed at EFI_MEMORY_BELOW_1MB_END is not universal!)
   // Bottom of EBDA is usually available by examining 0x40E, which should contain EBDA base address >> 4
   // If value is not sane, we use default value at EFI_MEMORY_BELOW_1MB_END (0x9F800)
-
-  EbdaAddress = LShiftU64((UINT64)(*(UINT16 *)(UINTN)(0x40E)), 4);
+  volatile UINT16 * volatile ebda;
+  ebda = (volatile UINT16 *)(UINTN)(0x40E);
+  EbdaAddress = LShiftU64((UINT64)(*ebda), 4);
   if (EbdaAddress < 0x90000 || EbdaAddress > EFI_MEMORY_BELOW_1MB_END) {
     EbdaAddress = 0x9A000;
   }
@@ -724,7 +755,7 @@ PrepareHobMemoryDescriptor (
   //
   gHob->MemoryDescriptor.MemDesc      = (EFI_MEMORY_DESCRIPTOR *)((UINTN) gHob->MemoryDescriptor.MemDesc & ~EFI_PAGE_MASK);
 
-  CopyMem (gHob->MemoryDescriptor.MemDesc, MemDesc, MemDescCount * sizeof(EFI_MEMORY_DESCRIPTOR));
+  CopyMem(gHob->MemoryDescriptor.MemDesc, MemDesc, MemDescCount * sizeof(EFI_MEMORY_DESCRIPTOR));
 
   return gHob->MemoryDescriptor.MemDesc;
 }
@@ -868,7 +899,7 @@ PrepareHobNvStorage (
     // Efivar.bin doesn't exist
     //  1. Init variable storage header to valid header
     //
-    CopyMem (
+    CopyMem(
       (VOID *) (UINTN) NV_STORAGE_START,
       &VarStoreHeader,
       sizeof (VARIABLE_STORE_HEADER)
@@ -876,7 +907,7 @@ PrepareHobNvStorage (
     //
     //  2. set all bits in variable storage body to 1
     //
-    SetMem (
+    SetMem(
       (VOID *) (UINTN) (NV_STORAGE_START + sizeof (VARIABLE_STORE_HEADER)),
       NV_STORAGE_SIZE - sizeof (VARIABLE_STORE_HEADER),
       0xff
@@ -900,8 +931,8 @@ PrepareHobNvStorage (
   }
   NvStorageFvbHeader.Checksum = (UINT16) (0x10000 - Checksum);
   StorageFvbBase = (EFI_PHYSICAL_ADDRESS)(((UINTN)NvStorageTop - NV_STORAGE_FVB_SIZE - NV_FTW_FVB_SIZE) & ~EFI_PAGE_MASK);
-  CopyMem ((VOID *) (UINTN) StorageFvbBase, &NvStorageFvbHeader, sizeof (EFI_FIRMWARE_VOLUME_HEADER));
-  CopyMem (
+  CopyMem((VOID *) (UINTN) StorageFvbBase, &NvStorageFvbHeader, sizeof (EFI_FIRMWARE_VOLUME_HEADER));
+  CopyMem(
     (VOID *) (UINTN) (StorageFvbBase + sizeof (EFI_FIRMWARE_VOLUME_HEADER)),
     &BlockMapEntryEnd,
     sizeof (EFI_FV_BLOCK_MAP_ENTRY)
@@ -910,7 +941,7 @@ PrepareHobNvStorage (
   //
   //  2. Relocate variable data
   //
-  CopyMem (
+  CopyMem(
     (VOID *) (UINTN) (StorageFvbBase + EFI_RUNTIME_UPDATABLE_FV_HEADER_LENGTH),
     (VOID *) (UINTN) NV_STORAGE_START,
     NV_STORAGE_SIZE
@@ -919,7 +950,7 @@ PrepareHobNvStorage (
   //
   //  3. Set the remaining memory to 0xff
   //
-  SetMem (
+  SetMem(
     (VOID *) (UINTN) (StorageFvbBase + EFI_RUNTIME_UPDATABLE_FV_HEADER_LENGTH + NV_STORAGE_SIZE),
     NV_STORAGE_FVB_SIZE - NV_STORAGE_SIZE - EFI_RUNTIME_UPDATABLE_FV_HEADER_LENGTH,
     0xff
@@ -966,7 +997,7 @@ PrepareHobPhit (
   gHob->Phit.EfiFreeMemoryTop    = (EFI_PHYSICAL_ADDRESS)(UINTN)FreeMemoryTop;
   gHob->Phit.EfiFreeMemoryBottom = gHob->Phit.EfiMemoryBottom + sizeof(HOB_TEMPLATE);
 
-  CopyMem ((VOID *)(UINTN)gHob->Phit.EfiMemoryBottom, gHob, sizeof(HOB_TEMPLATE));
+  CopyMem((VOID *)(UINTN)gHob->Phit.EfiMemoryBottom, gHob, sizeof(HOB_TEMPLATE));
   gHob = (HOB_TEMPLATE *)(UINTN)gHob->Phit.EfiMemoryBottom;
 
   gHob->Phit.EfiEndOfHobList = (EFI_PHYSICAL_ADDRESS)(UINTN)&gHob->EndOfHobList;

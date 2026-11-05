@@ -15,7 +15,8 @@
 //#include <Framework/FirmwareVolumeImageFormat.h>
 #include <Protocol/FirmwareVolume.h>
 
-EFI_HANDLE              mHandle = NULL;
+
+EFI_HANDLE              mHandle2 = NULL;
 
 typedef struct {
     EFI_GUID Guid;
@@ -323,7 +324,7 @@ FvReadSection (
     *BufferSize = sizeof(PointerImage1x);
     Status = gBS->AllocatePool(EfiBootServicesData, *BufferSize, (VOID **)Buffer);
     if (!EFI_ERROR(Status)) {
-      gBS->CopyMem(*Buffer, &PointerImage1x, *BufferSize);
+      CopyMem(*Buffer, &PointerImage1x, *BufferSize);
     }
     *AuthenticationStatus = 0;
     return Status;
@@ -331,7 +332,7 @@ FvReadSection (
     *BufferSize = sizeof(PointerImage2x);
     Status = gBS->AllocatePool(EfiBootServicesData, *BufferSize, (VOID **)Buffer);
     if (!EFI_ERROR(Status)) {
-      gBS->CopyMem(*Buffer, &PointerImage2x, *BufferSize);
+      CopyMem(*Buffer, &PointerImage2x, *BufferSize);
     }
     *AuthenticationStatus = 0;
     return Status;
@@ -339,7 +340,7 @@ FvReadSection (
     *BufferSize = sizeof(GuidList);
     Status = gBS->AllocatePool(EfiBootServicesData, *BufferSize, (VOID **)Buffer);
     if (!EFI_ERROR(Status)) {
-      gBS->CopyMem(*Buffer, &GuidList, *BufferSize);
+      CopyMem(*Buffer, &GuidList, *BufferSize);
     }
     *AuthenticationStatus = 0;
     return Status;
@@ -404,9 +405,9 @@ FVEntrypoint (IN EFI_HANDLE           ImageHandle,
   
   Status = gBS->LocateProtocol (&gEfiFirmwareVolumeProtocolGuid, NULL, (VOID **)&ExistingFirmwareVolume);
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     Status = gBS->InstallMultipleProtocolInterfaces (
-                                                     &mHandle,
+                                                     &mHandle2,
                                                      &gEfiFirmwareVolumeProtocolGuid,
                                                      &FirmwareVolume,
                                                      NULL

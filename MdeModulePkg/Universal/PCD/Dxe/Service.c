@@ -162,13 +162,13 @@ GetPcdName (
     //
     // Only need to get the TokenSpaceCName.
     //
-    Name = AllocateCopyPool (AsciiStrSize (TokenSpaceName), TokenSpaceName);
+    Name = AllocateCopyPool(AsciiStrSize (TokenSpaceName), TokenSpaceName);
   } else {
     //
     // Need to get the full PCD name.
     //
     NameSize = AsciiStrSize (TokenSpaceName) + AsciiStrSize (PcdName);
-    Name = AllocateZeroPool (NameSize);
+    Name = AllocateZeroPool(NameSize);
     ASSERT (Name != NULL);
     //
     // Catenate TokenSpaceCName and PcdCName with a '.' to form the full PCD name.
@@ -477,9 +477,9 @@ GetWorker (
           // to the default value buffer in the PCD Database.
           // So that we can free the Data allocated in GetHiiVariable.
           //
-          CopyMem (VaraiableDefaultBuffer, Data + VariableHead->Offset, GetSize);
+          CopyMem(VaraiableDefaultBuffer, Data + VariableHead->Offset, GetSize);
         }
-        FreePool (Data);
+        FreePool(Data);
       }
       RetPtr = (VOID *) VaraiableDefaultBuffer;
       break;
@@ -611,7 +611,7 @@ DxeUnRegisterCallBackWorker (
       // the Link List and return EFI_SUCCESS.
       //
       RemoveEntryList (ListNode);
-      FreePool (FnTableEntry);
+      FreePool(FnTableEntry);
 
       return EFI_SUCCESS;
     }
@@ -743,7 +743,7 @@ LocateExPcdBinary (
              (VOID **) &mDxePcdDbBinary,
              &mDxePcdDbSize
              );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   //
   // Check the first bytes (Header Signature Guid) and build version.
@@ -856,9 +856,9 @@ BuildPcdDxeDataBase (
   mPcdDatabase.DxeDb = LocateExPcdBinary ();
   ASSERT(mPcdDatabase.DxeDb != NULL);
   PcdDxeDbLen = mPcdDatabase.DxeDb->Length + mPcdDatabase.DxeDb->UninitDataBaseSize;
-  PcdDxeDb = AllocateZeroPool (PcdDxeDbLen);
+  PcdDxeDb = AllocateZeroPool(PcdDxeDbLen);
   ASSERT (PcdDxeDb != NULL);
-  CopyMem (PcdDxeDb, mPcdDatabase.DxeDb, mPcdDatabase.DxeDb->Length);
+  CopyMem(PcdDxeDb, mPcdDatabase.DxeDb, mPcdDatabase.DxeDb->Length);
   mPcdDatabase.DxeDb = PcdDxeDb;
 
   GuidHob = GetFirstGuidHob (&gPcdDataBaseHobGuid);
@@ -890,11 +890,11 @@ BuildPcdDxeDataBase (
     //
     if (mPcdDatabase.PeiDb->SystemSkuId != 0) {
       Status = UpdatePcdDatabase (mPcdDatabase.PeiDb->SystemSkuId, FALSE);
-      ASSERT_EFI_ERROR (Status);
+      ASSERT_EFI_ERROR(Status);
     }
     mPcdDatabase.DxeDb->SystemSkuId = mPcdDatabase.PeiDb->SystemSkuId;
   } else {
-    mPcdDatabase.PeiDb = AllocateZeroPool (sizeof (PEI_PCD_DATABASE));
+    mPcdDatabase.PeiDb = AllocateZeroPool(sizeof (PEI_PCD_DATABASE));
     ASSERT(mPcdDatabase.PeiDb != NULL);
   }
 
@@ -923,7 +923,7 @@ BuildPcdDxeDataBase (
   //
   // Initialized the Callback Function Table
   //
-  mCallbackFnTable = AllocateZeroPool (mPcdTotalTokenCount * sizeof (LIST_ENTRY));
+  mCallbackFnTable = AllocateZeroPool(mPcdTotalTokenCount * sizeof (LIST_ENTRY));
   ASSERT(mCallbackFnTable != NULL);
 
   //
@@ -1188,7 +1188,7 @@ SetWorker (
 
     case PCD_TYPE_STRING:
       if (SetPtrTypeSize (TmpTokenNumber, Size)) {
-        CopyMem (StringTable + *((STRING_HEAD *)InternalData), Data, *Size);
+        CopyMem(StringTable + *((STRING_HEAD *)InternalData), Data, *Size);
         Status = EFI_SUCCESS;
       } else {
         Status = EFI_INVALID_PARAMETER;
@@ -1222,7 +1222,7 @@ SetWorker (
     case PCD_TYPE_DATA:
       if (PtrType) {
         if (SetPtrTypeSize (TmpTokenNumber, Size)) {
-          CopyMem (InternalData, Data, *Size);
+          CopyMem(InternalData, Data, *Size);
           Status = EFI_SUCCESS;
         } else {
           Status = EFI_INVALID_PARAMETER;
@@ -1416,7 +1416,7 @@ GetVariableSizeAndDataFromHiiPcd (
           } else {
             VaraiableDefaultBuffer = (UINT8 *) Database + VariableHead->DefaultValueOffset;
           }
-          CopyMem ((UINT8 *) VariableData + VariableHead->Offset, VaraiableDefaultBuffer, PcdDataSize);
+          CopyMem((UINT8 *) VariableData + VariableHead->Offset, VaraiableDefaultBuffer, PcdDataSize);
         }
       }
     }
@@ -1489,9 +1489,9 @@ SetHiiVariable (
       Buffer
       );
 
-    ASSERT_EFI_ERROR (Status);
+    ASSERT_EFI_ERROR(Status);
 
-    CopyMem ((UINT8 *)Buffer + Offset, Data, DataSize);
+    CopyMem((UINT8 *)Buffer + Offset, Data, DataSize);
 
     if (SetAttributes == 0) {
       SetAttributes = Attribute;
@@ -1505,7 +1505,7 @@ SetHiiVariable (
               Buffer
               );
 
-    FreePool (Buffer);
+    FreePool(Buffer);
     return Status;
   } else if (Status == EFI_NOT_FOUND) {
     //
@@ -1516,14 +1516,14 @@ SetHiiVariable (
     // Get size, allocate buffer and get data.
     //
     GetVariableSizeAndDataFromHiiPcd (VariableGuid, VariableName, &Size, NULL);
-    Buffer = AllocateZeroPool (Size);
+    Buffer = AllocateZeroPool(Size);
     ASSERT (Buffer != NULL);
     GetVariableSizeAndDataFromHiiPcd (VariableGuid, VariableName, &Size, Buffer);
 
     //
     // Update buffer.
     //
-    CopyMem ((UINT8 *)Buffer + Offset, Data, DataSize);
+    CopyMem((UINT8 *)Buffer + Offset, Data, DataSize);
 
     if (SetAttributes == 0) {
       SetAttributes = EFI_VARIABLE_BOOTSERVICE_ACCESS | EFI_VARIABLE_RUNTIME_ACCESS | EFI_VARIABLE_NON_VOLATILE;
@@ -1537,7 +1537,7 @@ SetHiiVariable (
               Buffer
               );
 
-    FreePool (Buffer);
+    FreePool(Buffer);
     return Status;
   }
 
@@ -1868,7 +1868,7 @@ VariableLockDynamicHiiPcd (
         Guid = GuidTable + VariableHead->GuidTableIndex;
         Name = (UINT16*) (StringTable + VariableHead->StringIndex);
         Status = VariableLock->RequestToLock (VariableLock, Name, Guid);
-        ASSERT_EFI_ERROR (Status);
+        ASSERT_EFI_ERROR(Status);
       }
     }
   }
@@ -1893,7 +1893,7 @@ VariableLockCallBack (
   EDKII_VARIABLE_LOCK_PROTOCOL  *VariableLock;
 
   Status = gBS->LocateProtocol (&gEdkiiVariableLockProtocolGuid, NULL, (VOID **) &VariableLock);
-  if (!EFI_ERROR (Status)) {
+  if (!EFI_ERROR(Status)) {
     VariableLockDynamicHiiPcd (TRUE, VariableLock);
     VariableLockDynamicHiiPcd (FALSE, VariableLock);
   }

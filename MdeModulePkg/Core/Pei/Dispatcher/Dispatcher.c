@@ -66,7 +66,7 @@ DiscoverPeimsAndOrderWithApriori (
   FileHandle = NULL;
   do {
     Status = FvPpi->FindFileByType (FvPpi, PEI_CORE_INTERNAL_FFS_FILE_DISPATCH_TYPE, CoreFileHandle->FvHandle, &FileHandle);
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       if (PeimCount >= Private->TempPeimCount) {
         //
         // Run out of room, grow the buffer.
@@ -74,7 +74,7 @@ DiscoverPeimsAndOrderWithApriori (
         TempFileHandles = AllocatePool (
                             sizeof (EFI_PEI_FILE_HANDLE) * (Private->TempPeimCount + TEMP_FILE_GROWTH_STEP));
         ASSERT (TempFileHandles != NULL);
-        CopyMem (
+        CopyMem(
           TempFileHandles,
           Private->TempFileHandles,
           sizeof (EFI_PEI_FILE_HANDLE) * Private->TempPeimCount
@@ -83,7 +83,7 @@ DiscoverPeimsAndOrderWithApriori (
         TempFileGuid = AllocatePool (
                          sizeof (EFI_GUID) * (Private->TempPeimCount + TEMP_FILE_GROWTH_STEP));
         ASSERT (TempFileGuid != NULL);
-        CopyMem (
+        CopyMem(
           TempFileGuid,
           Private->TempFileGuid,
           sizeof (EFI_GUID) * Private->TempPeimCount
@@ -94,7 +94,7 @@ DiscoverPeimsAndOrderWithApriori (
 
       TempFileHandles[PeimCount++] = FileHandle;
     }
-  } while (!EFI_ERROR (Status));
+  } while (!EFI_ERROR(Status));
 
   DEBUG ((
     DEBUG_INFO,
@@ -116,9 +116,9 @@ DiscoverPeimsAndOrderWithApriori (
   // Record PeimCount, allocate buffer for PeimState and FvFileHandles.
   //
   CoreFileHandle->PeimCount = PeimCount;
-  CoreFileHandle->PeimState = AllocateZeroPool (sizeof (UINT8) * PeimCount);
+  CoreFileHandle->PeimState = AllocateZeroPool(sizeof (UINT8) * PeimCount);
   ASSERT (CoreFileHandle->PeimState != NULL);
-  CoreFileHandle->FvFileHandles = AllocateZeroPool (sizeof (EFI_PEI_FILE_HANDLE) * PeimCount);
+  CoreFileHandle->FvFileHandles = AllocateZeroPool(sizeof (EFI_PEI_FILE_HANDLE) * PeimCount);
   ASSERT (CoreFileHandle->FvFileHandles != NULL);
 
   //
@@ -131,12 +131,12 @@ DiscoverPeimsAndOrderWithApriori (
     // Read the Apriori file
     //
     Status = FvPpi->FindSectionByType (FvPpi, EFI_SECTION_RAW, AprioriFileHandle, (VOID **) &Apriori);
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       //
       // Calculate the number of PEIMs in the Apriori file
       //
       Status = FvPpi->GetFileInfo (FvPpi, AprioriFileHandle, &FileInfo);
-      ASSERT_EFI_ERROR (Status);
+      ASSERT_EFI_ERROR(Status);
       Private->AprioriCount = FileInfo.BufferSize;
       if (IS_SECTION2 (FileInfo.Buffer)) {
         Private->AprioriCount -= sizeof (EFI_COMMON_SECTION_HEADER2);
@@ -151,8 +151,8 @@ DiscoverPeimsAndOrderWithApriori (
         // quickly from file name to file handle
         //
         Status = FvPpi->GetFileInfo (FvPpi, TempFileHandles[Index], &FileInfo);
-        ASSERT_EFI_ERROR (Status);
-        CopyMem (&TempFileGuid[Index], &FileInfo.FileName, sizeof(EFI_GUID));
+        ASSERT_EFI_ERROR(Status);
+        CopyMem(&TempFileGuid[Index], &FileInfo.FileName, sizeof(EFI_GUID));
       }
 
       //
@@ -190,7 +190,7 @@ DiscoverPeimsAndOrderWithApriori (
       ASSERT (Index == PeimCount);
     }
   } else {
-    CopyMem (CoreFileHandle->FvFileHandles, TempFileHandles, sizeof (EFI_PEI_FILE_HANDLE) * PeimCount);
+    CopyMem(CoreFileHandle->FvFileHandles, TempFileHandles, sizeof (EFI_PEI_FILE_HANDLE) * PeimCount);
   }
 
   //
@@ -790,7 +790,7 @@ PeiCheckAndSwitchStack (
                NULL,
                (VOID**)&TemporaryRamSupportPpi
                );
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       //
       // Heap Offset
       //
@@ -878,12 +878,12 @@ PeiCheckAndSwitchStack (
       //
       HeapTemporaryRamSize = (UINTN) (Private->HobList.HandoffInformationTable->EfiFreeMemoryBottom - Private->HobList.HandoffInformationTable->EfiMemoryBottom);
       ASSERT (BaseOfNewHeap + HeapTemporaryRamSize <= Private->FreePhysicalMemoryTop);
-      CopyMem ((UINT8 *) (UINTN) BaseOfNewHeap, PeiTemporaryRamBase, HeapTemporaryRamSize);
+      CopyMem((UINT8 *) (UINTN) BaseOfNewHeap, PeiTemporaryRamBase, HeapTemporaryRamSize);
 
       //
       // Migrate Stack
       //
-      CopyMem ((UINT8 *) (UINTN) (TopOfNewStack - TemporaryStackSize), TemporaryStackBase, TemporaryStackSize);
+      CopyMem((UINT8 *) (UINTN) (TopOfNewStack - TemporaryStackSize), TemporaryStackBase, TemporaryStackSize);
 
       //
       // Copy Hole Range Data
@@ -928,7 +928,7 @@ PeiCheckAndSwitchStack (
               Private->HoleData[Index].OffsetPositive = FALSE;
               Private->HoleData[Index].Offset = (UINTN) (Private->HoleData[Index].Base - HoleMemBase);
             }
-            CopyMem ((VOID *) (UINTN) HoleMemBase, (VOID *) (UINTN) Private->HoleData[Index].Base, Private->HoleData[Index].Size);
+            CopyMem((VOID *) (UINTN) HoleMemBase, (VOID *) (UINTN) Private->HoleData[Index].Base, Private->HoleData[Index].Size);
             HoleMemBase = HoleMemBase + Private->HoleData[Index].Size;
           }
         }
@@ -1094,7 +1094,7 @@ PeiDispatcher (
             Private->PeimNeedingDispatch = TRUE;
           } else {
             Status = CoreFvHandle->FvPpi->GetFileInfo (CoreFvHandle->FvPpi, PeimFileHandle, &FvFileInfo);
-            ASSERT_EFI_ERROR (Status);
+            ASSERT_EFI_ERROR(Status);
             if (FvFileInfo.FileType == EFI_FV_FILETYPE_FIRMWARE_VOLUME_IMAGE) {
               //
               // For Fv type file, Produce new FvInfo PPI and FV hob
@@ -1309,7 +1309,7 @@ DepexSatisfied (
   EFI_FV_FILE_INFO     FileInfo;
 
   Status = PeiServicesFfsGetFileInfo (FileHandle, &FileInfo);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG ((DEBUG_DISPATCH, "Evaluate PEI DEPEX for FFS(Unknown)\n"));
   } else {
     DEBUG ((DEBUG_DISPATCH, "Evaluate PEI DEPEX for FFS(%g)\n", &FileInfo.FileName));
@@ -1332,7 +1332,7 @@ DepexSatisfied (
               (VOID **)&DepexData
               );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     //
     // If there is no DEPEX, assume the module can be executed
     //

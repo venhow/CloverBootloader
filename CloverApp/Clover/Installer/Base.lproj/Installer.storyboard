@@ -13,9 +13,9 @@
                     <window key="window" title="Clover Installer" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" titlebarAppearsTransparent="YES" id="ysg-ml-Ysp">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-                        <rect key="contentRect" x="229" y="240" width="680" height="470"/>
+                        <rect key="contentRect" x="229" y="240" width="680" height="405"/>
                         <rect key="screenRect" x="0.0" y="0.0" width="1600" height="877"/>
-                        <value key="minSize" type="size" width="680" height="470"/>
+                        <value key="minSize" type="size" width="680" height="405"/>
                         <connections>
                             <outlet property="delegate" destination="3bA-Bs-KDY" id="O5J-Xe-Rhf"/>
                         </connections>
@@ -37,8 +37,8 @@
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <button focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="cd4-BN-85D">
-                                <rect key="frame" x="12" y="176" width="80" height="18"/>
-                                <buttonCell key="cell" type="check" title="CloverEFI" bezelStyle="regularSquare" imagePosition="left" focusRingType="none" inset="2" id="cO6-AP-j0b">
+                                <rect key="frame" x="12" y="165" width="53" height="18"/>
+                                <buttonCell key="cell" type="check" title="BIOS" bezelStyle="regularSquare" imagePosition="left" focusRingType="none" inset="2" id="cO6-AP-j0b">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -78,7 +78,7 @@
                                 <rect key="frame" x="12" y="107" width="88" height="25"/>
                                 <popUpButtonCell key="cell" type="push" title="boot0af" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" focusRingType="none" imageScaling="proportionallyDown" inset="2" selectedItem="v1t-y6-CSK" id="7zo-zX-Jl9">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="menu"/>
+                                    <font key="font" metaFont="system"/>
                                     <menu key="menu" id="D8O-Dy-RtK">
                                         <items>
                                             <menuItem title="boot0af" state="on" id="v1t-y6-CSK"/>
@@ -86,6 +86,9 @@
                                         </items>
                                     </menu>
                                 </popUpButtonCell>
+                                <connections>
+                                    <action selector="boot0Selected:" target="nXe-XS-4J0" id="XcJ-8a-kjQ"/>
+                                </connections>
                             </popUpButton>
                             <button focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="6Mf-nc-9Pn">
                                 <rect key="frame" x="12" y="141" width="87" height="18"/>
@@ -97,14 +100,14 @@
                                     <action selector="bootSectPressed:" target="nXe-XS-4J0" id="LX5-eS-eGO"/>
                                 </connections>
                             </button>
-                            <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="24J-OS-i5T">
-                                <rect key="frame" x="14" y="209" width="156" height="184"/>
-                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" image="NSApplicationIcon" id="Bef-n1-kQ3"/>
+                            <imageView focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="24J-OS-i5T">
+                                <rect key="frame" x="14" y="196" width="156" height="197"/>
+                                <imageCell key="cell" refusesFirstResponder="YES" focusRingType="none" alignment="left" imageScaling="proportionallyDown" image="Bootmanager" id="Bef-n1-kQ3"/>
                             </imageView>
                             <textField focusRingType="none" verticalHuggingPriority="750" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ccr-sG-KVJ">
                                 <rect key="frame" x="81" y="87" width="91" height="15"/>
                                 <textFieldCell key="cell" lineBreakMode="clipping" allowsUndo="NO" focusRingType="none" alignment="left" title="boot1" id="DSK-8g-GVR">
-                                    <font key="font" metaFont="label" size="13"/>
+                                    <font key="font" metaFont="system"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
@@ -113,7 +116,7 @@
                                 <rect key="frame" x="99" y="57" width="74" height="25"/>
                                 <popUpButtonCell key="cell" type="push" title="boot6" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" focusRingType="none" imageScaling="proportionallyDown" inset="2" selectedItem="v2m-Hs-R3O" id="VwT-y2-7ny">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="menu"/>
+                                    <font key="font" metaFont="system"/>
                                     <menu key="menu" id="keQ-8o-AiU">
                                         <items>
                                             <menuItem title="boot6" state="on" id="v2m-Hs-R3O"/>
@@ -121,6 +124,9 @@
                                         </items>
                                     </menu>
                                 </popUpButtonCell>
+                                <connections>
+                                    <action selector="boot2Selected:" target="nXe-XS-4J0" id="38A-PO-XZf"/>
+                                </connections>
                             </popUpButton>
                             <imageView focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="8sv-QN-08c">
                                 <rect key="frame" x="57" y="86" width="18" height="15"/>
@@ -143,7 +149,7 @@
                                 <rect key="frame" x="190" y="17" width="373" height="24"/>
                                 <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" focusRingType="none" imageScaling="proportionallyDown" inset="2" selectedItem="0Jk-9o-xwr" id="O9J-Cw-n1E">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="menu"/>
+                                    <font key="font" metaFont="system"/>
                                     <menu key="menu" id="7w6-P9-EUu">
                                         <items>
                                             <menuItem title="Item 1" state="on" id="0Jk-9o-xwr"/>
@@ -178,7 +184,7 @@
                                     <action selector="installPressed:" target="nXe-XS-4J0" id="EWS-5P-8Z5"/>
                                 </connections>
                             </button>
-                            <scrollView focusRingType="none" borderType="line" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" translatesAutoresizingMaskIntoConstraints="NO" id="79D-mq-1Q0">
+                            <scrollView focusRingType="none" borderType="line" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" translatesAutoresizingMaskIntoConstraints="NO" id="79D-mq-1Q0">
                                 <rect key="frame" x="192" y="45" width="468" height="97"/>
                                 <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="8sm-KK-eZG">
                                     <rect key="frame" x="1" y="1" width="466" height="95"/>
@@ -196,11 +202,11 @@
                                     </subviews>
                                 </clipView>
                                 <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="Oja-xm-T1n">
-                                    <rect key="frame" x="-100" y="-100" width="225" height="15"/>
+                                    <rect key="frame" x="-100" y="-100" width="466" height="15"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                                 <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="Twd-gm-jkD">
-                                    <rect key="frame" x="-100" y="-100" width="15" height="115"/>
+                                    <rect key="frame" x="452" y="1" width="15" height="95"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                             </scrollView>
@@ -216,7 +222,7 @@
                             <constraint firstItem="PD6-mW-VtD" firstAttribute="bottom" secondItem="5aW-1v-mN2" secondAttribute="bottom" id="4bA-ef-7cG"/>
                             <constraint firstItem="8sv-QN-08c" firstAttribute="top" secondItem="AVt-3S-p3r" secondAttribute="bottom" constant="9" id="5X5-m7-xEF"/>
                             <constraint firstItem="btq-Z5-aMA" firstAttribute="top" secondItem="Ccr-sG-KVJ" secondAttribute="bottom" constant="9" id="79z-lG-snY"/>
-                            <constraint firstItem="PD6-mW-VtD" firstAttribute="leading" secondItem="24J-OS-i5T" secondAttribute="trailing" constant="8" symbolic="YES" id="8Ov-BD-gVo"/>
+                            <constraint firstItem="PD6-mW-VtD" firstAttribute="leading" secondItem="24J-OS-i5T" secondAttribute="trailing" constant="8" id="8Ov-BD-gVo"/>
                             <constraint firstItem="uj1-kY-SjZ" firstAttribute="leading" secondItem="5aW-1v-mN2" secondAttribute="trailing" constant="36" id="9P5-DX-Drj"/>
                             <constraint firstItem="AVt-3S-p3r" firstAttribute="trailing" secondItem="btq-Z5-aMA" secondAttribute="trailing" id="A7i-ZU-d4V"/>
                             <constraint firstItem="6Mf-nc-9Pn" firstAttribute="trailing" secondItem="AVt-3S-p3r" secondAttribute="trailing" id="AR9-WP-pmb"/>
@@ -247,8 +253,8 @@
                             <constraint firstItem="Fda-eU-aq8" firstAttribute="leading" secondItem="79D-mq-1Q0" secondAttribute="leading" id="frU-vg-Amx"/>
                             <constraint firstItem="79D-mq-1Q0" firstAttribute="top" secondItem="Fda-eU-aq8" secondAttribute="bottom" constant="8" symbolic="YES" id="jDU-Iw-tL2"/>
                             <constraint firstAttribute="trailing" secondItem="Fda-eU-aq8" secondAttribute="trailing" constant="20" symbolic="YES" id="kCT-UQ-jdd"/>
-                            <constraint firstItem="6Mf-nc-9Pn" firstAttribute="top" secondItem="cd4-BN-85D" secondAttribute="bottom" constant="21" id="kZC-qu-hBO"/>
-                            <constraint firstItem="cd4-BN-85D" firstAttribute="top" secondItem="24J-OS-i5T" secondAttribute="bottom" constant="17" id="lNu-Mo-Mge"/>
+                            <constraint firstItem="6Mf-nc-9Pn" firstAttribute="top" secondItem="cd4-BN-85D" secondAttribute="bottom" constant="10" id="kZC-qu-hBO"/>
+                            <constraint firstItem="cd4-BN-85D" firstAttribute="top" secondItem="24J-OS-i5T" secondAttribute="bottom" constant="15" id="lNu-Mo-Mge"/>
                             <constraint firstItem="PD6-mW-VtD" firstAttribute="leading" secondItem="YVM-Rq-d7o" secondAttribute="trailing" constant="45" id="ora-L3-TSy"/>
                             <constraint firstItem="cd4-BN-85D" firstAttribute="leading" secondItem="6Mf-nc-9Pn" secondAttribute="leading" id="pYV-pQ-Bj6"/>
                             <constraint firstItem="8sv-QN-08c" firstAttribute="leading" secondItem="MgP-28-KzA" secondAttribute="leading" constant="57" id="q71-1M-ERT"/>
@@ -281,7 +287,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="NSApplicationIcon" width="32" height="32"/>
+        <image name="Bootmanager" width="156" height="197"/>
         <image name="NSGoRightTemplate" width="9" height="12"/>
     </resources>
 </document>

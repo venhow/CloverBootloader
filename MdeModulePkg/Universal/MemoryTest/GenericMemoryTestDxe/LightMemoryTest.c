@@ -127,7 +127,7 @@ DestroyLinkList (
   while (Link != &Private->NonTestedMemRanList) {
     RemoveEntryList (Link);
     NontestedRange = NONTESTED_MEMORY_RANGE_FROM_LINK (Link);
-    gBS->FreePool (NontestedRange);
+    gBS->FreePool(NontestedRange);
     Link = Private->NonTestedMemRanList.BackLink;;
   }
 }
@@ -154,7 +154,7 @@ ConvertToTestedMemory (
                   BaseAddress,
                   Length
                   );
-  if (!EFI_ERROR (Status)) {
+  if (!EFI_ERROR(Status)) {
     Status = gDS->AddMemorySpace (
                     ((Capabilities & EFI_MEMORY_MORE_RELIABLE) == EFI_MEMORY_MORE_RELIABLE) ?
                     EfiGcdMemoryTypeMoreReliable : EfiGcdMemoryTypeSystemMemory,
@@ -232,7 +232,7 @@ DirectRangeTest (
   // Verify the memory range
   //
   Status = VerifyMemory (Private, StartAddress, Length);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
   //
@@ -339,7 +339,7 @@ WriteMemory (
   }
 
   while (Address < (Start + Size)) {
-    CopyMem ((VOID *) (UINTN) Address, Private->MonoPattern, Private->MonoTestSize);
+    CopyMem((VOID *) (UINTN) Address, Private->MonoPattern, Private->MonoTestSize);
     Address += Private->CoverageSpan;
   }
   //
@@ -404,7 +404,7 @@ VerifyMemory (
       //
       // Report uncorrectable errors
       //
-      ExtendedErrorData = AllocateZeroPool (sizeof (EFI_MEMORY_EXTENDED_ERROR_DATA));
+      ExtendedErrorData = AllocateZeroPool(sizeof (EFI_MEMORY_EXTENDED_ERROR_DATA));
       if (ExtendedErrorData == NULL) {
         return EFI_OUT_OF_RESOURCES;
       }
@@ -489,7 +489,7 @@ InitializeMemoryTest (
                   NULL,
                   (VOID **) &Cpu
                   );
-  if (!EFI_ERROR (Status)) {
+  if (!EFI_ERROR(Status)) {
     Private->Cpu = Cpu;
   }
   //
@@ -585,7 +585,7 @@ GenPerformMemoryTest (
       //
       // Report status code of every memory range
       //
-      RangeData                         = AllocateZeroPool (sizeof (EFI_MEMORY_RANGE_EXTENDED_DATA));
+      RangeData                         = AllocateZeroPool(sizeof (EFI_MEMORY_RANGE_EXTENDED_DATA));
       if (RangeData == NULL) {
         return EFI_OUT_OF_RESOURCES;
       }
@@ -611,7 +611,7 @@ GenPerformMemoryTest (
       WriteMemory (Private, mCurrentAddress, BlockBoundary);
 
       Status = VerifyMemory (Private, mCurrentAddress, BlockBoundary);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         //
         // If perform here, means there is mis-compare error, and no agent can
         // handle it, so we return to BDS EFI_DEVICE_ERROR.
@@ -680,7 +680,7 @@ GenMemoryTestFinished (
   // Perform Data and Address line test
   //
   Status = PerformAddressDataLineTest (Private);
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   //
   // Add the non tested memory range to system memory map through GCD service
@@ -739,7 +739,7 @@ GenCompatibleRangeTest (
                     CurrentBase,
                     &Descriptor
                     );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
 
@@ -757,7 +757,7 @@ GenCompatibleRangeTest (
                  CurrentLength,
                  Descriptor.Capabilities
                  );
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         return Status;
       }
     }

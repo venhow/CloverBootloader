@@ -165,7 +165,7 @@ InitializeBootManager (
                   &gBootManagerPrivate.ConfigAccess,
                   NULL
                   );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   //
   // Publish our HII data
@@ -330,7 +330,7 @@ CallBootManager (
     TempStr = FileDevicePathToStr (Option->DevicePath);
     TempSize = StrSize (TempStr);
     HelpSize = TempSize + StrSize (L"Device Path : ");
-    HelpString = AllocateZeroPool (HelpSize);
+    HelpString = AllocateZeroPool(HelpSize);
  //   ASSERT (HelpString != NULL);
    if (!HelpString) {
      return;
@@ -399,7 +399,7 @@ CallBootManager (
   //
   Status = BdsLibBootViaBootOption (gOption, gOption->DevicePath, &ExitDataSize, &ExitData);
 
-  if (!EFI_ERROR (Status)) {
+  if (!EFI_ERROR(Status)) {
     gOption->StatusString = GetStringById (STRING_TOKEN (STR_BOOT_SUCCEEDED));
     PlatformBdsBootSuccess (gOption);
   } else {

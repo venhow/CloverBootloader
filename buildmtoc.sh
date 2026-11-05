@@ -3,11 +3,21 @@
 # Script for building MTOC
 #
 
+if [ -z "$WORKSPACE" ]
+then
+  echo WORKSPACE must be defined to Clover root path
+  export WORKSPACE=`pwd`
+fi
+
 # Ctools source version
 # here we can change source versions of tools
 #
-export CCTOOLS_VERSION=${CCTOOLS_VERSION:-921}
-
+OSXVER="`/usr/bin/sw_vers -productVersion | cut -d '.' -f1,2`"
+if [[ ${OSXVER} < 10.15 ]]; then
+	export CCTOOLS_VERSION=${CCTOOLS_VERSION:-cctools-949.0.1}
+else
+	export CCTOOLS_VERSION=${CCTOOLS_VERSION:-cctools-986}
+fi
 # Change PREFIX if you want mtoc installed on different place
 #
 TOOLCHAIN_DIR=${TOOLCHAIN_DIR:-~/src/opt/local}
@@ -85,14 +95,14 @@ fnDownloadCctools ()
 # Function: Download cctools source
 {
     cd "$DIR_DOWNLOADS"
-    local tarball="cctools-${CCTOOLS_VERSION}.tar.gz"
-    if [[ ! -f "$tarball" ]]; then
-        echo "Status: $tarball not found."
-        curl -f -o download.tmp --remote-name https://opensource.apple.com/tarballs/cctools/$tarball || exit 1
+    local tarball="${CCTOOLS_VERSION}.tar.gz"
+    if [[ ! -f ${DIR_DOWNLOADS}/${CCTOOLS_VERSION}.tar.gz ]]; then
+        echo "Status: ${CCTOOLS_VERSION} not found."
+        curl -k -f -o download.tmp --remote-name https://codeload.github.com/apple-oss-distributions/cctools/tar.gz/refs/tags/${CCTOOLS_VERSION} || exit 1
         mv download.tmp $tarball
     fi
 }
-
+#https://github.com/apple-oss-distributions/cctools/archive/refs/tags/cctools-973.0.1.tar.gz
 
 ### Extract ###
 
@@ -100,12 +110,15 @@ fnDownloadCctools ()
 fnExtract ()
 {
     exec 3>&1 1>&2 # Save stdout and redirect stdout to stderr
+		
+		# OS version check
+		local OSXVER="`/usr/bin/sw_vers -productVersion | cut -d '.' -f1,2`"
 
     local tarball="$1"
     local package=${tarball%%.tar*}
     tarball="${DIR_DOWNLOADS}/$tarball"
     local flagfile="${DIR_BUILD}/$package.extracted"
-
+		
     local filetype=$(file -L --brief "$tarball" | tr '[A-Z]' '[a-z]')
     local tar_filter_option=""
 
@@ -134,6 +147,15 @@ fnExtract ()
         echo "-  ${package} extract..."
         rm -rf "${DIR_BUILD}/$top_level_dir" # Remove old directory if exists
         tar -C "$DIR_BUILD" -x "$tar_filter_option" -f "${tarball}" && touch "${DIR_BUILD}/$package.extracted"
+        
+        #jief copy the modified version that keeps __mod_init_func section
+        #cp "$WORKSPACE"/BaseTools/Source/C/mtoc/mtoc-v921_jief.c "$DIR_BUILD/$top_level_dir"/efitools/mtoc.c
+				if [[ ${OSXVER} < 10.15 ]]; then
+					cp "$WORKSPACE"/Patches/Mtoc/mtoc-v973_jief.c "$DIR_BUILD/$top_level_dir"/efitools/mtoc.c
+				else
+					cp "$WORKSPACE"/Patches/Mtoc/mtoc-v986_jief.c "$DIR_BUILD/$top_level_dir"/efitools/mtoc.c
+					cp "$WORKSPACE"/Patches/Mtoc/libstuff.xcconfig "$DIR_BUILD/$top_level_dir"/xcode/
+				fi
     fi
 
     # Restore stdout for the result and close file desciptor 3
@@ -148,9 +170,12 @@ fnCompileMtoc ()
 {
     # Mount RamDisk
     mountRamDisk
-
+		
+		# OS version check
+		local OSXVER="`/usr/bin/sw_vers -productVersion | cut -d '.' -f1,2`"
+		
     # Extract the tarball
-    local CCTOOLS_DIR=$(fnExtract "cctools-${CCTOOLS_VERSION}.tar.gz")
+    local CCTOOLS_DIR=$(fnExtract "${CCTOOLS_VERSION}.tar.gz")
 
     # Set SDKROOT for Makefiles
     export SDKROOT="$(xcrun -n --show-sdk-path)"
@@ -158,10 +183,22 @@ fnCompileMtoc ()
     # Mtoc build
     local cmd logfile
     cd "$CCTOOLS_DIR"
+
+# Replace deprecated DT_TOOLCHAIN_DIR as a workaround for building in Xcode 15
+	xcodeapp=$(defaults read /Applications/Xcode.app/Contents/version.plist CFBundleShortVersionString)
+	if [[ $xcodeapp == 15.* ]]; then
+		sed -i '' 's/DT_TOOLCHAIN_DIR/TOOLCHAIN_DIR/g' "$CCTOOLS_DIR"/xcode/cctools.xcconfig
+		sed -i '' 's/DT_TOOLCHAIN_DIR/TOOLCHAIN_DIR/g' "$CCTOOLS_DIR"/xcode/libstuff.xcconfig
+		sed -i '' 's/DT_TOOLCHAIN_DIR/TOOLCHAIN_DIR/g' "$CCTOOLS_DIR"/xcode/strip.xcconfig
+	fi
     # Removal of _structs.h needed as a workaround for a bug in cctools-900 or above
     /bin/rm -f ./include/mach/i386/_structs.h
     echo "-  cctools-${CCTOOLS_VERSION} make mtoc..."
-    cmd="(make LTO= EFITOOLS=efitools -C libstuff) && (make -C efitools)"
+		if [[ ${OSXVER} < 10.15 ]]; then
+			cmd="(make LTO= EFITOOLS=efitools -C libstuff) && (make -C efitools)"
+		else
+			cmd="(xcodebuild -scheme mtoc -configuration Release ARCHS=x86_64 ONLY_ACTIVE_ARCH=YES CONFIGURATION_BUILD_DIR=$PREFIX/bin)"
+		fi
     logfile="$DIR_LOGS/mtoc.make.log.txt"
     echo "$cmd" > "$logfile"
     eval "$cmd" >> "$logfile" 2>&1
@@ -170,7 +207,11 @@ fnCompileMtoc ()
         exit 1
     fi
     echo "-  cctools-${CCTOOLS_VERSION} installing mtoc..."
-    cmd="install -c -s -m 555 efitools/mtoc.NEW ${PREFIX}/bin"
+		if [[ ${OSXVER} < 10.15 ]]; then
+			cmd="install -c -s -m 555 efitools/mtoc.NEW ${PREFIX}/bin/mtoc.NEW_jief"
+		else
+			cmd="mv ${PREFIX}/bin/mtoc ${PREFIX}/bin/mtoc.NEW_jief"
+		fi
     logfile="$DIR_LOGS/mtoc.install.log.txt"
     echo "$cmd" > "$logfile"
     eval "$cmd" >> "$logfile" 2>&1
@@ -182,6 +223,13 @@ fnCompileMtoc ()
     echo "-  cctools-${CCTOOLS_VERSION} mtoc installed in $PREFIX"
 }
 
+# remove unused additional files
+fnCleanUp()
+{
+	if [[ ${OSXVER} > 10.15 ]]; then
+		rm -r $PREFIX/bin/*.dSYM $PREFIX/bin/*.a
+	fi
+}
 
 ### fnFunctions ###
 
@@ -190,6 +238,7 @@ fnMtoc ()
 {
     fnDownloadCctools
     fnCompileMtoc
+		fnCleanUp
 }
 
 

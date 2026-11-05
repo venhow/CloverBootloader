@@ -220,7 +220,7 @@ SmiHandlerRegister (
     return EFI_INVALID_PARAMETER;
   }
 
-  SmiHandler = AllocateZeroPool (sizeof (SMI_HANDLER));
+  SmiHandler = AllocateZeroPool(sizeof (SMI_HANDLER));
   if (SmiHandler == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
@@ -311,7 +311,7 @@ SmiHandlerUnRegister (
   SmiEntry = SmiHandler->SmiEntry;
 
   RemoveEntryList (&SmiHandler->Link);
-  FreePool (SmiHandler);
+  FreePool(SmiHandler);
 
   if (SmiEntry == NULL) {
     //
@@ -326,7 +326,7 @@ SmiHandlerUnRegister (
     //
     RemoveEntryList (&SmiEntry->AllEntries);
 
-    FreePool (SmiEntry);
+    FreePool(SmiEntry);
   }
 
   return EFI_SUCCESS;

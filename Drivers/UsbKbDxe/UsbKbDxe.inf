@@ -58,6 +58,7 @@
   CloverPkg.dec
   MdePkg/MdePkg.dec
   MdeModulePkg/MdeModulePkg.dec
+  OpenCorePkg/OpenCorePkg.dec
 
 [LibraryClasses]
   MemoryAllocationLib
@@ -81,7 +82,7 @@
   gUsbKeyboardLayoutPackageGuid                 ## SOMETIMES_CONSUMES ## HII
   gUsbKeyboardLayoutKeyGuid                     ## SOMETIMES_PRODUCES ## UNDEFINED
   gApplePlatformInfoKeyboardGuid                ## SOMETIMES_CONSUMES
-  gAppleOsLoadedNamedEventGuid                  ## SOMETIMES_CONSUMES
+  gAppleOSLoadedNamedEventGuid                  ## SOMETIMES_CONSUMES
 
 [Protocols]
   gEfiUsbIoProtocolGuid                         ## TO_START

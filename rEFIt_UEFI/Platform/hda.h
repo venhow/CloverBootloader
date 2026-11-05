@@ -20,36 +20,12 @@
 
 #ifndef __LIBSAIO_HDA_H
 #define __LIBSAIO_HDA_H
-#include "device_inject.h"
-
-//extern CHAR8 *gDeviceProperties;
-
-//BOOLEAN setup_hda_devprop(pci_dt_t *hda_dev, CHAR8 *OSVersion);
-
-struct hda_controller_devices;
-typedef struct
-{
-    UINT32      model;
-    CHAR8		*desc;
-} hda_controller_devices;
-
-struct hdacc_codecs;
-typedef struct
-{
-    UINT32      id;
-    UINT32      rev;
-    CHAR8       *name;
-} hdacc_codecs;
-
-
-#define UNKNOWN "Unknown "
-
-/****************************************************************************
- * Miscellanious defines
- ****************************************************************************/
-
-/* Controller models */
-#define HDA_MODEL_CONSTRUCT(vendor, model) (((UINT32)(model) << 16) | ((vendor##_VENDORID) & 0xffff))
+//#include "device_inject.h"
+#include "MacOsVersion.h"
+#include "../include/Pci.h"
+extern "C" {
+#include <Protocol/PciIo.h> // for EFI_PCI_IO_PROTOCOL
+}
 
 #if 0 //already defined
 /* Intel */
@@ -351,5 +327,28 @@ typedef struct
 #define HDA_CODEC_INTELCL	HDA_CODEC_CONSTRUCT(INTEL, 0x29fb) // Crestline HDMI
 #define HDA_CODEC_INTELXXXX	HDA_CODEC_CONSTRUCT(INTEL, 0xffff)
 #endif
+
+
+typedef enum {
+  Unknown,
+  Ati,      /* 0x1002 */
+  Intel,    /* 0x8086 */
+  Nvidia,   /* 0x10de */
+  RDC,  /* 0x17f3 */
+  VIA,  /* 0x1106 */
+  SiS,  /* 0x1039 */
+  ULI  /* 0x10b9 */
+} HRDW_MANUFACTERER;
+
+
+XBool
+setup_hda_devprop (
+  EFI_PCI_IO_PROTOCOL *PciIo,
+  pci_dt_t *hda_dev,
+  const MacOsVersion& OSVersion
+  );
+
+XBool EFIAPI IsHDMIAudio(EFI_HANDLE PciDevHandle);
+void ResetHDA();
 
 #endif /* !__LIBSAIO_GMA_H */

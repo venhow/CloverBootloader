@@ -138,7 +138,7 @@ grub_device_iterate(grub_device_iterate_hook_t hook, void *hook_data)
 grub_disk_read_hook_t grub_file_progress_hook = NULL;
 
 grub_err_t
-grub_disk_read(grub_disk_t disk, grub_disk_addr_t sector,
+grub_disk_read(grub_disk_t disk, grub_disk_addr_t sector,   //SL - here grub_disk_read
 		grub_off_t offset, grub_size_t size, void *buf)
 {
 	EFI_STATUS Status;
@@ -413,8 +413,11 @@ GrubRead(EFI_GRUB_FILE *File, VOID *Data, UINTN *Len)
 	/* GRUB may return an error if we request more data than available */
 	Remaining = f->size - f->offset;
 
-	if (*Len > Remaining)
-		*Len = Remaining;
+  if ( Remaining < 0 ) {
+    *Len = 0;
+  }else	if (*Len > (UINTN)Remaining) {
+    *Len = Remaining;
+  }
 
 	len = p->read(f, (char *) Data, *Len);
 

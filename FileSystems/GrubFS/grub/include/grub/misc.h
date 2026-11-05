@@ -47,7 +47,7 @@
 #define va_arg VA_ARG
 #endif
 #define memcmp CompareMem
-#define strcpy AsciiStrCpy
+#define strcpy(out,in) AsciiStrnCpyS(out, AsciiStrLen(out)+1, in, AsciiStrLen(in))
 #define memmove CopyMem
 #define memset(s,c,n) SetMem(s,n,c)
 #define bzero(s,n) SetMem(s,n,0)
@@ -55,14 +55,16 @@
 #define strlen(a) AsciiStrLen(a)
 
 #define ALIGN_UP(addr, align) \
-	((addr + (typeof (addr)) align - 1) & ~((typeof (addr)) align - 1))
-#define ALIGN_UP_OVERHEAD(addr, align) ((-(addr)) & ((typeof (addr)) (align) - 1))
+	((addr + (__typeof__(addr)) align - 1) & ~((__typeof__(addr)) align - 1))
+#define ALIGN_UP_OVERHEAD(addr, align) ((-(addr)) & ((__typeof__(addr)) (align) - 1))
 #define ALIGN_DOWN(addr, align) \
-	((addr) & ~((typeof (addr)) align - 1))
+	((addr) & ~((__typeof__(addr)) align - 1))
 //#define ARRAY_SIZE(array) (sizeof (array) / sizeof (array[0]))  //defined in edk2
 #define COMPILE_TIME_ASSERT(cond) switch (0) { case 1: case !(cond): ; }
 
-#define grub_dprintf(condition, ...) grub_real_dprintf(GRUB_FILE, __LINE__, condition, __VA_ARGS__)
+#define _GRUB_STRINGIFY(x) #x
+#define GRUB_STRINGIFY(x) _GRUB_STRINGIFY(x)
+#define grub_dprintf(condition, ...) grub_real_dprintf(GRUB_STRINGIFY(GRUB_FILE), __LINE__, condition, __VA_ARGS__)
 
 #undef grub_memmove
 #define grub_memmove memmove
@@ -550,7 +552,7 @@ extern struct grub_boot_time *EXPORT_VAR(grub_boot_time_head);
 void EXPORT_FUNC(grub_real_boot_time) (const char *file,
 				       const int line,
 				       const char *fmt, ...) __attribute__ ((format (GNU_PRINTF, 3, 4)));
-#define grub_boot_time(...) grub_real_boot_time(GRUB_FILE, __LINE__, __VA_ARGS__)
+#define grub_boot_time(...) grub_real_boot_time(GRUB_STRINGIFY(GRUB_FILE), __LINE__, __VA_ARGS__)
 #else
 #define grub_boot_time(...)
 #endif

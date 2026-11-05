@@ -85,7 +85,7 @@ GetNextLanguage (
     Index++;
   }
 
-  CopyMem (Lang, StringPtr, Index);
+  CopyMem(Lang, StringPtr, Index);
   Lang[Index] = 0;
 
   if (StringPtr[Index] == ';') {
@@ -141,14 +141,14 @@ LanguageChangeHandler (
                     AsciiStrSize (Lang),
                     Lang
                     );
-    if (EFI_ERROR (Status)) {
-      FreePool (Lang);
+    if (EFI_ERROR(Status)) {
+      FreePool(Lang);
       return EFI_DEVICE_ERROR;
     }
   } else {
     ASSERT (FALSE);
   }
-  FreePool (Lang);
+  FreePool(Lang);
 
   return EFI_SUCCESS;
 }
@@ -279,7 +279,7 @@ UiCreateLanguageMenu (
   //
   GetEfiGlobalVariable2 (L"PlatformLangCodes", (VOID**)&gLanguageString, NULL);
   if (gLanguageString == NULL) {
-    gLanguageString = AllocateCopyPool (
+    gLanguageString = AllocateCopyPool(
                                AsciiStrSize ((CHAR8 *) PcdGetPtr (PcdUefiVariableDefaultPlatformLangCodes)),
                                (CHAR8 *) PcdGetPtr (PcdUefiVariableDefaultPlatformLangCodes)
                                );
@@ -303,11 +303,11 @@ UiCreateLanguageMenu (
     //
     // Allocate extra 1 as the end tag.
     //
-    gLanguageToken = AllocateZeroPool ((OptionCount + 1) * sizeof (EFI_STRING_ID));
+    gLanguageToken = AllocateZeroPool((OptionCount + 1) * sizeof (EFI_STRING_ID));
     ASSERT (gLanguageToken != NULL);
 
     Status = gBS->LocateProtocol (&gEfiHiiStringProtocolGuid, NULL, (VOID **) &HiiString);
-    ASSERT_EFI_ERROR (Status);
+    ASSERT_EFI_ERROR(Status);
 
     LangCode     = gLanguageString;
     OptionCount  = 0;
@@ -317,13 +317,13 @@ UiCreateLanguageMenu (
       StringSize = 0;
       Status = HiiString->GetString (HiiString, Lang, HiiHandle, PRINTABLE_LANGUAGE_NAME_STRING_ID, StringBuffer, &StringSize, NULL);
       if (Status == EFI_BUFFER_TOO_SMALL) {
-        StringBuffer = AllocateZeroPool (StringSize);
+        StringBuffer = AllocateZeroPool(StringSize);
         ASSERT (StringBuffer != NULL);
         Status = HiiString->GetString (HiiString, Lang, HiiHandle, PRINTABLE_LANGUAGE_NAME_STRING_ID, StringBuffer, &StringSize, NULL);
-        ASSERT_EFI_ERROR (Status);
+        ASSERT_EFI_ERROR(Status);
       }
 
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         LangSize = AsciiStrSize (Lang);
         StringBuffer = AllocatePool (LangSize * sizeof (CHAR16));
         ASSERT (StringBuffer != NULL);
@@ -332,7 +332,7 @@ UiCreateLanguageMenu (
 
       ASSERT (StringBuffer != NULL);
       gLanguageToken[OptionCount] = HiiSetString (HiiHandle, 0, StringBuffer, NULL);
-      FreePool (StringBuffer);
+      FreePool(StringBuffer);
 
       OptionCount++;
     }
@@ -348,7 +348,7 @@ UiCreateLanguageMenu (
   while (*LangCode != 0) {
     GetNextLanguage (&LangCode, Lang);
 
-    if (CurrentLang != NULL && AsciiStrCmp (Lang, CurrentLang) == 0) {
+    if (CurrentLang != NULL && AsciiStrCmp(Lang, CurrentLang) == 0) {
       HiiCreateOneOfOptionOpCode (
         OptionsOpCodeHandle,
         gLanguageToken[OptionCount],
@@ -371,9 +371,9 @@ UiCreateLanguageMenu (
   }
 
   if (CurrentLang != NULL) {
-    FreePool (CurrentLang);
+    FreePool(CurrentLang);
   }
-  FreePool (Lang);
+  FreePool(Lang);
 
   HiiCreateOneOfOpCode (
     StartOpCodeHandle,
@@ -475,7 +475,7 @@ ExtractDevicePathFromHiiHandle (
   }
 
   Status = gHiiDatabase->GetPackageListHandle (gHiiDatabase, Handle, &DriverHandle);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return NULL;
   }
 
@@ -513,7 +513,7 @@ RequiredDriver (
   BOOLEAN                     RetVal;
 
   Status = HiiGetFormSetFromHiiHandle(HiiHandle, &Buffer,&BufferSize);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return FALSE;
   }
 
@@ -538,12 +538,12 @@ RequiredDriver (
 
       *PromptId = ((EFI_IFR_FORM_SET *)Ptr)->FormSetTitle;
       *HelpId = ((EFI_IFR_FORM_SET *)Ptr)->Help;
-      CopyMem (FormsetGuid, &((EFI_IFR_FORM_SET *) Ptr)->Guid, sizeof (EFI_GUID));
+      CopyMem(FormsetGuid, &((EFI_IFR_FORM_SET *) Ptr)->Guid, sizeof (EFI_GUID));
       RetVal = TRUE;
     }
   }
 
-  FreePool (Buffer);
+  FreePool(Buffer);
 
   return RetVal;
 }
@@ -581,13 +581,13 @@ UiListThirdPartyDrivers (
   BOOLEAN                     EmptyLineAfter;
 
   if (gHiiDriverList != NULL) {
-    FreePool (gHiiDriverList);
+    FreePool(gHiiDriverList);
   }
 
   HiiHandles = HiiGetHiiHandles (NULL);
   ASSERT (HiiHandles != NULL);
 
-  gHiiDriverList = AllocateZeroPool (UI_HII_DRIVER_LIST_SIZE * sizeof (UI_HII_DRIVER_INSTANCE));
+  gHiiDriverList = AllocateZeroPool(UI_HII_DRIVER_LIST_SIZE * sizeof (UI_HII_DRIVER_INSTANCE));
   ASSERT (gHiiDriverList != NULL);
   DriverListPtr = gHiiDriverList;
   CurrentSize = UI_HII_DRIVER_LIST_SIZE;
@@ -607,13 +607,13 @@ UiListThirdPartyDrivers (
       //
       EmptyLineAfter = FALSE;
       if (SpecialHandlerFn (String, &NewName, &EmptyLineAfter)) {
-        FreePool (String);
+        FreePool(String);
         String = NewName;
         DriverListPtr[Count].EmptyLineAfter = EmptyLineAfter;
       }
     }
     DriverListPtr[Count].PromptId = HiiSetString (HiiHandle, 0, String, NULL);
-    FreePool (String);
+    FreePool(String);
 
     String = HiiGetString (HiiHandles[Index], TokenHelp, NULL);
     if (String == NULL) {
@@ -621,12 +621,12 @@ UiListThirdPartyDrivers (
       ASSERT (String != NULL);
     }
     DriverListPtr[Count].HelpId = HiiSetString (HiiHandle, 0, String, NULL);
-    FreePool (String);
+    FreePool(String);
 
     DevicePathStr = ExtractDevicePathFromHiiHandle(HiiHandles[Index]);
     if (DevicePathStr != NULL){
       DriverListPtr[Count].DevicePathId = HiiSetString (HiiHandle, 0, DevicePathStr, NULL);
-      FreePool (DevicePathStr);
+      FreePool(DevicePathStr);
     } else {
       DriverListPtr[Count].DevicePathId = 0;
     }
@@ -645,7 +645,7 @@ UiListThirdPartyDrivers (
     }
   }
 
-  FreePool (HiiHandles);
+  FreePool(HiiHandles);
 
   Index = 0;
   while (gHiiDriverList[Index].PromptId != 0) {

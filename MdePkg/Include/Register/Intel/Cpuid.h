@@ -322,9 +322,9 @@ typedef union {
     ///
     UINT32  RDRAND:1;
     ///
-    /// [Bit 31] Always returns 0.
+    /// [Bit 31] A value of 1 indicates that processor is in Para-Virtualized.
     ///
-    UINT32  NotUsed:1;
+    UINT32    ParaVirtualized     : 1;
   } Bits;
   ///
   /// All bit fields as a 32-bit value
@@ -1579,9 +1579,9 @@ typedef union {
     ///
     UINT32  EnumeratesSupportForCapability:1;
     ///
-    /// [Bit 30] Reserved.
+    /// [Bit 30] Enumerates support for the IA32_CORE_CAPABILITIES MSR.
     ///
-    UINT32  Reserved3:1;
+    UINT32  EnumeratesSupportForCoreCapabilitiesMsr:1;
     ///
     /// [Bit 31] Enumerates support for Speculative Store Bypass Disable (SSBD).
     /// Processors that set this bit sup-port the IA32_SPEC_CTRL MSR. They allow

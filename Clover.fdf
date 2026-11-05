@@ -91,7 +91,7 @@ INF  MdeModulePkg/Universal/Console/ConPlatformDxe/ConPlatformDxe.inf
 INF  MdeModulePkg/Universal/Console/ConSplitterDxe/ConSplitterDxe.inf
 INF  MdeModulePkg/Universal/HiiDatabaseDxe/HiiDatabaseDxe.inf
 INF  MdeModulePkg/Universal/SetupBrowserDxe/SetupBrowserDxe.inf
-INF  MdeModulePkg/Universal/DisplayEngineDxe/DisplayEngineDxe.inf
+#INF  MdeModulePkg/Universal/DisplayEngineDxe/DisplayEngineDxe.inf
 
 #INF  MdeModulePkg/Universal/Console/GraphicsConsoleDxe/GraphicsConsoleDxe.inf
 INF  CloverEFI/GraphicsConsoleDxe/GraphicsConsoleDxe.inf
@@ -102,7 +102,7 @@ INF  MdeModulePkg/Universal/SmbiosDxe/SmbiosDxe.inf
 INF  CloverEFI/OsxSmbiosGenDxe/SmbiosGen.inf
 #INF  IntelFrameworkModulePkg/Universal/BdsDxe/BdsDxe.inf
 INF  CloverEFI/OsxBdsDxe/BdsDxe.inf
-INF  MdeModulePkg/Universal/EbcDxe/EbcDxe.inf
+#INF  MdeModulePkg/Universal/EbcDxe/EbcDxe.inf
 INF  MdeModulePkg/Universal/DevicePathDxe/DevicePathDxe.inf
 INF  CloverEFI/UefiCpuPkg/CpuIo2Dxe/CpuIo2Dxe.inf
 #INF  UefiCpuPkg/CpuDxe/CpuDxe.inf
@@ -117,7 +117,7 @@ INF  CloverEFI/CpuDxe/Cpu.inf
 
     # DataHub
 #INF  VBoxAppleSim/VBoxAppleSim.inf
-INF Protocols/DataHubDxe/DataHubDxe.inf
+#INF Protocols/DataHubDxe/DataHubDxe.inf
 #INF Protocols/DataHubStdErrDxe/DataHubStdErrDxe.inf
 #INF EdkCompatibilityPkg/Compatibility/PiSmbiosRecordOnDataHubSmbiosRecordThunk/PiSmbiosRecordOnDataHubSmbiosRecordThunk.inf
 	# foreign file system support
@@ -131,7 +131,7 @@ INF  FileSystems/GrubFS/src/EXFAT.inf
 #INF  FileSystems/VBoxFsDxe/VBoxFsDxe.inf
 #INF  FileSystems/VBoxFsDxe/VBoxIso9660.inf
 #INF  FileSystems/VBoxFsDxe/VBoxExt2.inf
-#INF  FileSystems/VBoxFsDxe/VBoxExt4.inf
+#INF  FileSystems/VBoxFsDxe/Ext4Dxe.inf
 #INF  FileSystems/VBoxFsDxe/VBoxReiserFS.inf
 !if $(USE_APPLE_HFSPLUS_DRIVER) AND ( $(ARCH) == X64 )
 INF  RuleOverride=BINARY FileSystems/HFSPlus/HFSPlus.inf
@@ -202,6 +202,7 @@ INF   LegacyBios/Region2Dxe/LegacyRegion2Dxe.inf
   #INF  MdeModulePkg/Bus/Scsi/ScsiDiskDxe/ScsiDiskDxe.inf
   INF  Drivers/DVDDisk/ScsiDiskDxe.inf
   #INF  IntelFrameworkModulePkg/Bus/Pci/IdeBusDxe/IdeBusDxe.inf
+  INF  MdeModulePkg/Bus/Pci/NvmExpressDxe/NvmExpressDxe.inf
 !endif  
 !endif
 

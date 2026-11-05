@@ -247,7 +247,8 @@ FONT_PACK_BIN mFontBin = {
         0x00
       }
     }
-  }
+  },
+  { { 0, 0, { 0, }, { 0, }, { 0, }, }, },
 };
 
 /**
@@ -302,7 +303,7 @@ GetNextLanguage (
     Index++;
   }
 
-  CopyMem (Lang, StringPtr, Index);
+  CopyMem(Lang, StringPtr, Index);
   Lang[Index] = 0;
 
   if (StringPtr[Index] == ';') {
@@ -351,8 +352,8 @@ IsLangInSupportedLangCodes(
 
   if (Iso639Language) {
     CompareLength = ISO_639_2_ENTRY_SIZE;
-    for (Index = 0; Index < AsciiStrLen (SupportedLang); Index += CompareLength) {
-      if (AsciiStrnCmp (Lang, SupportedLang + Index, CompareLength) == 0) {
+    for (Index = 0; Index < AsciiStrLen(SupportedLang); Index += CompareLength) {
+      if (AsciiStrnCmp(Lang, SupportedLang + Index, CompareLength) == 0) {
         //
         // Successfully find the Lang string in SupportedLang string.
         //
@@ -377,7 +378,7 @@ IsLangInSupportedLangCodes(
       for (CompareLength = 0; SupportedLang[CompareLength] != '\0' && SupportedLang[CompareLength] != ';'; CompareLength++);
       
       if ((CompareLength == LanguageLength) && 
-          (AsciiStrnCmp (Lang, SupportedLang, CompareLength) == 0)) {
+          (AsciiStrnCmp(Lang, SupportedLang, CompareLength) == 0)) {
         //
         // Successfully find the Lang string in SupportedLang string.
         //
@@ -434,7 +435,7 @@ InitializeLangVariable (
   }
 
   if (Lang != NULL) {
-    FreePool (Lang);
+    FreePool(Lang);
   }
 }
 

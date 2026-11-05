@@ -2,14 +2,8 @@
 
     Usb bus enumeration support.
 
-Copyright (c) 2007 - 2013, Intel Corporation. All rights reserved.<BR>
-This program and the accompanying materials
-are licensed and made available under the terms and conditions of the BSD License
-which accompanies this distribution.  The full text of the license may be found at
-http://opensource.org/licenses/bsd-license.php
-
-THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
-WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+Copyright (c) 2007 - 2018, Intel Corporation. All rights reserved.<BR>
+SPDX-License-Identifier: BSD-2-Clause-Patent
 
 **/
 
@@ -71,28 +65,33 @@ UsbGetEndpointDesc (
 
   @param  UsbIf                 The USB interface to free.
 
+  @retval EFI_ACCESS_DENIED     The interface is still occupied.
+  @retval EFI_SUCCESS           The interface is freed.
 **/
-VOID
+EFI_STATUS
 UsbFreeInterface (
   IN USB_INTERFACE        *UsbIf
   )
 {
+  EFI_STATUS              Status;
+
   UsbCloseHostProtoByChild (UsbIf->Device->Bus, UsbIf->Handle);
 
-  gBS->UninstallMultipleProtocolInterfaces (
-         UsbIf->Handle,
-         &gEfiDevicePathProtocolGuid,
-         UsbIf->DevicePath,
-         &gEfiUsbIoProtocolGuid,
-         &UsbIf->UsbIo,
-         NULL
-         );
-
-  if (UsbIf->DevicePath != NULL) {
-    FreePool (UsbIf->DevicePath);
+  Status = gBS->UninstallMultipleProtocolInterfaces (
+                  UsbIf->Handle,
+                  &gEfiDevicePathProtocolGuid, UsbIf->DevicePath,
+                  &gEfiUsbIoProtocolGuid,      &UsbIf->UsbIo,
+                  NULL
+                  );
+  if (!EFI_ERROR(Status)) {
+    if (UsbIf->DevicePath != NULL) {
+      FreePool(UsbIf->DevicePath);
+    }
+    FreePool(UsbIf);
+  } else {
+    UsbOpenHostProtoByChild (UsbIf->Device->Bus, UsbIf->Handle);
   }
-
-  FreePool (UsbIf);
+  return Status;
 }
 
 
@@ -117,7 +116,7 @@ UsbCreateInterface (
   USB_INTERFACE           *HubIf;
   EFI_STATUS              Status;
 
-  UsbIf = AllocateZeroPool (sizeof (USB_INTERFACE));
+  UsbIf = AllocateZeroPool(sizeof (USB_INTERFACE));
 
   if (UsbIf == NULL) {
     return NULL;
@@ -133,7 +132,7 @@ UsbCreateInterface (
   }
   UsbIf->IfSetting  = IfDesc->Settings[IfDesc->ActiveIndex];
 
-  CopyMem (
+  CopyMem(
     &(UsbIf->UsbIo),
     &mUsbIoProtocol,
     sizeof (EFI_USB_IO_PROTOCOL)
@@ -173,7 +172,7 @@ UsbCreateInterface (
                   NULL
                   );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
  //   DEBUG ((EFI_D_ERROR, "UsbCreateInterface: failed to install UsbIo - %r\n", Status));
     goto ON_ERROR;
   }
@@ -183,9 +182,9 @@ UsbCreateInterface (
   //
   Status = UsbOpenHostProtoByChild (Device->Bus, UsbIf->Handle);
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     gBS->UninstallMultipleProtocolInterfaces (
-           &UsbIf->Handle,
+           UsbIf->Handle,
            &gEfiDevicePathProtocolGuid,
            UsbIf->DevicePath,
            &gEfiUsbIoProtocolGuid,
@@ -202,10 +201,10 @@ UsbCreateInterface (
 
 ON_ERROR:
   if (UsbIf->DevicePath != NULL) {
-    FreePool (UsbIf->DevicePath);
+    FreePool(UsbIf->DevicePath);
   }
 
-  FreePool (UsbIf);
+  FreePool(UsbIf);
   return NULL;
 }
 
@@ -225,7 +224,7 @@ UsbFreeDevice (
     UsbFreeDevDesc (Device->DevDesc);
   }
 
-  gBS->FreePool (Device);
+  gBS->FreePool(Device);
 }
 
 
@@ -251,7 +250,7 @@ UsbCreateDevice (
     return NULL;
   }
 
-  Device = AllocateZeroPool (sizeof (USB_DEVICE));
+  Device = AllocateZeroPool(sizeof (USB_DEVICE));
 
   if (Device == NULL) {
     return NULL;
@@ -315,7 +314,7 @@ UsbConnectDriver (
       gBS->RestoreTPL (TPL_CALLBACK);
 
       Status            = gBS->ConnectController (UsbIf->Handle, NULL, NULL, TRUE);
-      UsbIf->IsManaged  = (BOOLEAN)!EFI_ERROR (Status);
+      UsbIf->IsManaged  = (BOOLEAN)!EFI_ERROR(Status);
 
  //     DEBUG ((EFI_D_INFO, "UsbConnectDriver: TPL after connect is %d\n", (UINT32)UsbGetCurrentTpl()));
  //     ASSERT (UsbGetCurrentTpl () == TPL_CALLBACK);
@@ -468,7 +467,7 @@ UsbSelectConfig (
     //
     Status = UsbConnectDriver (UsbIf);
     DBG("UsbSelect[%d]:%r\n", Index, Status);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
  //     DEBUG ((EFI_D_ERROR, "UsbSelectConfig: failed to connect driver %r, ignored\n", Status));
     }
   }
@@ -516,7 +515,7 @@ UsbDisconnectDriver (
     gBS->RestoreTPL (TPL_CALLBACK);
 
     Status = gBS->DisconnectController (UsbIf->Handle, NULL, NULL);
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       UsbIf->IsManaged = FALSE;
     }
 
@@ -559,7 +558,7 @@ UsbRemoveConfig (
     }
 
     Status = UsbDisconnectDriver (UsbIf);
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       UsbFreeInterface (UsbIf);
       Device->Interfaces[Index] = NULL;
     } else {
@@ -607,7 +606,7 @@ UsbRemoveDevice (
     DBG("Remove child %d\n", Index);
     Status = UsbRemoveDevice (Child);
 
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       Bus->Devices[Index] = NULL;
     } else {
       Bus->Devices[Index]->DisconnectFail = TRUE;
@@ -617,13 +616,13 @@ UsbRemoveDevice (
     }
   }
 
-  if (EFI_ERROR (ReturnStatus)) {
+  if (EFI_ERROR(ReturnStatus)) {
     return ReturnStatus;
   }
 
   Status = UsbRemoveConfig (Device);
 
-  if (!EFI_ERROR (Status)) {
+  if (!EFI_ERROR(Status)) {
 //  DEBUG (( EFI_D_INFO, "UsbRemoveDevice: device %d removed\n", Device->Address));
     DBG("UsbRemoveDevice: device %d removed\n", Device->Address);
 
@@ -720,7 +719,7 @@ UsbEnumerateNewDev (
   //
   Status = HubApi->ResetPort (HubIf, Port);
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
  //   DEBUG ((EFI_D_ERROR, "UsbEnumerateNewDev: failed to reset port %d - %r\n", Port, Status));
 
     return Status;
@@ -741,7 +740,7 @@ UsbEnumerateNewDev (
   DBG("GetPortStatus\n");
   Status = HubApi->GetPortStatus (HubIf, Port, &PortState);
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
 //    DEBUG ((EFI_D_ERROR, "UsbEnumerateNewDev: failed to get speed of port %d\n", Port));
     goto ON_ERROR;
   }
@@ -813,7 +812,7 @@ UsbEnumerateNewDev (
   Child->Address        = (UINT8)Address;
   Bus->Devices[Address] = Child;
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
 //    DEBUG ((EFI_D_ERROR, "UsbEnumerateNewDev: failed to set device address - %r\n", Status));
     goto ON_ERROR;
   }
@@ -828,7 +827,7 @@ UsbEnumerateNewDev (
   //
   Status = UsbGetMaxPacketSize0 (Child);
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
  //   DEBUG ((EFI_D_ERROR, "UsbEnumerateNewDev: failed to get max packet for EP 0 - %r\n", Status));
     DBG("UsbEnumerateNewDev: failed to get max packet for EP 0 - %r\n", Status);
     goto ON_ERROR;
@@ -842,7 +841,7 @@ UsbEnumerateNewDev (
   //
   Status = UsbBuildDescTable (Child);
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
 //    DEBUG ((EFI_D_ERROR, "UsbEnumerateNewDev: failed to build descriptor table - %r\n", Status));
     DBG("UsbEnumerateNewDev: failed to build descriptor table - %r\n", Status);
     goto ON_ERROR;
@@ -855,7 +854,7 @@ UsbEnumerateNewDev (
   Config = Child->DevDesc->Configs[0]->Desc.ConfigurationValue;
   Status = UsbSetConfig (Child, Config);
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
 //    DEBUG ((EFI_D_ERROR, "UsbEnumerateNewDev: failed to set configure %d - %r\n", Config, Status));
     DBG("UsbEnumerateNewDev: failed to set configure %d - %r\n", Config, Status);
     goto ON_ERROR;
@@ -868,7 +867,7 @@ UsbEnumerateNewDev (
   //
   Status = UsbSelectConfig (Child, Config);
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
 //    DEBUG ((EFI_D_ERROR, "UsbEnumerateNewDev: failed to create interfaces - %r\n", Status));
     DBG("UsbEnumerateNewDev: failed to create interfaces - %r\n", Status);
     goto ON_ERROR;
@@ -942,7 +941,7 @@ UsbEnumeratePort (
   //
   Status = HubApi->GetPortStatus (HubIf, Port, &PortState);
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
 //    DEBUG ((EFI_D_ERROR, "UsbEnumeratePort: failed to get state of port %d\n", Port));
     DBG("UsbEnumeratePort: failed to get state of port %d\n", Port);
     return Status;
@@ -1097,7 +1096,7 @@ UsbHubEnumeration (
 
   UsbHubAckHubStatus (HubIf->Device);
 
-  gBS->FreePool (HubIf->ChangeMap);
+  gBS->FreePool(HubIf->ChangeMap);
   HubIf->ChangeMap = NULL;
   return ;
 }

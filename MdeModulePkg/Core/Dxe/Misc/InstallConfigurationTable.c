@@ -83,7 +83,7 @@ CoreInstallConfigurationTable (
     //
     // Copy over deleted entry
     //
-    CopyMem (
+    CopyMem(
       &(EfiConfigurationTable[Index]),
       &(gDxeCoreST->ConfigurationTable[Index + 1]),
       (gDxeCoreST->NumberOfTableEntries - Index) * sizeof (EFI_CONFIGURATION_TABLE)
@@ -122,7 +122,7 @@ CoreInstallConfigurationTable (
         //
         // Copy the old table to the new table.
         //
-        CopyMem (
+        CopyMem(
           EfiConfigurationTable,
           gDxeCoreST->ConfigurationTable,
           Index * sizeof (EFI_CONFIGURATION_TABLE)
@@ -146,7 +146,7 @@ CoreInstallConfigurationTable (
         //
         // Free the old table after updating System Table to the new table pointer.
         //
-        CoreFreePool (OldTable);
+        CoreFreePool(OldTable);
       } else {
         //
         // Update System Table

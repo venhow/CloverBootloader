@@ -433,7 +433,7 @@ SmbiosPrintStructure (
     } else {
       DisplayProcessorFamily (Struct->Type4->ProcessorFamily, Option);
     }
-    PRINT_PENDING_STRING (Struct, Type4, ProcessorManufacture);
+    PRINT_PENDING_STRING (Struct, Type4, ProcessorManufacturer);
     PRINT_BIT_FIELD (Struct, Type4, ProcessorId, 8);
     PRINT_PENDING_STRING (Struct, Type4, ProcessorVersion);
     DisplayProcessorVoltage (*(UINT8 *) &(Struct->Type4->Voltage), Option);
@@ -560,6 +560,33 @@ SmbiosPrintStructure (
       PRINT_STRUCT_VALUE_H (Struct, Type9, BusNum);
       PRINT_STRUCT_VALUE_H (Struct, Type9, DevFuncNum);
     }
+    if (AE_SMBIOS_VERSION (0x3, 0x2)) {
+      MISC_SLOT_PEER_GROUP  *PeerGroupPtr;
+      UINT8                 PeerGroupCount;
+
+      if (Struct->Hdr->Length > 0x11) {
+        PRINT_STRUCT_VALUE (Struct, Type9, DataBusWidth);
+      }
+
+      if (Struct->Hdr->Length > 0x12) {
+        PRINT_STRUCT_VALUE (Struct, Type9, PeerGroupingCount);
+
+        PeerGroupCount = Struct->Type9->PeerGroupingCount;
+        PeerGroupPtr   = Struct->Type9->PeerGroups;
+        for (Index = 0; Index < PeerGroupCount; Index++) {
+          ShellPrintHiiEx (-1, -1, NULL, STRING_TOKEN (STR_SMBIOSVIEW_PRINTINFO_SLOT_PEER_GROUPS), gShellDebug1HiiHandle, Index + 1);
+          ShellPrintHiiEx (-1, -1, NULL, STRING_TOKEN (STR_SMBIOSVIEW_PRINTINFO_SEGMENT_GROUP_NUM), gShellDebug1HiiHandle, PeerGroupPtr[Index].SegmentGroupNum);
+          ShellPrintHiiEx (-1, -1, NULL, STRING_TOKEN (STR_SMBIOSVIEW_PRINTINFO_BUS_NUM), gShellDebug1HiiHandle, PeerGroupPtr[Index].BusNum);
+          ShellPrintHiiEx (-1, -1, NULL, STRING_TOKEN (STR_SMBIOSVIEW_PRINTINFO_DEV_FUNC_NUM), gShellDebug1HiiHandle, PeerGroupPtr[Index].DevFuncNum);
+          ShellPrintHiiEx (-1, -1, NULL, STRING_TOKEN (STR_SMBIOSVIEW_PRINTINFO_DATA_BUS_WIDTH), gShellDebug1HiiHandle, PeerGroupPtr[Index].DataBusWidth);
+        }
+
+        DisplaySystemSlotHeight (Struct->Type9->SlotHeight, Option);
+        DisplaySystemSlotPhysicalWidth (Struct->Type9->SlotPhysicalWidth, Option);
+        DisplaySystemSlotInformation (Struct->Type9->SlotInformation, Option);
+      }
+    }
+
     break;
 
   //
@@ -1233,7 +1260,7 @@ DisplayBiosCharacteristics (
   }
 
   if (BIT (Chara, 15) != 0) {
-    ShellPrintHiiEx(-1,-1,NULL,STRING_TOKEN (STR_SMBIOSVIEW_PRINTINFO_BOOT_FORM_CD_SUPPORTED), gShellDebug1HiiHandle);
+    ShellPrintHiiEx(-1,-1,NULL,STRING_TOKEN (STR_SMBIOSVIEW_PRINTINFO_BOOT_FROM_CD_SUPPORTED), gShellDebug1HiiHandle);
   }
 
   if (BIT (Chara, 16) != 0) {
@@ -1394,9 +1421,19 @@ DisplayBiosCharacteristicsExt2 (
       if (BIT (byte2, 3) != 0) {
         ShellPrintHiiEx(-1,-1,NULL,STRING_TOKEN (STR_SMBIOSVIEW_PRINTINFO_UEFI_SPEC_SUPPORT), gShellDebug1HiiHandle);
       }
+
       if (BIT (byte2, 4) != 0) {
         ShellPrintHiiEx(-1,-1,NULL,STRING_TOKEN (STR_SMBIOSVIEW_PRINTINFO_VIRTUAL_MACHINE), gShellDebug1HiiHandle);
       }
+
+      if (BIT (byte2, 5) != 0) {
+        ShellPrintHiiEx (-1, -1, NULL, STRING_TOKEN (STR_SMBIOSVIEW_PRINTINFO_MCFG_SUPPORTED), gShellDebug1HiiHandle);
+      }
+
+      if (BIT (byte2, 6) != 0) {
+        ShellPrintHiiEx (-1, -1, NULL, STRING_TOKEN (STR_SMBIOSVIEW_PRINTINFO_MCFG_ENABLED), gShellDebug1HiiHandle);
+      }
+
       ShellPrintHiiEx(-1,-1,NULL,STRING_TOKEN (STR_SMBIOSVIEW_PRINTINFO_BITS_RSVD_FOR_FUTURE), gShellDebug1HiiHandle, 5);
     } else {
       ShellPrintHiiEx(-1,-1,NULL,STRING_TOKEN (STR_SMBIOSVIEW_PRINTINFO_BITS_RSVD_FOR_FUTURE), gShellDebug1HiiHandle, 3);

@@ -191,7 +191,7 @@ CoreAddRange (
   // used for other purposes.
   //  
   if (Type == EfiConventionalMemory && Start == 0 && (End >= EFI_PAGE_SIZE - 1)) {
-    SetMem ((VOID *)(UINTN)Start, EFI_PAGE_SIZE, 0);
+    SetMem((VOID *)(UINTN)Start, EFI_PAGE_SIZE, 0);
   }
   
   //
@@ -363,7 +363,7 @@ CoreFreeMemoryMapStack (
       RemoveEntryList (&mMapStack[mMapDepth].Link);
       mMapStack[mMapDepth].Link.ForwardLink = NULL;
 
-      CopyMem (Entry , &mMapStack[mMapDepth], sizeof (MEMORY_MAP));
+      CopyMem(Entry , &mMapStack[mMapDepth], sizeof (MEMORY_MAP));
       Entry->FromPages = TRUE;
 
       //
@@ -589,7 +589,7 @@ CoreAddMemoryDescriptor (
                  gMemoryTypeInformation[Index].NumberOfPages,
                  &mMemoryTypeStatistics[Type].BaseAddress
                  );
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         //
         // If an error occurs allocating the pages for the current memory type, then
         // free all the pages allocates for the previous memory types and return.  This
@@ -1191,7 +1191,7 @@ CoreAllocatePages (
 Done:
   CoreReleaseMemoryLock ();
 
-  if (!EFI_ERROR (Status)) {
+  if (!EFI_ERROR(Status)) {
     *Memory = Start;
   }
 
@@ -1264,7 +1264,7 @@ CoreFreePages (
 
   Status = CoreConvertPages (Memory, NumberOfPages, EfiConventionalMemory);
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto Done;
   }
 

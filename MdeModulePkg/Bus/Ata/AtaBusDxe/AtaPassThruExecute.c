@@ -132,8 +132,8 @@ AtaDevicePassThru (
       return EFI_OUT_OF_RESOURCES;
     }
 
-    CopyMem (Packet->Asb, AtaDevice->Asb, sizeof (EFI_ATA_STATUS_BLOCK));
-    Packet->Acb = AllocateCopyPool (sizeof (EFI_ATA_COMMAND_BLOCK), &AtaDevice->Acb);
+    CopyMem(Packet->Asb, AtaDevice->Asb, sizeof (EFI_ATA_STATUS_BLOCK));
+    Packet->Acb = AllocateCopyPool(sizeof (EFI_ATA_COMMAND_BLOCK), &AtaDevice->Acb);
   } else {
     Packet = &AtaDevice->Packet;
     Packet->Asb = AtaDevice->Asb;
@@ -423,7 +423,7 @@ DiscoverAtaDevice (
   Retry = MAX_RETRY_TIMES;
   do {
     Status = AtaDevicePassThru (AtaDevice, NULL, NULL);
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       //
       // The command is issued successfully
       //
@@ -571,10 +571,10 @@ FreeAtaSubTask (
     FreeAlignedBuffer (Task->Packet.Asb, sizeof (EFI_ATA_STATUS_BLOCK));
   }
   if (Task->Packet.Acb != NULL) {
-    FreePool (Task->Packet.Acb);
+    FreePool(Task->Packet.Acb);
   }
 
-  FreePool (Task);
+  FreePool(Task);
 }
 
 /**
@@ -612,7 +612,7 @@ AtaTerminateNonBlockingTask (
     gBS->SignalEvent (AtaTask->Token->Event);
 
     Entry = RemoveEntryList (Entry);
-    FreePool (AtaTask);
+    FreePool(AtaTask);
   }
   gBS->RestoreTPL (OldTpl);
 
@@ -699,8 +699,8 @@ AtaNonBlockingCallBack (
       DEBUG ((EFI_D_BLKIO, "Signal the upper layer event!\n"));
     }
 
-    FreePool (Task->UnsignalledEventCount);
-    FreePool (Task->IsError);
+    FreePool(Task->UnsignalledEventCount);
+    FreePool(Task->IsError);
 
 
     //
@@ -719,12 +719,12 @@ AtaNonBlockingCallBack (
                  AtaTask->IsWrite,
                  AtaTask->Token
                  );
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         AtaTask->Token->TransactionStatus = Status;
         gBS->SignalEvent (AtaTask->Token->Event);
       }
       RemoveEntryList (Entry);
-      FreePool (AtaTask);
+      FreePool(AtaTask);
     }
   }
 
@@ -808,7 +808,7 @@ AccessAtaDevice(
     OldTpl = gBS->RaiseTPL (TPL_NOTIFY);
 
     if (!IsListEmpty (&AtaDevice->AtaSubTaskList)) {
-      AtaTask = AllocateZeroPool (sizeof (ATA_BUS_ASYN_TASK));
+      AtaTask = AllocateZeroPool(sizeof (ATA_BUS_ASYN_TASK));
       if (AtaTask == NULL) {
         gBS->RestoreTPL (OldTpl);
         return EFI_OUT_OF_RESOURCES;
@@ -828,14 +828,14 @@ AccessAtaDevice(
     gBS->RestoreTPL (OldTpl);
 
     Token->TransactionStatus = EFI_SUCCESS;
-    EventCount = AllocateZeroPool (sizeof (UINTN));
+    EventCount = AllocateZeroPool(sizeof (UINTN));
     if (EventCount == NULL) {
       return EFI_OUT_OF_RESOURCES;
     }
 
-    IsError = AllocateZeroPool (sizeof (BOOLEAN));
+    IsError = AllocateZeroPool(sizeof (BOOLEAN));
     if (IsError == NULL) {
-      FreePool (EventCount);
+      FreePool(EventCount);
       return EFI_OUT_OF_RESOURCES;
     }
     DEBUG ((EFI_D_BLKIO, "Allocation IsError Addr=%x\n", IsError));
@@ -870,7 +870,7 @@ AccessAtaDevice(
       SubTask  = NULL;
       SubEvent = NULL;
 
-      SubTask = AllocateZeroPool (sizeof (ATA_BUS_ASYN_SUB_TASK));
+      SubTask = AllocateZeroPool(sizeof (ATA_BUS_ASYN_SUB_TASK));
       if (SubTask == NULL) {
         Status = EFI_OUT_OF_RESOURCES;
         goto EXIT;
@@ -896,7 +896,7 @@ AccessAtaDevice(
       // If resource allocation fail, the un-signalled event count should equal to
       // the original one minus the unassigned subtasks number.
       //
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         Status = EFI_OUT_OF_RESOURCES;
         goto EXIT;
       }
@@ -910,7 +910,7 @@ AccessAtaDevice(
       Status = TransferAtaDevice (AtaDevice, NULL, Buffer, StartLba, (UINT32) TransferBlockNumber, IsWrite, NULL);
     }
 
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       goto EXIT;
     }
 
@@ -924,15 +924,15 @@ EXIT:
     //
     // Release resource at non-blocking mode.
     //
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       OldTpl = gBS->RaiseTPL (TPL_NOTIFY);
       Token->TransactionStatus = Status;
       *EventCount = (*EventCount) - (TempCount - Index);
       *IsError    = TRUE;
 
       if (*EventCount == 0) {
-        FreePool (EventCount);
-        FreePool (IsError);
+        FreePool(EventCount);
+        FreePool(IsError);
       }
 
       if (SubTask != NULL) {
@@ -1042,8 +1042,8 @@ TrustTransferAtaDevice (
         return EFI_OUT_OF_RESOURCES;
       }
 
-      CopyMem (NewBuffer, Buffer, TransferLength);
-      FreePool (Buffer);
+      CopyMem(NewBuffer, Buffer, TransferLength);
+      FreePool(Buffer);
       Buffer = NewBuffer;
     }
     Packet->OutDataBuffer = Buffer;

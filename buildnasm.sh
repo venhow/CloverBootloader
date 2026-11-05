@@ -8,7 +8,7 @@
 # Nasm source version
 # here we can change source versions of tools
 #
-export NASM_VERSION=${NASM_VERSION:-2.14.02}
+export NASM_VERSION=${NASM_VERSION:-2.16.03}
 
 # Change PREFIX if you want nasm installed on different place
 #
@@ -94,7 +94,7 @@ fnDownloadNasm ()
     local tarball="nasm-${NASM_VERSION}.tar.xz"
     if [[ ! -f "$tarball" ]]; then
         echo "Status: $tarball not found."
-        curl -f -o download.tmp --remote-name https://ftp.osuosl.org/pub/blfs/conglomeration/nasm/$tarball || exit 1
+        curl -k -f -o download.tmp --remote-name https://ftp2.osuosl.org/pub/blfs/conglomeration/nasm/$tarball || exit 1
         mv download.tmp $tarball
     fi
 }

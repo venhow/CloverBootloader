@@ -49,7 +49,7 @@ NetbufAllocStruct (
   //
   // Allocate three memory blocks.
   //
-  Nbuf = AllocateZeroPool (NET_BUF_SIZE (BlockOpNum));
+  Nbuf = AllocateZeroPool(NET_BUF_SIZE (BlockOpNum));
 
   if (Nbuf == NULL) {
     return NULL;
@@ -61,7 +61,7 @@ NetbufAllocStruct (
   InitializeListHead (&Nbuf->List);
 
   if (BlockNum != 0) {
-    Vector = AllocateZeroPool (NET_VECTOR_SIZE (BlockNum));
+    Vector = AllocateZeroPool(NET_VECTOR_SIZE (BlockNum));
 
     if (Vector == NULL) {
       goto FreeNbuf;
@@ -77,7 +77,7 @@ NetbufAllocStruct (
 
 FreeNbuf:
 
-  FreePool (Nbuf);
+  FreePool(Nbuf);
   return NULL;
 }
 
@@ -132,7 +132,7 @@ NetbufAlloc (
   return Nbuf;
 
 FreeNBuf:
-  FreePool (Nbuf);
+  FreePool(Nbuf);
   return NULL;
 }
 
@@ -170,7 +170,7 @@ NetbufFreeVector (
     // first block since it is allocated by us
     //
     if ((Vector->Flag & NET_VECTOR_OWN_FIRST) != 0) {
-      gBS->FreePool (Vector->Block[0].Bulk);
+      gBS->FreePool(Vector->Block[0].Bulk);
     }
 
     Vector->Free (Vector->Arg);
@@ -180,11 +180,11 @@ NetbufFreeVector (
     // Free each memory block associated with the Vector
     //
     for (Index = 0; Index < Vector->BlockNum; Index++) {
-      gBS->FreePool (Vector->Block[Index].Bulk);
+      gBS->FreePool(Vector->Block[Index].Bulk);
     }
   }
 
-  FreePool (Vector);
+  FreePool(Vector);
 }
 
 
@@ -218,7 +218,7 @@ NetbufFree (
     // all the sharing of Nbuf increse Vector's RefCnt by one
     //
     NetbufFreeVector (Nbuf->Vector);
-    FreePool (Nbuf);
+    FreePool(Nbuf);
   }
 }
 
@@ -258,14 +258,14 @@ NetbufClone (
   Clone->Ip   = Nbuf->Ip;
   Clone->Tcp  = Nbuf->Tcp;
 
-  CopyMem (Clone->ProtoData, Nbuf->ProtoData, NET_PROTO_DATA);
+  CopyMem(Clone->ProtoData, Nbuf->ProtoData, NET_PROTO_DATA);
 
   NET_GET_REF (Nbuf->Vector);
 
   Clone->Vector     = Nbuf->Vector;
   Clone->BlockOpNum = Nbuf->BlockOpNum;
   Clone->TotalSize  = Nbuf->TotalSize;
-  CopyMem (Clone->BlockOp, Nbuf->BlockOp, sizeof (NET_BLOCK_OP) * Nbuf->BlockOpNum);
+  CopyMem(Clone->BlockOp, Nbuf->BlockOp, sizeof (NET_BLOCK_OP) * Nbuf->BlockOpNum);
 
   return Clone;
 }
@@ -311,7 +311,7 @@ NetbufDuplicate (
   // Don't set the IP and TCP head point, since it is most
   // like that they are pointing to the memory of Nbuf.
   //
-  CopyMem (Duplicate->ProtoData, Nbuf->ProtoData, NET_PROTO_DATA);
+  CopyMem(Duplicate->ProtoData, Nbuf->ProtoData, NET_PROTO_DATA);
   NetbufReserve (Duplicate, HeadSpace);
 
   Dst = NetbufAllocSpace (Duplicate, Nbuf->TotalSize, NET_BUF_TAIL);
@@ -680,12 +680,12 @@ NetbufGetFragment (
       );
   }
 
-  CopyMem (Child->ProtoData, Nbuf->ProtoData, NET_PROTO_DATA);
+  CopyMem(Child->ProtoData, Nbuf->ProtoData, NET_PROTO_DATA);
   return Child;
 
 FreeChild:
 
-  FreePool (Child);
+  FreePool(Child);
   return NULL;
 }
 
@@ -787,7 +787,7 @@ NetbufFromExt (
 
     for (Index = 0; Index < ExtNum; Index++) {
       if (Len >= ExtFragment[Index].Len) {
-        CopyMem (Header, ExtFragment[Index].Bulk, ExtFragment[Index].Len);
+        CopyMem(Header, ExtFragment[Index].Bulk, ExtFragment[Index].Len);
 
         Copied    += ExtFragment[Index].Len;
         Len       -= ExtFragment[Index].Len;
@@ -805,7 +805,7 @@ NetbufFromExt (
         }
 
       } else {
-        CopyMem (Header, ExtFragment[Index].Bulk, Len);
+        CopyMem(Header, ExtFragment[Index].Bulk, Len);
 
         Copied    += Len;
         TotalLen  += Len;
@@ -868,7 +868,7 @@ NetbufFromExt (
 
 FreeFirstBlock:
   if (FirstBlock != NULL) {
-    FreePool (FirstBlock);
+    FreePool(FirstBlock);
   }
   return NULL;
 }
@@ -989,7 +989,7 @@ NetbufFromBufList (
   }
 
   Nbuf = NetbufFromExt (Fragment, Current, HeadSpace, HeaderLen, ExtFree, Arg);
-  FreePool (Fragment);
+  FreePool(Fragment);
 
   return Nbuf;
 }
@@ -1293,11 +1293,11 @@ NetbufCopy (
   Left  = BlockOp[Index].Size - Skip;
 
   if (Len <= Left) {
-    CopyMem (Dest, BlockOp[Index].Head + Skip, Len);
+    CopyMem(Dest, BlockOp[Index].Head + Skip, Len);
     return Len;
   }
 
-  CopyMem (Dest, BlockOp[Index].Head + Skip, Left);
+  CopyMem(Dest, BlockOp[Index].Head + Skip, Left);
 
   Dest  += Left;
   Len   -= Left;
@@ -1310,11 +1310,11 @@ NetbufCopy (
       Len    -= BlockOp[Index].Size;
       Copied += BlockOp[Index].Size;
 
-      CopyMem (Dest, BlockOp[Index].Head, BlockOp[Index].Size);
+      CopyMem(Dest, BlockOp[Index].Head, BlockOp[Index].Size);
       Dest   += BlockOp[Index].Size;
     } else {
       Copied += Len;
-      CopyMem (Dest, BlockOp[Index].Head, Len);
+      CopyMem(Dest, BlockOp[Index].Head, Len);
       break;
     }
   }
@@ -1394,7 +1394,7 @@ NetbufQueFree (
 
   if (NbufQue->RefCnt == 0) {
     NetbufQueFlush (NbufQue);
-    FreePool (NbufQue);
+    FreePool(NbufQue);
   }
 }
 
@@ -1887,10 +1887,10 @@ NetIpSecNetbufFree (
     // allocated by us
     //
     if ((Nbuf->Vector->Flag & NET_VECTOR_OWN_FIRST) != 0) {
-      FreePool (Nbuf->Vector->Block[0].Bulk);
+      FreePool(Nbuf->Vector->Block[0].Bulk);
     }
-    FreePool (Nbuf->Vector);
-    FreePool (Nbuf); 
+    FreePool(Nbuf->Vector);
+    FreePool(Nbuf); 
   } 
 }
 

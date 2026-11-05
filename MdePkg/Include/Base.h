@@ -28,64 +28,12 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 #pragma warning ( disable : 4200 )
 #endif
 
-/**
-  Verifies the storage size of a given data type.
-
-  This macro generates a divide by zero error or a zero size array declaration in
-  the preprocessor if the size is incorrect.  These are declared as "extern" so
-  the space for these arrays will not be in the modules.
-
-  @param  TYPE  The date type to determine the size of.
-  @param  Size  The expected size for the TYPE.
-
-**/
-#define VERIFY_SIZE_OF(TYPE, Size) extern UINT8 _VerifySizeof##TYPE[(sizeof(TYPE) == (Size)) / (sizeof(TYPE) == (Size))]
-
-//
-// Verify that ProcessorBind.h produced UEFI Data Types that are compliant with
-// Section 2.3.1 of the UEFI 2.3 Specification.
-//
-VERIFY_SIZE_OF (BOOLEAN, 1);
-VERIFY_SIZE_OF (INT8, 1);
-VERIFY_SIZE_OF (UINT8, 1);
-VERIFY_SIZE_OF (INT16, 2);
-VERIFY_SIZE_OF (UINT16, 2);
-VERIFY_SIZE_OF (INT32, 4);
-VERIFY_SIZE_OF (UINT32, 4);
-VERIFY_SIZE_OF (INT64, 8);
-VERIFY_SIZE_OF (UINT64, 8);
-VERIFY_SIZE_OF (CHAR8, 1);
-VERIFY_SIZE_OF (CHAR16, 2);
-
-//
-// The following three enum types are used to verify that the compiler
-// configuration for enum types is compliant with Section 2.3.1 of the
-// UEFI 2.3 Specification. These enum types and enum values are not
-// intended to be used. A prefix of '__' is used avoid conflicts with
-// other types.
-//
-typedef enum {
-  __VerifyUint8EnumValue = 0xff
-} __VERIFY_UINT8_ENUM_SIZE;
-
-typedef enum {
-  __VerifyUint16EnumValue = 0xffff
-} __VERIFY_UINT16_ENUM_SIZE;
-
-typedef enum {
-  __VerifyUint32EnumValue = 0xffffffff
-} __VERIFY_UINT32_ENUM_SIZE;
-
-VERIFY_SIZE_OF (__VERIFY_UINT8_ENUM_SIZE, 4);
-VERIFY_SIZE_OF (__VERIFY_UINT16_ENUM_SIZE, 4);
-VERIFY_SIZE_OF (__VERIFY_UINT32_ENUM_SIZE, 4);
-
 //
 // The Microsoft* C compiler can removed references to unreferenced data items
 //  if the /OPT:REF linker option is used. We defined a macro as this is a
 //  a non standard extension
 //
-#if defined(_MSC_EXTENSIONS) && _MSC_VER < 1800 && !defined (MDE_CPU_EBC)
+#if defined(_MSC_VER) && _MSC_VER < 1800 && !defined (MDE_CPU_EBC)
   ///
   /// Remove global variable from the linked image if there are no references to
   /// it after all compiler and linker optimizations have been performed.
@@ -247,7 +195,7 @@ VERIFY_SIZE_OF (__VERIFY_UINT32_ENUM_SIZE, 4);
 ///
 #define ASM_PFX(name) _CONCATENATE (__USER_LABEL_PREFIX__, name)
 
-#if __APPLE__
+#ifdef __APPLE__
   //
   // Apple extension that is used by the linker to optimize code size
   // with assembly functions. Put at the end of your .S files
@@ -267,6 +215,7 @@ VERIFY_SIZE_OF (__VERIFY_UINT32_ENUM_SIZE, 4);
   #define PACKED
 #endif
 
+#ifndef GUID_PLUSPLUS_DEFINED
 ///
 /// 128 bit buffer containing a unique identifier value.
 /// Unless otherwise specified, aligned on a 64 bit boundary.
@@ -277,6 +226,11 @@ typedef struct {
   UINT16  Data3;
   UINT8   Data4[8];
 } GUID;
+
+#define CONST_EFI_GUID_PTR_T  IN CONST EFI_GUID*
+#define JCONST_EFI_GUID_PTR_T  IN JCONST EFI_GUID*
+
+#endif
 
 ///
 /// 4-byte buffer. An IPv4 internet protocol address.
@@ -318,6 +272,10 @@ struct _LIST_ENTRY {
 /// Datum is read-only.
 ///
 #define CONST     const
+// JCONST is for when CONST has been forgotten, creating problem to C++ compiler. When compiling Clover, JCONST is defined to const
+#ifndef JCONST
+#define JCONST
+#endif
 
 ///
 /// Datum is scoped to the current file or function.
@@ -370,7 +328,11 @@ struct _LIST_ENTRY {
 ///
 /// NULL pointer (VOID *)
 ///
+#ifdef __cplusplus
+#define NULL  nullptr
+#else
 #define NULL  ((VOID *) 0)
+#endif
 
 //
 // Null character
@@ -673,7 +635,7 @@ typedef char* VA_LIST;
 #define VA_END(Marker)                  (Marker = (VA_LIST) 0)
 #define VA_COPY(Dest, Start)            ((void)((Dest) = (Start)))
 
-#elif defined(__GNUC__)
+#elif defined(__GNUC__) || defined(__clang__)
 
 #if defined(MDE_CPU_X64) && !defined(NO_MSABI_VA_FUNCS)
 //
@@ -833,15 +795,117 @@ typedef UINTN  *BASE_LIST;
   @return  Offset, in bytes, of field.
 
 **/
-#ifdef __GNUC__
-#if __GNUC__ >= 4
+#if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__clang__)
 #define OFFSET_OF(TYPE, Field) ((UINTN) __builtin_offsetof(TYPE, Field))
-#endif
 #endif
 
 #ifndef OFFSET_OF
 #define OFFSET_OF(TYPE, Field) ((UINTN) &(((TYPE *)0)->Field))
 #endif
+
+/**
+  Returns the alignment requirement of a type.
+
+  @param   TYPE  The name of the type to retrieve the alignment requirement of.
+
+  @return  Alignment requirement, in Bytes, of TYPE.
+**/
+#if defined(__cplusplus) && __cplusplus >= 201103L
+  //
+  // C++ 11 and later support the standard operator alignof.
+  //
+  #define ALIGNOF(TYPE)  alignof (TYPE)
+#elif ((defined(__GNUC__) || (defined(_MSC_VER) && _MSC_VER >= 1900)) && !defined (__cplusplus)) || defined(__clang__)
+  //
+  // All supported versions of GCC and Clang, as well as MSVC 2015 and later,
+  // support the standard operator _Alignof in C mode. GCC and MSVC do not
+  // support it in C++ mode though.
+  //
+  #define ALIGNOF(TYPE)  _Alignof (TYPE)
+#elif defined(__GNUC__)
+  //
+  // GCC does not support _Alignof in C++ mode, unlike Clang. The vendor-
+  // extenstion is supported in both C and C++ mode.
+  //
+  #define ALIGNOF(TYPE)  __alignof__ (TYPE)
+#elif defined(_MSC_EXTENSIONS)
+  //
+  // Earlier versions of MSVC, at least MSVC 2008 and later, as well as current
+  // versions in C++ mode support the vendor-extension __alignof.
+  //
+  #define ALIGNOF(TYPE)  __alignof (TYPE)
+#else
+//
+// For compilers that do not support inbuilt alignof operators, use OFFSET_OF.
+// CHAR8 is known to have both a size and an alignment requirement of 1 Byte.
+// As such, A must be located exactly at the offset equal to its alignment
+// requirement.
+//
+#define ALIGNOF(TYPE)  OFFSET_OF (struct { CHAR8 C; TYPE A; }, A)
+#endif
+
+/**
+  Portable definition for compile time assertions.
+  Equivalent to C11 static_assert macro from assert.h.
+
+  @param  Expression  Boolean expression.
+  @param  Message     Raised compiler diagnostic message when expression is false.
+
+**/
+#ifdef __cplusplus
+  #define STATIC_ASSERT(Expression, Message) static_assert(Expression, Message)
+#else
+  #ifdef MDE_CPU_EBC
+    #define STATIC_ASSERT(Expression, Message)
+  #elif defined(_MSC_EXTENSIONS)
+    #define STATIC_ASSERT static_assert
+  #else
+    #define STATIC_ASSERT _Static_assert
+  #endif
+#endif
+
+//
+// Verify that ProcessorBind.h produced UEFI Data Types that are compliant with
+// Section 2.3.1 of the UEFI 2.3 Specification.
+//
+
+STATIC_ASSERT (sizeof (BOOLEAN) == 1, "sizeof (BOOLEAN) does not meet UEFI Specification Data Type requirements");
+STATIC_ASSERT (sizeof (INT8)    == 1, "sizeof (INT8) does not meet UEFI Specification Data Type requirements");
+STATIC_ASSERT (sizeof (UINT8)   == 1, "sizeof (UINT8) does not meet UEFI Specification Data Type requirements");
+STATIC_ASSERT (sizeof (INT16)   == 2, "sizeof (INT16) does not meet UEFI Specification Data Type requirements");
+STATIC_ASSERT (sizeof (UINT16)  == 2, "sizeof (UINT16) does not meet UEFI Specification Data Type requirements");
+STATIC_ASSERT (sizeof (INT32)   == 4, "sizeof (INT32) does not meet UEFI Specification Data Type requirements");
+STATIC_ASSERT (sizeof (UINT32)  == 4, "sizeof (UINT32) does not meet UEFI Specification Data Type requirements");
+STATIC_ASSERT (sizeof (INT64)   == 8, "sizeof (INT64) does not meet UEFI Specification Data Type requirements");
+STATIC_ASSERT (sizeof (UINT64)  == 8, "sizeof (UINT64) does not meet UEFI Specification Data Type requirements");
+STATIC_ASSERT (sizeof (CHAR8)   == 1, "sizeof (CHAR8) does not meet UEFI Specification Data Type requirements");
+#ifdef __cplusplus
+  //sizeof(CHAR16) == 4
+#else
+STATIC_ASSERT (sizeof (CHAR16)  == 2, "sizeof (CHAR16) does not meet UEFI Specification Data Type requirements");
+#endif
+//
+// The following three enum types are used to verify that the compiler
+// configuration for enum types is compliant with Section 2.3.1 of the
+// UEFI 2.3 Specification. These enum types and enum values are not
+// intended to be used. A prefix of '__' is used avoid conflicts with
+// other types.
+//
+typedef enum {
+  __VerifyUint8EnumValue = 0xff
+} __VERIFY_UINT8_ENUM_SIZE;
+
+typedef enum {
+  __VerifyUint16EnumValue = 0xffff
+} __VERIFY_UINT16_ENUM_SIZE;
+
+typedef enum {
+  __VerifyUint32EnumValue = 0xffffffff
+} __VERIFY_UINT32_ENUM_SIZE;
+
+STATIC_ASSERT (sizeof (__VERIFY_UINT8_ENUM_SIZE) == 4, "Size of enum does not meet UEFI Specification Data Type requirements");
+STATIC_ASSERT (sizeof (__VERIFY_UINT16_ENUM_SIZE) == 4, "Size of enum does not meet UEFI Specification Data Type requirements");
+STATIC_ASSERT (sizeof (__VERIFY_UINT32_ENUM_SIZE) == 4, "Size of enum does not meet UEFI Specification Data Type requirements");
 
 /**
   Macro that returns a pointer to the data structure that contains a specified field of
@@ -863,6 +927,60 @@ typedef UINTN  *BASE_LIST;
 
 **/
 #define BASE_CR(Record, TYPE, Field)  ((TYPE *) ((CHAR8 *) (Record) - OFFSET_OF (TYPE, Field)))
+
+/**
+  Checks whether a value is a power of two.
+
+  @param   Value  The value to check.
+
+  @retval TRUE   Value is a power of two.
+  @retval FALSE  Value is not a power of two.
+**/
+#define IS_POW2(Value)  ((Value) != 0U && ((Value) & ((Value) - 1U)) == 0U)
+
+/**
+  Determines the subtrahend to subtract from a value to round it down to the
+  previous boundary of a specified alignment.
+
+  @param   Value      The value to round down.
+  @param   Alignment  The alignment boundary used to return the subtrahend.
+
+  @return  Subtrahend to round Value down to alignment boundary Alignment.
+**/
+#define ALIGN_VALUE_SUBTRAHEND(Value, Alignment)  ((Value) & ((Alignment) - 1U))
+
+/**
+  Checks whether a value is aligned by a specified alignment.
+
+  @param   Value      The value to check.
+  @param   Alignment  The alignment boundary used to check against.
+
+  @retval TRUE   Value is aligned by Alignment.
+  @retval FALSE  Value is not aligned by Alignment.
+**/
+#define IS_ALIGNED(Value, Alignment)  (ALIGN_VALUE_SUBTRAHEND (Value, Alignment) == 0U)
+
+/**
+  Checks whether a pointer or address is aligned by a specified alignment.
+
+  @param   Address    The pointer or address to check.
+  @param   Alignment  The alignment boundary used to check against.
+
+  @retval TRUE   Address is aligned by Alignment.
+  @retval FALSE  Address is not aligned by Alignment.
+**/
+#define ADDRESS_IS_ALIGNED(Address, Alignment)  IS_ALIGNED ((UINTN) (Address), Alignment)
+
+/**
+  Determines the addend to add to a value to round it up to the next boundary of
+  a specified alignment.
+
+  @param   Value      The value to round up.
+  @param   Alignment  The alignment boundary used to return the addend.
+
+  @return  Addend to round Value up to alignment boundary Alignment.
+**/
+#define ALIGN_VALUE_ADDEND(Value, Alignment)  (((Alignment) - (Value)) & ((Alignment) - 1U))
 
 /**
   Rounds a value up to the next boundary using a specified alignment.
@@ -1270,7 +1388,7 @@ typedef UINTN RETURN_STATUS;
 
   **/
   #define RETURN_ADDRESS(L)     ((L == 0) ? _ReturnAddress() : (VOID *) 0)
-#elif defined(__GNUC__)
+#elif defined (__GNUC__) || defined (__clang__)
   void * __builtin_return_address (unsigned int level);
   /**
     Get the return address of the calling function.

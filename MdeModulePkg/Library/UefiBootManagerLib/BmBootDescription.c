@@ -158,7 +158,7 @@ BmGetDescriptionFromDiskInfo (
                   &gEfiDiskInfoProtocolGuid,
                   (VOID **) &DiskInfo
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return NULL;
   }
 
@@ -170,8 +170,8 @@ BmGetDescriptionFromDiskInfo (
                          &IdentifyData,
                          &BufferSize
                          );
-    if (!EFI_ERROR (Status)) {
-      Description = AllocateZeroPool ((ModelNameLength + SerialNumberLength + 2) * sizeof (CHAR16));
+    if (!EFI_ERROR(Status)) {
+      Description = AllocateZeroPool((ModelNameLength + SerialNumberLength + 2) * sizeof (CHAR16));
       ASSERT (Description != NULL);
       for (Index = 0; Index + 1 < ModelNameLength; Index += 2) {
         Description[Index]     = (CHAR16) IdentifyData.ModelName[Index + 1];
@@ -198,8 +198,8 @@ BmGetDescriptionFromDiskInfo (
                          &InquiryData,
                          &BufferSize
                          );
-    if (!EFI_ERROR (Status)) {
-      Description = AllocateZeroPool ((VENDOR_IDENTIFICATION_LENGTH + PRODUCT_IDENTIFICATION_LENGTH + 2) * sizeof (CHAR16));
+    if (!EFI_ERROR(Status)) {
+      Description = AllocateZeroPool((VENDOR_IDENTIFICATION_LENGTH + PRODUCT_IDENTIFICATION_LENGTH + 2) * sizeof (CHAR16));
       ASSERT (Description != NULL);
 
       //
@@ -245,7 +245,7 @@ BmGetDescriptionFromDiskInfo (
       return NULL;
     }
 
-    Description = AllocateCopyPool (StrSize (Description), Description);
+    Description = AllocateCopyPool(StrSize (Description), Description);
   }
 
   return Description;
@@ -278,14 +278,14 @@ BmGetUsbDescription (
                   &gEfiUsbIoProtocolGuid,
                   (VOID **) &UsbIo
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return NULL;
   }
 
   NullChar = L'\0';
 
   Status = UsbIo->UsbGetDeviceDescriptor (UsbIo, &DevDesc);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return NULL;
   }
 
@@ -295,7 +295,7 @@ BmGetUsbDescription (
                     DevDesc.StrManufacturer,
                     &Manufacturer
                     );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     Manufacturer = &NullChar;
   }
 
@@ -305,7 +305,7 @@ BmGetUsbDescription (
                     DevDesc.StrProduct,
                     &Product
                     );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     Product = &NullChar;
   }
 
@@ -315,7 +315,7 @@ BmGetUsbDescription (
                     DevDesc.StrSerialNumber,
                     &SerialNumber
                     );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     SerialNumber = &NullChar;
   }
 
@@ -327,7 +327,7 @@ BmGetUsbDescription (
   }
 
   DescMaxSize = StrSize (Manufacturer) + StrSize (Product) + StrSize (SerialNumber);
-  Description = AllocateZeroPool (DescMaxSize);
+  Description = AllocateZeroPool(DescMaxSize);
   ASSERT (Description != NULL);
   StrCatS (Description, DescMaxSize/sizeof(CHAR16), Manufacturer);
   StrCatS (Description, DescMaxSize/sizeof(CHAR16), L" ");
@@ -338,13 +338,13 @@ BmGetUsbDescription (
   StrCatS (Description, DescMaxSize/sizeof(CHAR16), SerialNumber);
 
   if (Manufacturer != &NullChar) {
-    FreePool (Manufacturer);
+    FreePool(Manufacturer);
   }
   if (Product != &NullChar) {
-    FreePool (Product);
+    FreePool(Product);
   }
   if (SerialNumber != &NullChar) {
-    FreePool (SerialNumber);
+    FreePool(SerialNumber);
   }
 
   BmEliminateExtraSpaces (Description);
@@ -381,7 +381,7 @@ BmGetNetworkDescription (
                   Handle,
                   EFI_OPEN_PROTOCOL_TEST_PROTOCOL
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return NULL;
   }
 
@@ -393,7 +393,7 @@ BmGetNetworkDescription (
                   Handle,
                   EFI_OPEN_PROTOCOL_GET_PROTOCOL
                   );
-  if (EFI_ERROR (Status) || (DevicePath == NULL)) {
+  if (EFI_ERROR(Status) || (DevicePath == NULL)) {
     return NULL;
   }
 
@@ -517,7 +517,7 @@ BmGetLoadFileDescription (
   EFI_LOAD_FILE_PROTOCOL                *LoadFile;
 
   Status = gBS->HandleProtocol (Handle, &gEfiLoadFileProtocolGuid, (VOID **)&LoadFile);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return NULL;
   }
 
@@ -526,7 +526,7 @@ BmGetLoadFileDescription (
   //
   Description = NULL;
   Status = gBS->HandleProtocol (Handle, &gEfiDevicePathProtocolGuid, (VOID **)&FilePath);
-  if (!EFI_ERROR (Status)) {
+  if (!EFI_ERROR(Status)) {
     DevicePathNode = FilePath;
     while (!IsDevicePathEnd (DevicePathNode)) {
       if (DevicePathNode->Type == MEDIA_DEVICE_PATH && DevicePathNode->SubType == MEDIA_FILEPATH_DP) {
@@ -538,7 +538,7 @@ BmGetLoadFileDescription (
   }
 
   if (Description != NULL) {
-    return AllocateCopyPool (StrSize (Description), Description);
+    return AllocateCopyPool(StrSize (Description), Description);
   }
 
   return NULL;
@@ -568,12 +568,12 @@ BmGetNvmeDescription (
   UINTN                                    Index;
 
   Status = gBS->HandleProtocol (Handle, &gEfiDevicePathProtocolGuid, (VOID **) &DevicePath.DevPath);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return NULL;
   }
 
   Status = gBS->LocateDevicePath (&gEfiNvmExpressPassThruProtocolGuid, &DevicePath.DevPath, &Handle);
-  if (EFI_ERROR (Status) ||
+  if (EFI_ERROR(Status) ||
       (DevicePathType (DevicePath.DevPath) != MESSAGING_DEVICE_PATH) ||
       (DevicePathSubType (DevicePath.DevPath) != MSG_NVME_NAMESPACE_DP)) {
     //
@@ -586,7 +586,7 @@ BmGetNvmeDescription (
   // Send ADMIN_IDENTIFY command to NVME controller to get the model and serial number.
   //
   Status = gBS->HandleProtocol (Handle, &gEfiNvmExpressPassThruProtocolGuid, (VOID **) &NvmePassthru);
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   ZeroMem (&CommandPacket, sizeof(EFI_NVM_EXPRESS_PASS_THRU_COMMAND_PACKET));
   ZeroMem (&Command, sizeof(EFI_NVM_EXPRESS_COMMAND));
@@ -616,11 +616,11 @@ BmGetNvmeDescription (
                                &CommandPacket,
                                NULL
                                );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return NULL;
   }
 
-  Description = AllocateZeroPool (
+  Description = AllocateZeroPool(
                   (ARRAY_SIZE (ControllerData.Mn) + 1
                    + ARRAY_SIZE (ControllerData.Sn) + 1
                    + MAXIMUM_VALUE_CHARACTERS + 1
@@ -670,7 +670,7 @@ BmGetMiscDescription (
   case BmMessageAtapiBoot:
   case BmMessageSataBoot:
     Status = gBS->HandleProtocol (Handle, &gEfiBlockIoProtocolGuid, (VOID **) &BlockIo);
-    ASSERT_EFI_ERROR (Status);
+    ASSERT_EFI_ERROR(Status);
     //
     // Assume a removable SATA device should be the DVD/CD device
     //
@@ -687,7 +687,7 @@ BmGetMiscDescription (
 
   case BmHardwareDeviceBoot:
     Status = gBS->HandleProtocol (Handle, &gEfiBlockIoProtocolGuid, (VOID **) &BlockIo);
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       Description = BlockIo->Media->RemovableMedia ? L"Removable Disk" : L"Hard Drive";
     } else {
       Description = L"Misc Device";
@@ -696,7 +696,7 @@ BmGetMiscDescription (
 
   default:
     Status = gBS->HandleProtocol (Handle, &gEfiSimpleFileSystemProtocolGuid, (VOID **) &Fs);
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       Description = L"Non-Block Boot Device";
     } else {
       Description = L"Misc Device";
@@ -704,7 +704,7 @@ BmGetMiscDescription (
     break;
   }
 
-  return AllocateCopyPool (StrSize (Description), Description);
+  return AllocateCopyPool(StrSize (Description), Description);
 }
 
 /**
@@ -789,7 +789,7 @@ BmGetBootDescription (
       ASSERT (Temp != NULL);
       StrCpyS (Temp, (StrSize (DefaultDescription) + sizeof (mBmUefiPrefix)) / sizeof (CHAR16), mBmUefiPrefix);
       StrCatS (Temp, (StrSize (DefaultDescription) + sizeof (mBmUefiPrefix)) / sizeof (CHAR16), DefaultDescription);
-      FreePool (DefaultDescription);
+      FreePool(DefaultDescription);
       DefaultDescription = Temp;
       break;
     }
@@ -806,7 +806,7 @@ BmGetBootDescription (
     Entry = CR (Link, BM_BOOT_DESCRIPTION_ENTRY, Link, BM_BOOT_DESCRIPTION_ENTRY_SIGNATURE);
     Description = Entry->Handler (Handle, DefaultDescription);
     if (Description != NULL) {
-      FreePool (DefaultDescription);
+      FreePool(DefaultDescription);
       return Description;
     }
   }
@@ -847,7 +847,7 @@ BmMakeBootOptionDescriptionUnique (
     MaxSuffixSize += sizeof (CHAR16);
   }
 
-  Visited = AllocateZeroPool (sizeof (BOOLEAN) * BootOptionCount);
+  Visited = AllocateZeroPool(sizeof (BOOLEAN) * BootOptionCount);
   ASSERT (Visited != NULL);
 
   for (Base = 0; Base < BootOptionCount; Base++) {
@@ -859,7 +859,7 @@ BmMakeBootOptionDescriptionUnique (
         if (!Visited[Index] && StrCmp (BootOptions[Base].Description, BootOptions[Index].Description) == 0) {
           Visited[Index] = TRUE;
           MatchCount++;
-          FreePool (BootOptions[Index].Description);
+          FreePool(BootOptions[Index].Description);
           BootOptions[Index].Description = AllocatePool (DescriptionSize + MaxSuffixSize);
           UnicodeSPrint (
             BootOptions[Index].Description, DescriptionSize + MaxSuffixSize,
@@ -871,5 +871,5 @@ BmMakeBootOptionDescriptionUnique (
     }
   }
 
-  FreePool (Visited);
+  FreePool(Visited);
 }

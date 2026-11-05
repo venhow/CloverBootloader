@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>BuildMachineOSBuild</key>
-	<string>17G7024</string>
+	<string>24E248</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
@@ -17,7 +17,7 @@
 	<key>CFBundlePackageType</key>
 	<string>KEXT</string>
 	<key>CFBundleShortVersionString</key>
-	<string>3.5.2</string>
+	<string>3.5.6</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleSupportedPlatforms</key>
@@ -25,21 +25,23 @@
 		<string>MacOSX</string>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>3.5.2</string>
+	<string>3.5.6</string>
 	<key>DTCompiler</key>
 	<string>com.apple.compilers.llvm.clang.1_0</string>
 	<key>DTPlatformBuild</key>
-	<string>10B61</string>
+	<string>24E241</string>
+	<key>DTPlatformName</key>
+	<string>macosx</string>
 	<key>DTPlatformVersion</key>
-	<string>GM</string>
+	<string>15.4</string>
 	<key>DTSDKBuild</key>
-	<string>15E60</string>
+	<string>24E241</string>
 	<key>DTSDKName</key>
-	<string>macosx10.11</string>
+	<string>macosx15.4</string>
 	<key>DTXcode</key>
-	<string>1010</string>
+	<string>1630</string>
 	<key>DTXcodeBuild</key>
-	<string>10B61</string>
+	<string>16E140</string>
 	<key>IOKitPersonalities</key>
 	<dict>
 		<key>SMC Device Emulator</key>
@@ -166,7 +168,7 @@
 					<array>
 						<string>si8</string>
 						<data>
-						Aw==
+						BQ==
 						</data>
 					</array>
 					<key>NATJ</key>
@@ -218,6 +220,13 @@
 						ATAPAAAD
 						</data>
 					</array>
+					<key>RGEN</key>
+					<array>
+						<string>ui8</string>
+						<data>
+						Ag==
+						</data>
+					</array>
 					<key>RMde</key>
 					<array>
 						<string>char</string>
@@ -229,6 +238,13 @@
 					<array>
 						<string>ch8*</string>
 						<string>m82</string>
+					</array>
+					<key>RVBF</key>
+					<array>
+						<string>{rev</string>
+						<data>
+						ATAPAAAD
+						</data>
 					</array>
 				</dict>
 				<key>debug</key>
@@ -246,6 +262,8 @@
 			<string>ACPI</string>
 		</dict>
 	</dict>
+	<key>LSMinimumSystemVersion</key>
+	<string>10.13</string>
 	<key>OSBundleCompatibleVersion</key>
 	<string>3.3.0</string>
 	<key>OSBundleLibraries</key>

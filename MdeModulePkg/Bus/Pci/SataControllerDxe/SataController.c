@@ -263,7 +263,7 @@ InitializeSataControllerDriver (
              &gSataControllerComponentName,
              &gSataControllerComponentName2
              );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   return Status;
 }
@@ -293,6 +293,30 @@ SataControllerSupported (
   EFI_STATUS            Status;
   EFI_PCI_IO_PROTOCOL   *PciIo;
   PCI_TYPE00            PciData;
+  EFI_DEVICE_PATH_PROTOCOL  *ParentDevicePath;
+    //
+    // Attempt to open DevicePath Protocol
+    //
+    Status = gBS->OpenProtocol (
+                    Controller,
+                    &gEfiDevicePathProtocolGuid,
+                    (VOID *)&ParentDevicePath,
+                    This->DriverBindingHandle,
+                    Controller,
+                    EFI_OPEN_PROTOCOL_BY_DRIVER
+                    );
+    if (EFI_ERROR (Status)) {
+      return Status;
+    }
+    ///
+    /// Close the protocol because we don't use it here
+    ///
+    gBS->CloseProtocol (
+           Controller,
+           &gEfiDevicePathProtocolGuid,
+           This->DriverBindingHandle,
+           Controller
+           );
 
   //
   // Attempt to open PCI I/O Protocol
@@ -305,7 +329,7 @@ SataControllerSupported (
                   Controller,
                   EFI_OPEN_PROTOCOL_GET_PROTOCOL
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -320,7 +344,7 @@ SataControllerSupported (
                         sizeof (PciData.Hdr.ClassCode),
                         PciData.Hdr.ClassCode
                         );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return EFI_UNSUPPORTED;
   }
 
@@ -377,7 +401,7 @@ SataControllerStart (
                   Controller,
                   EFI_OPEN_PROTOCOL_BY_DRIVER
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG ((EFI_D_ERROR, "SataControllerStart error. return status = %r\n", Status));
     return Status;
   }
@@ -385,7 +409,7 @@ SataControllerStart (
   //
   // Allocate Sata Private Data structure
   //
-  Private = AllocateZeroPool (sizeof (EFI_SATA_CONTROLLER_PRIVATE_DATA));
+  Private = AllocateZeroPool(sizeof (EFI_SATA_CONTROLLER_PRIVATE_DATA));
   if (Private == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Done;
@@ -414,7 +438,7 @@ SataControllerStart (
                     0,
                     &Private->OriginalPciAttributes
                     );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
       goto Done;
   }
 
@@ -430,7 +454,7 @@ SataControllerStart (
                     0,
                     &Supports
                     );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto Done;
   }
 
@@ -443,7 +467,7 @@ SataControllerStart (
                       Supports,
                       NULL
                       );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     goto Done;
   }
 
@@ -457,7 +481,7 @@ SataControllerStart (
                         sizeof (PciData.Hdr.ClassCode),
                         PciData.Hdr.ClassCode
                         );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     ASSERT (FALSE);
     goto Done;
   }
@@ -499,19 +523,19 @@ SataControllerStart (
   }
 
   TotalCount = (UINTN) (Private->IdeInit.ChannelCount) * (UINTN) (Private->DeviceCount);
-  Private->DisqualifiedModes = AllocateZeroPool ((sizeof (EFI_ATA_COLLECTIVE_MODE)) * TotalCount);
+  Private->DisqualifiedModes = AllocateZeroPool((sizeof (EFI_ATA_COLLECTIVE_MODE)) * TotalCount);
   if (Private->DisqualifiedModes == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Done;
   }
 
-  Private->IdentifyData = AllocateZeroPool ((sizeof (EFI_IDENTIFY_DATA)) * TotalCount);
+  Private->IdentifyData = AllocateZeroPool((sizeof (EFI_IDENTIFY_DATA)) * TotalCount);
   if (Private->IdentifyData == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Done;
   }
 
-  Private->IdentifyValid = AllocateZeroPool ((sizeof (BOOLEAN)) * TotalCount);
+  Private->IdentifyValid = AllocateZeroPool((sizeof (BOOLEAN)) * TotalCount);
   if (Private->IdentifyValid == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Done;
@@ -528,7 +552,7 @@ SataControllerStart (
                   );
 
 Done:
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
 
     gBS->CloseProtocol (
           Controller,
@@ -538,13 +562,13 @@ Done:
           );
     if (Private != NULL) {
       if (Private->DisqualifiedModes != NULL) {
-        FreePool (Private->DisqualifiedModes);
+        FreePool(Private->DisqualifiedModes);
       }
       if (Private->IdentifyData != NULL) {
-        FreePool (Private->IdentifyData);
+        FreePool(Private->IdentifyData);
       }
       if (Private->IdentifyValid != NULL) {
-        FreePool (Private->IdentifyValid);
+        FreePool(Private->IdentifyValid);
       }
       if (Private->PciAttributesChanged) {
         //
@@ -557,7 +581,7 @@ Done:
                  NULL
                  );
       }
-      FreePool (Private);
+      FreePool(Private);
     }
   }
 
@@ -602,7 +626,7 @@ SataControllerStop (
                   Controller,
                   EFI_OPEN_PROTOCOL_GET_PROTOCOL
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return EFI_UNSUPPORTED;
   }
 
@@ -618,19 +642,19 @@ SataControllerStop (
                   &(Private->IdeInit),
                   NULL
                   );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
   if (Private != NULL) {
     if (Private->DisqualifiedModes != NULL) {
-      FreePool (Private->DisqualifiedModes);
+      FreePool(Private->DisqualifiedModes);
     }
     if (Private->IdentifyData != NULL) {
-      FreePool (Private->IdentifyData);
+      FreePool(Private->IdentifyData);
     }
     if (Private->IdentifyValid != NULL) {
-      FreePool (Private->IdentifyValid);
+      FreePool(Private->IdentifyValid);
     }
     if (Private->PciAttributesChanged) {
       //
@@ -643,7 +667,7 @@ SataControllerStop (
                         NULL
                         );
     }
-    FreePool (Private);
+    FreePool(Private);
   }
 
   //
@@ -850,7 +874,7 @@ IdeInitSubmitData (
   // Make a local copy of device's IdentifyData and mark the valid flag
   //
   if (IdentifyData != NULL) {
-    CopyMem (
+    CopyMem(
       &(Private->IdentifyData[DeviceIndex]),
       IdentifyData,
       sizeof (EFI_IDENTIFY_DATA)
@@ -929,7 +953,7 @@ IdeInitDisqualifyMode (
   // Record the disqualified modes per channel per device. From ATA/ATAPI spec,
   // if a mode is not supported, the modes higher than it is also not supported.
   //
-  CopyMem (
+  CopyMem(
     &(Private->DisqualifiedModes[DeviceIndex]),
     BadModes,
     sizeof (EFI_ATA_COLLECTIVE_MODE)
@@ -1016,7 +1040,7 @@ IdeInitCalculateMode (
     return EFI_INVALID_PARAMETER;
   }
 
-  *SupportedModes = AllocateZeroPool (sizeof (EFI_ATA_COLLECTIVE_MODE));
+  *SupportedModes = AllocateZeroPool(sizeof (EFI_ATA_COLLECTIVE_MODE));
   if (*SupportedModes == NULL) {
     ASSERT (*SupportedModes != NULL);
     return EFI_OUT_OF_RESOURCES;
@@ -1032,7 +1056,7 @@ IdeInitCalculateMode (
   // Make sure we've got the valid identify data of the device from SubmitData()
   //
   if (!IdentifyValid) {
-    FreePool (*SupportedModes);
+    FreePool(*SupportedModes);
     return EFI_NOT_READY;
   }
 
@@ -1041,7 +1065,7 @@ IdeInitCalculateMode (
             (DisqualifiedModes->PioMode.Valid ? ((UINT16 *) &(DisqualifiedModes->PioMode.Mode)) : NULL),
             &SelectedMode
             );
-  if (!EFI_ERROR (Status)) {
+  if (!EFI_ERROR(Status)) {
     (*SupportedModes)->PioMode.Valid = TRUE;
     (*SupportedModes)->PioMode.Mode = SelectedMode;
 
@@ -1056,7 +1080,7 @@ IdeInitCalculateMode (
             &SelectedMode
             );
 
-  if (!EFI_ERROR (Status)) {
+  if (!EFI_ERROR(Status)) {
     (*SupportedModes)->UdmaMode.Valid = TRUE;
     (*SupportedModes)->UdmaMode.Mode  = SelectedMode;
 

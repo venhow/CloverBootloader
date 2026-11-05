@@ -144,7 +144,7 @@ PcdDxeInit (
                   &gEfiPcdProtocolGuid,  &mEfiPcdInstance,
                   NULL
                   );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   //
   // Install GET_PCD_INFO_PROTOCOL to handle dynamic type PCD
@@ -156,7 +156,7 @@ PcdDxeInit (
                   &gEfiGetPcdInfoProtocolGuid,  &mEfiGetPcdInfoInstance,
                   NULL
                   );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   //
   // Register callback function upon VariableLockProtocol
@@ -310,7 +310,7 @@ DxePcdSetSku (
     if (SkuId == SkuIdTable[Index + 1]) {
       DEBUG ((DEBUG_INFO, "PcdDxe - SkuId is found in SkuId table.\n"));
       Status = UpdatePcdDatabase (SkuId, TRUE);
-      if (!EFI_ERROR (Status)) {
+      if (!EFI_ERROR(Status)) {
         mPcdDatabase.DxeDb->SystemSkuId = (SKU_ID) SkuId;
         DEBUG ((DEBUG_INFO, "PcdDxe - Set current SKU Id to 0x%lx.\n", (SKU_ID) SkuId));
         return;
@@ -1234,7 +1234,7 @@ GetDistinctTokenSpace (
   UINTN     Idx;
   BOOLEAN   Match;
 
-  DistinctTokenSpace = AllocateZeroPool (*ExMapTableSize * sizeof (EFI_GUID *));
+  DistinctTokenSpace = AllocateZeroPool(*ExMapTableSize * sizeof (EFI_GUID *));
   ASSERT (DistinctTokenSpace != NULL);
 
   TsIdx = 0;
@@ -1318,9 +1318,9 @@ DxePcdGetNextTokenSpace (
                             (DYNAMICEX_MAPPING *)((UINT8 *)mPcdDatabase.PeiDb + mPcdDatabase.PeiDb->ExMapTableOffset),
                             (EFI_GUID *)((UINT8 *)mPcdDatabase.PeiDb + mPcdDatabase.PeiDb->GuidTableOffset)
                             );
-      CopyMem (TmpTokenSpaceBuffer, PeiTokenSpaceTable, sizeof (EFI_GUID*) * PeiTokenSpaceTableSize);
+      CopyMem(TmpTokenSpaceBuffer, PeiTokenSpaceTable, sizeof (EFI_GUID*) * PeiTokenSpaceTableSize);
       TmpTokenSpaceBufferCount = PeiTokenSpaceTableSize;
-      FreePool (PeiTokenSpaceTable);
+      FreePool(PeiTokenSpaceTable);
     }
 
     if (!DxeExMapTableEmpty) {
@@ -1347,7 +1347,7 @@ DxePcdGetNextTokenSpace (
       }
 
       TmpTokenSpaceBufferCount = Idx3;
-      FreePool (DxeTokenSpaceTable);
+      FreePool(DxeTokenSpaceTable);
     }
   }
 

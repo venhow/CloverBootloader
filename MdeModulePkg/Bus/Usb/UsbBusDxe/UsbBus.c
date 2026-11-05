@@ -101,14 +101,14 @@ UsbIoControlTransfer (
   // transfered is the same as the number of bytes requested.  If a different
   // number of bytes were transfered, then return EFI_DEVICE_ERROR.
   //
-  if (!EFI_ERROR (Status)) {
+  if (!EFI_ERROR(Status)) {
     if (Direction != EfiUsbNoData && DataLength != RequestedDataLength) {
       Status = EFI_DEVICE_ERROR;
       goto ON_EXIT;
     }
   }
 
-  if (EFI_ERROR (Status) || (*UsbStatus != EFI_USB_NOERROR)) {
+  if (EFI_ERROR(Status) || (*UsbStatus != EFI_USB_NOERROR)) {
     //
     // Clear TT buffer when CTRL/BULK split transaction failes
     // Clear the TRANSLATOR TT buffer, not parent's buffer
@@ -197,7 +197,7 @@ UsbIoControlTransfer (
 
     Status = UsbSelectSetting (UsbIf->IfDesc, (UINT8) Request->Value);
 
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       ASSERT (UsbIf->IfDesc->ActiveIndex < USB_MAX_INTERFACE_SETTING);
       UsbIf->IfSetting = UsbIf->IfDesc->Settings[UsbIf->IfDesc->ActiveIndex];
     }
@@ -281,7 +281,7 @@ UsbIoBulkTransfer (
 
   EpDesc->Toggle = Toggle;
 
-  if (EFI_ERROR (Status) || (*UsbStatus != EFI_USB_NOERROR)) {
+  if (EFI_ERROR(Status) || (*UsbStatus != EFI_USB_NOERROR)) {
     //
     // Clear TT buffer when CTRL/BULK split transaction failes.
     // Clear the TRANSLATOR TT buffer, not parent's buffer
@@ -542,7 +542,7 @@ UsbIoGetDeviceDescriptor (
   UsbIf  = USB_INTERFACE_FROM_USBIO (This);
   Dev    = UsbIf->Device;
 
-  CopyMem (Descriptor, &Dev->DevDesc->Desc, sizeof (EFI_USB_DEVICE_DESCRIPTOR));
+  CopyMem(Descriptor, &Dev->DevDesc->Desc, sizeof (EFI_USB_DEVICE_DESCRIPTOR));
 
   gBS->RestoreTPL (OldTpl);
   return EFI_SUCCESS;
@@ -587,7 +587,7 @@ UsbIoGetActiveConfigDescriptor (
     goto ON_EXIT;
   }
 
-  CopyMem (Descriptor, &(Dev->ActiveConfig->Desc), sizeof (EFI_USB_CONFIG_DESCRIPTOR));
+  CopyMem(Descriptor, &(Dev->ActiveConfig->Desc), sizeof (EFI_USB_CONFIG_DESCRIPTOR));
 
 ON_EXIT:
   gBS->RestoreTPL (OldTpl);
@@ -622,7 +622,7 @@ UsbIoGetInterfaceDescriptor (
   OldTpl = gBS->RaiseTPL (USB_BUS_TPL);
 
   UsbIf  = USB_INTERFACE_FROM_USBIO (This);
-  CopyMem (Descriptor, &(UsbIf->IfSetting->Desc), sizeof (EFI_USB_INTERFACE_DESCRIPTOR));
+  CopyMem(Descriptor, &(UsbIf->IfSetting->Desc), sizeof (EFI_USB_INTERFACE_DESCRIPTOR));
 
   gBS->RestoreTPL (OldTpl);
   return EFI_SUCCESS;
@@ -666,7 +666,7 @@ UsbIoGetEndpointDescriptor (
     return EFI_NOT_FOUND;
   }
 
-  CopyMem (
+  CopyMem(
     Descriptor,
     &(UsbIf->IfSetting->Endpoints[Index]->Desc),
     sizeof (EFI_USB_ENDPOINT_DESCRIPTOR)
@@ -780,19 +780,19 @@ UsbIoGetStringDescriptor (
     goto FREE_STR;
   }
 
-  Buf = AllocateZeroPool (StrDesc->Length);
+  Buf = AllocateZeroPool(StrDesc->Length);
 
   if (Buf == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto FREE_STR;
   }
 
-  CopyMem (Buf, StrDesc->String, StrDesc->Length - 2);
+  CopyMem(Buf, StrDesc->String, StrDesc->Length - 2);
   *String = (CHAR16 *) Buf;
   Status  = EFI_SUCCESS;
 
 FREE_STR:
-  gBS->FreePool (StrDesc);
+  gBS->FreePool(StrDesc);
 
 ON_EXIT:
   gBS->RestoreTPL (OldTpl);
@@ -836,7 +836,7 @@ UsbIoPortReset (
   HubIf  = Dev->ParentIf;
   Status = HubIf->HubApi->ResetPort (HubIf, Dev->ParentPort);
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG (( EFI_D_ERROR, "UsbIoPortReset: failed to reset hub port %d@hub  %d, %r \n",
                 Dev->ParentPort, Dev->ParentAddr, Status));
 
@@ -857,7 +857,7 @@ UsbIoPortReset (
 
   gBS->Stall (USB_SET_DEVICE_ADDRESS_STALL);
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     //
     // It may fail due to device disconnection or other reasons.
     //
@@ -876,7 +876,7 @@ UsbIoPortReset (
   if (Dev->ActiveConfig != NULL) {
     Status = UsbSetConfig (Dev, Dev->ActiveConfig->Desc.ConfigurationValue);
 
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       DEBUG (( EFI_D_ERROR, "UsbIoPortReset: failed to set configure for device %d - %r\n",
                   Dev->Address, Status));
     }
@@ -914,7 +914,7 @@ UsbBusBuildProtocol (
   EFI_STATUS              Status;
   EFI_STATUS              Status2;
 
-  UsbBus = AllocateZeroPool (sizeof (USB_BUS));
+  UsbBus = AllocateZeroPool(sizeof (USB_BUS));
 
   if (UsbBus == NULL) {
     return EFI_OUT_OF_RESOURCES;
@@ -933,10 +933,10 @@ UsbBusBuildProtocol (
                   EFI_OPEN_PROTOCOL_BY_DRIVER
                   );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG ((EFI_D_ERROR, "UsbBusStart: Failed to open device path %r\n", Status));
 
-    FreePool (UsbBus);
+    FreePool(UsbBus);
     return Status;
   }
 
@@ -966,14 +966,14 @@ UsbBusBuildProtocol (
                    EFI_OPEN_PROTOCOL_BY_DRIVER
                    );
 
-  if (EFI_ERROR (Status) && EFI_ERROR (Status2)) {
+  if (EFI_ERROR(Status) && EFI_ERROR(Status2)) {
     DEBUG ((EFI_D_ERROR, "UsbBusStart: Failed to open USB_HC/USB2_HC %r\n", Status));
 
     Status = EFI_DEVICE_ERROR;
     goto CLOSE_HC;
   }
 
-  if (!EFI_ERROR (Status)) {
+  if (!EFI_ERROR(Status)) {
     //
     // The EFI_USB2_HC_PROTOCOL is produced for XHCI support.
     // Then its max supported devices are 256. Otherwise it's 128.
@@ -994,7 +994,7 @@ UsbBusBuildProtocol (
                   &UsbBus->BusId
                   );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG ((EFI_D_ERROR, "UsbBusStart: Failed to install bus protocol %r\n", Status));
     goto CLOSE_HC;
   }
@@ -1004,21 +1004,21 @@ UsbBusBuildProtocol (
   //
   InitializeListHead (&UsbBus->WantedUsbIoDPList);
   Status = UsbBusAddWantedUsbIoDP (&UsbBus->BusId, RemainingDevicePath);
-  ASSERT (!EFI_ERROR (Status));
+  ASSERT (!EFI_ERROR(Status));
   //
   // Create a fake usb device for root hub
   //
-  RootHub = AllocateZeroPool (sizeof (USB_DEVICE));
+  RootHub = AllocateZeroPool(sizeof (USB_DEVICE));
 
   if (RootHub == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto UNINSTALL_USBBUS;
   }
 
-  RootIf = AllocateZeroPool (sizeof (USB_INTERFACE));
+  RootIf = AllocateZeroPool(sizeof (USB_INTERFACE));
 
   if (RootIf == NULL) {
-    FreePool (RootHub);
+    FreePool(RootHub);
     Status = EFI_OUT_OF_RESOURCES;
     goto FREE_ROOTHUB;
   }
@@ -1042,7 +1042,7 @@ UsbBusBuildProtocol (
 
   Status                  = mUsbRootHubApi.Init (RootIf);
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     DEBUG ((EFI_D_ERROR, "UsbBusStart: Failed to init root hub %r\n", Status));
     goto FREE_ROOTHUB;
   }
@@ -1054,10 +1054,10 @@ UsbBusBuildProtocol (
 
 FREE_ROOTHUB:
   if (RootIf != NULL) {
-    FreePool (RootIf);
+    FreePool(RootIf);
   }
   if (RootHub != NULL) {
-    FreePool (RootHub);
+    FreePool(RootHub);
   }
 
 UNINSTALL_USBBUS:
@@ -1086,7 +1086,7 @@ CLOSE_HC:
          This->DriverBindingHandle,
          Controller
          );
-  FreePool (UsbBus);
+  FreePool(UsbBus);
 
   DEBUG ((EFI_D_ERROR, "UsbBusStart: Failed to start bus driver %r\n", Status));
   return Status;
@@ -1187,7 +1187,7 @@ UsbBusControllerDriverSupported (
     return EFI_SUCCESS;
   }
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     //
     // If failed to open USB_HC2, fall back to USB_HC
     //
@@ -1203,7 +1203,7 @@ UsbBusControllerDriverSupported (
       return EFI_SUCCESS;
     }
 
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
 
@@ -1245,7 +1245,7 @@ UsbBusControllerDriverSupported (
     return EFI_SUCCESS;
   }
 
-  if (!EFI_ERROR (Status)) {
+  if (!EFI_ERROR(Status)) {
     //
     // Close protocol, don't use device path protocol in the Support() function
     //
@@ -1296,7 +1296,7 @@ UsbBusControllerDriverStart (
                   Controller,
                   EFI_OPEN_PROTOCOL_GET_PROTOCOL
                   );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   //
   // Report Status Code here since we will initialize the host controller
@@ -1320,13 +1320,13 @@ UsbBusControllerDriverStart (
                   EFI_OPEN_PROTOCOL_GET_PROTOCOL
                   );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     //
     // If first start, build the bus execute environment and install bus protocol
     //
     REPORT_STATUS_CODE (EFI_PROGRESS_CODE, (EFI_IO_BUS_USB | EFI_P_PC_ENABLE));
     Status = UsbBusBuildProtocol (This, Controller, RemainingDevicePath);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
     //
@@ -1340,7 +1340,7 @@ UsbBusControllerDriverStart (
                     Controller,
                     EFI_OPEN_PROTOCOL_GET_PROTOCOL
                     );
-    ASSERT (!EFI_ERROR (Status));
+    ASSERT (!EFI_ERROR(Status));
   } else {
     //
     // USB Bus driver need to control the recursive connect policy of the bus, only those wanted
@@ -1362,12 +1362,12 @@ UsbBusControllerDriverStart (
     }
 
     Status = UsbBusAddWantedUsbIoDP (UsbBusId, RemainingDevicePath);
-    ASSERT (!EFI_ERROR (Status));
+    ASSERT (!EFI_ERROR(Status));
     //
     // Ensure all wanted child usb devices are fully recursively connected
     //
     Status = UsbBusRecursivelyConnectWantedUsbIo (UsbBusId);
-    ASSERT (!EFI_ERROR (Status));
+    ASSERT (!EFI_ERROR(Status));
   }
 
 
@@ -1428,7 +1428,7 @@ UsbBusControllerDriverStop (
                       EFI_OPEN_PROTOCOL_GET_PROTOCOL
                       );
 
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         //
         // It is possible that the child has already been released:
         // 1. For combo device, free one device will release others.
@@ -1462,7 +1462,7 @@ UsbBusControllerDriverStop (
                   EFI_OPEN_PROTOCOL_GET_PROTOCOL
                   );
 
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -1483,7 +1483,7 @@ UsbBusControllerDriverStop (
   for (Index = 1; Index < Bus->MaxDevices; Index++) {
     if (Bus->Devices[Index] != NULL) {
       Status = UsbRemoveDevice (Bus->Devices[Index]);
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         ReturnStatus = Status;
       }
     }
@@ -1491,13 +1491,13 @@ UsbBusControllerDriverStop (
 
   gBS->RestoreTPL (OldTpl);
 
-  if (!EFI_ERROR (ReturnStatus)) {
+  if (!EFI_ERROR(ReturnStatus)) {
     mUsbRootHubApi.Release (RootIf);
     gBS->FreePool   (RootIf);
     gBS->FreePool   (RootHub);
 
     Status = UsbBusFreeUsbDPList (&Bus->WantedUsbIoDPList);
-    ASSERT (!EFI_ERROR (Status));
+    ASSERT (!EFI_ERROR(Status));
 
     //
     // Uninstall the bus identifier and close USB_HC/USB2_HC protocols
@@ -1522,7 +1522,7 @@ UsbBusControllerDriverStop (
                       );
     }
 
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       gBS->CloseProtocol (
              Controller,
              &gEfiDevicePathProtocolGuid,
@@ -1530,7 +1530,7 @@ UsbBusControllerDriverStop (
              Controller
              );
 
-      gBS->FreePool (Bus);
+      gBS->FreePool(Bus);
     }
   }
   return Status;

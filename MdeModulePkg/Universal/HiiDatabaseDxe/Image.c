@@ -191,7 +191,7 @@ CopyGopToRgbPixel (
   ASSERT (BitMapOut != NULL && BitMapIn != NULL);
 
   for (Index = 0; Index < PixelNum; Index++) {
-    CopyMem (BitMapOut + Index, BitMapIn + Index, sizeof (EFI_HII_RGB_PIXEL));
+    CopyMem(BitMapOut + Index, BitMapIn + Index, sizeof (EFI_HII_RGB_PIXEL));
   }
 }
 
@@ -220,7 +220,7 @@ CopyRgbToGopPixel (
   ASSERT (BitMapOut != NULL && BitMapIn != NULL);
 
   for (Index = 0; Index < PixelNum; Index++) {
-    CopyMem (BitMapOut + Index, BitMapIn + Index, sizeof (EFI_HII_RGB_PIXEL));
+    CopyMem(BitMapOut + Index, BitMapIn + Index, sizeof (EFI_HII_RGB_PIXEL));
   }
 }
 
@@ -264,19 +264,19 @@ Output1bitPixel (
   // First entry corresponds to color 0 and second entry corresponds to color 1.
   //
   PaletteSize = 0;
-  CopyMem (&PaletteSize, PaletteInfo, sizeof (UINT16));
+  CopyMem(&PaletteSize, PaletteInfo, sizeof (UINT16));
   PaletteSize += sizeof (UINT16);
-  Palette = AllocateZeroPool (PaletteSize);
+  Palette = AllocateZeroPool(PaletteSize);
   ASSERT (Palette != NULL);
   if (Palette == NULL) {
     return;
   }
-  CopyMem (Palette, PaletteInfo, PaletteSize);
+  CopyMem(Palette, PaletteInfo, PaletteSize);
 
   ZeroMem (PaletteValue, sizeof (PaletteValue));
   CopyRgbToGopPixel (&PaletteValue[0], &Palette->PaletteValue[0], 1);
   CopyRgbToGopPixel (&PaletteValue[1], &Palette->PaletteValue[1], 1);
-  FreePool (Palette);
+  FreePool(Palette);
 
   //
   // Convert the pixel from one bit to corresponding color.
@@ -353,19 +353,19 @@ Output4bitPixel (
   // The bitmap should allocate each color index starting from 0.
   //
   PaletteSize = 0;
-  CopyMem (&PaletteSize, PaletteInfo, sizeof (UINT16));
+  CopyMem(&PaletteSize, PaletteInfo, sizeof (UINT16));
   PaletteSize += sizeof (UINT16);
-  Palette = AllocateZeroPool (PaletteSize);
+  Palette = AllocateZeroPool(PaletteSize);
   ASSERT (Palette != NULL);
   if (Palette == NULL) {
     return;
   }
-  CopyMem (Palette, PaletteInfo, PaletteSize);
+  CopyMem(Palette, PaletteInfo, PaletteSize);
   PaletteNum = (UINT16)(Palette->PaletteSize / sizeof (EFI_HII_RGB_PIXEL));
 
   ZeroMem (PaletteValue, sizeof (PaletteValue));
   CopyRgbToGopPixel (PaletteValue, Palette->PaletteValue, MIN (PaletteNum, ARRAY_SIZE (PaletteValue)));
-  FreePool (Palette);
+  FreePool(Palette);
 
   //
   // Convert the pixel from 4 bit to corresponding color.
@@ -431,18 +431,18 @@ Output8bitPixel (
   // The bitmap should allocate each color index starting from 0.
   //
   PaletteSize = 0;
-  CopyMem (&PaletteSize, PaletteInfo, sizeof (UINT16));
+  CopyMem(&PaletteSize, PaletteInfo, sizeof (UINT16));
   PaletteSize += sizeof (UINT16);
-  Palette = AllocateZeroPool (PaletteSize);
+  Palette = AllocateZeroPool(PaletteSize);
   ASSERT (Palette != NULL);
   if (Palette == NULL) {
     return;
   }
-  CopyMem (Palette, PaletteInfo, PaletteSize);
+  CopyMem(Palette, PaletteInfo, PaletteSize);
   PaletteNum = (UINT16)(Palette->PaletteSize / sizeof (EFI_HII_RGB_PIXEL));
   ZeroMem (PaletteValue, sizeof (PaletteValue));
   CopyRgbToGopPixel (PaletteValue, Palette->PaletteValue, MIN (PaletteNum, ARRAY_SIZE (PaletteValue)));
-  FreePool (Palette);
+  FreePool(Palette);
 
   //
   // Convert the pixel from 8 bits to corresponding color.
@@ -696,12 +696,12 @@ HiiNewImage (
     //
     // Copy the original content.
     //
-    CopyMem (
+    CopyMem(
       ImageBlocks,
       ImagePackage->ImageBlock,
       ImagePackage->ImageBlockSize - sizeof (EFI_HII_IIBT_END_BLOCK)
       );
-    FreePool (ImagePackage->ImageBlock);
+    FreePool(ImagePackage->ImageBlock);
     ImagePackage->ImageBlock = ImageBlocks;
 
     //
@@ -730,7 +730,7 @@ HiiNewImage (
     // The specified package list does not contain image package.
     // Create one to add this image block.
     //
-    ImagePackage = (HII_IMAGE_PACKAGE_INSTANCE *) AllocateZeroPool (sizeof (HII_IMAGE_PACKAGE_INSTANCE));
+    ImagePackage = (HII_IMAGE_PACKAGE_INSTANCE *) AllocateZeroPool(sizeof (HII_IMAGE_PACKAGE_INSTANCE));
     if (ImagePackage == NULL) {
       EfiReleaseLock (&mHiiDatabaseLock);
       return EFI_OUT_OF_RESOURCES;
@@ -758,9 +758,9 @@ HiiNewImage (
     // Fill in image blocks.
     //
     ImagePackage->ImageBlockSize = NewBlockSize + sizeof (EFI_HII_IIBT_END_BLOCK);
-    ImagePackage->ImageBlock = AllocateZeroPool (NewBlockSize + sizeof (EFI_HII_IIBT_END_BLOCK));
+    ImagePackage->ImageBlock = AllocateZeroPool(NewBlockSize + sizeof (EFI_HII_IIBT_END_BLOCK));
     if (ImagePackage->ImageBlock == NULL) {
-      FreePool (ImagePackage);
+      FreePool(ImagePackage);
       EfiReleaseLock (&mHiiDatabaseLock);
       return EFI_OUT_OF_RESOURCES;
     }
@@ -905,11 +905,11 @@ IGetImage (
     // Spec requires to use the first capable image decoder instance.
     // The first image decoder instance may fail to decode the image.
     //
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       Image->Bitmap = ImageOut->Image.Bitmap;
       Image->Height = ImageOut->Height;
       Image->Width = ImageOut->Width;
-      FreePool (ImageOut);
+      FreePool(ImageOut);
     }
     return Status;
 
@@ -926,13 +926,13 @@ IGetImage (
     //
     // Use the common block code since the definition of these structures is the same.
     //
-    CopyMem (&Iibt1bit, CurrentImageBlock, sizeof (EFI_HII_IIBT_IMAGE_1BIT_BLOCK));
+    CopyMem(&Iibt1bit, CurrentImageBlock, sizeof (EFI_HII_IIBT_IMAGE_1BIT_BLOCK));
     ImageLength = (UINTN) Iibt1bit.Bitmap.Width * Iibt1bit.Bitmap.Height;
     if (ImageLength > MAX_UINTN / sizeof (EFI_GRAPHICS_OUTPUT_BLT_PIXEL)) {
       return EFI_OUT_OF_RESOURCES;
     }
     ImageLength  *= sizeof (EFI_GRAPHICS_OUTPUT_BLT_PIXEL);
-    Image->Bitmap = AllocateZeroPool (ImageLength);
+    Image->Bitmap = AllocateZeroPool(ImageLength);
     if (Image->Bitmap == NULL) {
       return EFI_OUT_OF_RESOURCES;
     }
@@ -942,7 +942,7 @@ IGetImage (
 
     PaletteInfo = ImagePackage->PaletteBlock + sizeof (EFI_HII_IMAGE_PALETTE_INFO_HEADER);
     for (PaletteIndex = 1; PaletteIndex < Iibt1bit.PaletteIndex; PaletteIndex++) {
-      CopyMem (&PaletteSize, PaletteInfo, sizeof (UINT16));
+      CopyMem(&PaletteSize, PaletteInfo, sizeof (UINT16));
       PaletteInfo += PaletteSize + sizeof (UINT16);
     }
     ASSERT (PaletteIndex == Iibt1bit.PaletteIndex);
@@ -987,7 +987,7 @@ IGetImage (
       return EFI_OUT_OF_RESOURCES;
     }
     ImageLength  *= sizeof (EFI_GRAPHICS_OUTPUT_BLT_PIXEL);
-    Image->Bitmap = AllocateZeroPool (ImageLength);
+    Image->Bitmap = AllocateZeroPool(ImageLength);
     if (Image->Bitmap == NULL) {
       return EFI_OUT_OF_RESOURCES;
     }
@@ -1178,7 +1178,7 @@ HiiSetImage (
   //
   // Adjust the image package to remove the original block firstly then add the new block.
   //
-  ImageBlocks = AllocateZeroPool (ImagePackage->ImageBlockSize + NewBlockSize - OldBlockSize);
+  ImageBlocks = AllocateZeroPool(ImagePackage->ImageBlockSize + NewBlockSize - OldBlockSize);
   if (ImageBlocks == NULL) {
     EfiReleaseLock (&mHiiDatabaseLock);
     return EFI_OUT_OF_RESOURCES;
@@ -1186,7 +1186,7 @@ HiiSetImage (
 
   Part1Size = (UINT32) ((UINTN) CurrentImageBlock - (UINTN) ImagePackage->ImageBlock);
   Part2Size = ImagePackage->ImageBlockSize - Part1Size - OldBlockSize;
-  CopyMem (ImageBlocks, ImagePackage->ImageBlock, Part1Size);
+  CopyMem(ImageBlocks, ImagePackage->ImageBlock, Part1Size);
 
   //
   // Set the new image block
@@ -1202,9 +1202,9 @@ HiiSetImage (
   CopyGopToRgbPixel (((EFI_HII_IIBT_IMAGE_24BIT_BLOCK *) NewImageBlock)->Bitmap.Bitmap,
                        Image->Bitmap, (UINT32) Image->Width * Image->Height);
 
-  CopyMem ((UINT8 *) NewImageBlock + NewBlockSize, (UINT8 *) CurrentImageBlock + OldBlockSize, Part2Size);
+  CopyMem((UINT8 *) NewImageBlock + NewBlockSize, (UINT8 *) CurrentImageBlock + OldBlockSize, Part2Size);
 
-  FreePool (ImagePackage->ImageBlock);
+  FreePool(ImagePackage->ImageBlock);
   ImagePackage->ImageBlock                       = ImageBlocks;
   ImagePackage->ImageBlockSize                  += NewBlockSize - OldBlockSize;
   ImagePackage->ImagePkgHdr.Header.Length       += NewBlockSize - OldBlockSize;
@@ -1359,13 +1359,13 @@ HiiDrawImage (
       return EFI_OUT_OF_RESOURCES;
     }
     BufferLen *= sizeof (EFI_GRAPHICS_OUTPUT_BLT_PIXEL);
-    BltBuffer  = AllocateZeroPool (BufferLen);
+    BltBuffer  = AllocateZeroPool(BufferLen);
     if (BltBuffer == NULL) {
       return EFI_OUT_OF_RESOURCES;
     }
 
     if (Width == Image->Width && Height == Image->Height) {
-      CopyMem (BltBuffer, Image->Bitmap, BufferLen);
+      CopyMem(BltBuffer, Image->Bitmap, BufferLen);
     } else {
       for (Ypos = 0; Ypos < Height; Ypos++) {
         OffsetY1 = Image->Width * Ypos;
@@ -1415,7 +1415,7 @@ HiiDrawImage (
 
     }
 
-    FreePool (BltBuffer);
+    FreePool(BltBuffer);
     return Status;
 
   } else {
@@ -1441,14 +1441,14 @@ HiiDrawImage (
       return EFI_OUT_OF_RESOURCES;
     }
     BufferLen *= sizeof (EFI_GRAPHICS_OUTPUT_BLT_PIXEL);
-    BltBuffer  = AllocateZeroPool (BufferLen);
+    BltBuffer  = AllocateZeroPool(BufferLen);
     if (BltBuffer == NULL) {
       return EFI_OUT_OF_RESOURCES;
     }
 
-    ImageOut = (EFI_IMAGE_OUTPUT *) AllocateZeroPool (sizeof (EFI_IMAGE_OUTPUT));
+    ImageOut = (EFI_IMAGE_OUTPUT *) AllocateZeroPool(sizeof (EFI_IMAGE_OUTPUT));
     if (ImageOut == NULL) {
-      FreePool (BltBuffer);
+      FreePool(BltBuffer);
       return EFI_OUT_OF_RESOURCES;
     }
     ImageOut->Width        = Width;
@@ -1460,16 +1460,16 @@ HiiDrawImage (
     // color. Not sure if it need to be updated or not.
     //
     Status = GetSystemFont (Private, &FontInfo, NULL);
-    if (EFI_ERROR (Status)) {
-      FreePool (BltBuffer);
-      FreePool (ImageOut);
+    if (EFI_ERROR(Status)) {
+      FreePool(BltBuffer);
+      FreePool(ImageOut);
       return Status;
     }
     ASSERT (FontInfo != NULL);
     for (Index = 0; Index < (UINTN)Width * Height; Index++) {
       BltBuffer[Index] = FontInfo->BackgroundColor;
     }
-    FreePool (FontInfo);
+    FreePool(FontInfo);
 
     //
     // Draw the incoming image to the new created image.
@@ -1547,7 +1547,7 @@ HiiDrawImageId (
   // Get the specified Image.
   //
   Status = HiiGetImage (This, PackageList, ImageId, &Image);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -1556,7 +1556,7 @@ HiiDrawImageId (
   //
   Status = HiiDrawImage (This, Flags, &Image, Blt, BltX, BltY);
   if (Image.Bitmap != NULL) {
-    FreePool (Image.Bitmap);
+    FreePool(Image.Bitmap);
   }
   return Status;
 }

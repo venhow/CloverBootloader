@@ -208,7 +208,7 @@ IncompatiblePciDeviceSupportEntryPoint (
                   EFI_NATIVE_INTERFACE,
                   &mIncompatiblePciDeviceSupport
                   );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   return Status;
 }
@@ -323,7 +323,7 @@ PCheckDevice (
         return EFI_UNSUPPORTED;
       }
 
-      AcpiPtr = AllocateZeroPool (sizeof (EFI_ACPI_ADDRESS_SPACE_DESCRIPTOR) * Index + sizeof (EFI_ACPI_END_TAG_DESCRIPTOR));
+      AcpiPtr = AllocateZeroPool(sizeof (EFI_ACPI_ADDRESS_SPACE_DESCRIPTOR) * Index + sizeof (EFI_ACPI_END_TAG_DESCRIPTOR));
       if (AcpiPtr == NULL) {
         return EFI_OUT_OF_RESOURCES;
       }

@@ -48,7 +48,7 @@ PopEfikeyBufHead (
   // Retrieve and remove the values
   //
   if (KeyData != NULL) {
-    CopyMem (KeyData, &Queue->Buffer[Queue->Head], sizeof (EFI_KEY_DATA));
+    CopyMem(KeyData, &Queue->Buffer[Queue->Head], sizeof (EFI_KEY_DATA));
   }
   Queue->Head = (Queue->Head + 1) % KEYBOARD_EFI_KEY_MAX_COUNT;
   return EFI_SUCCESS;
@@ -72,7 +72,7 @@ PushEfikeyBufTail (
     //
     PopEfikeyBufHead (Queue, NULL);
   }
-  CopyMem (&Queue->Buffer[Queue->Tail], KeyData, sizeof (EFI_KEY_DATA));
+  CopyMem(&Queue->Buffer[Queue->Tail], KeyData, sizeof (EFI_KEY_DATA));
   Queue->Tail = (Queue->Tail + 1) % KEYBOARD_EFI_KEY_MAX_COUNT;
 }
 
@@ -209,7 +209,7 @@ KeyboardEfiReset (
   // Call InitKeyboard to initialize the keyboard
   //
   Status = InitKeyboard (ConsoleIn, ExtendedVerification);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     //
     // Leave critical section and return
     //
@@ -277,7 +277,7 @@ KeyboardReadKeyStroke (
     // If there is no pending key, then return.
     //
     Status = KeyboardReadKeyStrokeWorker (ConsoleIn, &KeyData);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return Status;
     }
     //
@@ -298,7 +298,7 @@ KeyboardReadKeyStroke (
       }
     }
 
-    CopyMem (Key, &KeyData.Key, sizeof (EFI_INPUT_KEY));
+    CopyMem(Key, &KeyData.Key, sizeof (EFI_INPUT_KEY));
     return EFI_SUCCESS;
   }
 }
@@ -339,7 +339,7 @@ KeyboardWaitForKey (
     // next key from the queue
     //
     while (!IsEfikeyBufEmpty (&ConsoleIn->EfiKeyQueue)) {
-      CopyMem (
+      CopyMem(
         &KeyData,
         &(ConsoleIn->EfiKeyQueue.Buffer[ConsoleIn->EfiKeyQueue.Head]),
         sizeof (EFI_KEY_DATA)
@@ -512,7 +512,7 @@ KeyboardSetState (
   }
 
   Status = UpdateStatusLights (ConsoleInDev);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     Status = EFI_DEVICE_ERROR;
   }
 
@@ -593,7 +593,7 @@ KeyboardRegisterKeyNotify (
   //
   // Allocate resource to save the notification function
   //
-  NewNotify = (KEYBOARD_CONSOLE_IN_EX_NOTIFY *) AllocateZeroPool (sizeof (KEYBOARD_CONSOLE_IN_EX_NOTIFY));
+  NewNotify = (KEYBOARD_CONSOLE_IN_EX_NOTIFY *) AllocateZeroPool(sizeof (KEYBOARD_CONSOLE_IN_EX_NOTIFY));
   if (NewNotify == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto Exit;
@@ -601,7 +601,7 @@ KeyboardRegisterKeyNotify (
 
   NewNotify->Signature         = KEYBOARD_CONSOLE_IN_EX_NOTIFY_SIGNATURE;
   NewNotify->KeyNotificationFn = KeyNotificationFunction;
-  CopyMem (&NewNotify->KeyData, KeyData, sizeof (EFI_KEY_DATA));
+  CopyMem(&NewNotify->KeyData, KeyData, sizeof (EFI_KEY_DATA));
   InsertTailList (&ConsoleInDev->NotifyList, &NewNotify->NotifyEntry);
 
   *NotifyHandle                = NewNotify;
@@ -664,7 +664,7 @@ KeyboardUnregisterKeyNotify (
       //
       RemoveEntryList (&CurrentNotify->NotifyEntry);
 
-      gBS->FreePool (CurrentNotify);
+      gBS->FreePool(CurrentNotify);
       Status = EFI_SUCCESS;
       goto Exit;
     }
@@ -719,7 +719,7 @@ KeyNotifyProcessHandler (
     // Leave critical section
     //
     gBS->RestoreTPL (OldTpl);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       break;
     }
     for (Link = GetFirstNode (NotifyList); !IsNull (NotifyList, Link); Link = GetNextNode (NotifyList, Link)) {

@@ -10,11 +10,14 @@
 #include <Library/UefiBootServicesTableLib.h>
 #include <Library/MemLogLib.h>
 #include <Library/DebugLib.h>
+#include <Library/SerialPortLib.h>
+#include <Library/DebugPrintErrorLevelLib.h>
 
 #include <Library/IoLib.h>
 #include <Library/PciLib.h>
 #include "GenericIch.h"
 
+#include <Library/printf_lite.h>
 //
 // Struct for holding mem buffer.
 //
@@ -122,12 +125,12 @@ MemLogInit (
   //
   // Set up and publish new MEM_LOG
   //
-  mMemLog = AllocateZeroPool ( sizeof (MEM_LOG) );
+  mMemLog = AllocateZeroPool( sizeof (MEM_LOG) );
   if (mMemLog == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
   mMemLog->BufferSize = MEM_LOG_INITIAL_SIZE;
-  mMemLog->Buffer = AllocateZeroPool (MEM_LOG_INITIAL_SIZE);
+  mMemLog->Buffer = AllocateZeroPool(MEM_LOG_INITIAL_SIZE);
   mMemLog->Cursor = mMemLog->Buffer;
   mMemLog->Callback = NULL;
   
@@ -206,11 +209,11 @@ MemLogInit (
                                                    mMemLog,
                                                    NULL
                                                    );
-  MemLog(TRUE, 1, "MemLog inited, TSC freq: %ld\n", mMemLog->TscFreqSec);
+  MemLogf(TRUE, 1, "MemLog inited, TSC freq: %lld\n", mMemLog->TscFreqSec);
   if (InitError[0] != '\0') {
-    MemLog(TRUE, 1, "CPU was calibrated with RTC\n");
+    MemLogf(TRUE, 1, "CPU was calibrated with RTC\n");
   } else {
-    MemLog(TRUE, 1, "CPU was calibrated with ACPI PM Timer\n");
+    MemLogf(TRUE, 1, "CPU was calibrated with ACPI PM Timer\n");
   }
   return Status;
 }
@@ -243,7 +246,7 @@ MemLogVA (
   
   if (mMemLog == NULL) {
     Status = MemLogInit ();
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return;
     }
   }
@@ -270,9 +273,13 @@ MemLogVA (
   // Add log to buffer
   //
   LastMessage = mMemLog->Cursor;
+#ifdef JIEF_DEBUG
+  if (0) {
+#else
   if (Timing) {
+#endif
     //
-    // Write timing only at the beginnign of a new line
+    // Write timing only at the beginning of a new line
     //
     if ((mMemLog->Buffer[0] == '\0') || (mMemLog->Cursor[-1] == '\n')) {
       DataWritten = AsciiSPrint(
@@ -292,16 +299,19 @@ MemLogVA (
   mMemLog->Cursor += DataWritten;
   
   //
+  // Write to standard debug device also
+  //
+  // Jief : use SerialPortWrite instead of DebugPrint to avoid 256 chars message length limitation.
+  // Jief : do this before CallBack to preserve order of messages sent from inside callback.
+  SerialPortWrite((UINT8*)LastMessage, mMemLog->Cursor - LastMessage);
+//  DebugPrint(DEBUG_INFO, "%a", LastMessage);
+
+  //
   // Pass this last message to callback if defined
   //
   if (mMemLog->Callback != NULL) {
     mMemLog->Callback(DebugMode, LastMessage);
   }
-  
-  //
-  // Write to standard debug device also
-  //
-  DebugPrint(DEBUG_INFO, LastMessage);
 }
 
 /**
@@ -350,7 +360,7 @@ GetMemLogBuffer (
   
   if (mMemLog == NULL) {
     Status = MemLogInit ();
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return NULL;
     }
   }
@@ -372,7 +382,7 @@ GetMemLogLen (
   
   if (mMemLog == NULL) {
     Status = MemLogInit ();
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return 0;
     }
   }
@@ -393,11 +403,21 @@ SetMemLogCallback (
   
   if (mMemLog == NULL) {
     Status = MemLogInit ();
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return;
     }
   }
   mMemLog->Callback = Callback;
+}
+
+/**
+  Sets callback that will be called when message is added to mem log.
+ **/
+MEM_LOG_CALLBACK
+EFIAPI
+GetMemLogCallback ()
+{
+  return mMemLog->Callback;
 }
 
 /**
@@ -407,13 +427,171 @@ UINT64
 EFIAPI
 GetMemLogTscTicksPerSecond (VOID)
 {
-  EFI_STATUS        Status;
-  
+  if (mMemLog == NULL) return 0;
+  return mMemLog->TscFreqSec;
+}
+
+
+// Microsoft wants _fltused
+#ifdef _MSC_VER
+#ifdef __cplusplus
+extern "C" {
+#endif
+int _fltused=0; // it should be a single underscore since the double one is the mangled name
+#ifdef __cplusplus
+}
+#endif
+#endif
+
+static int printfNewline = 1;
+static void transmitS8Printf(const char* buf, unsigned int nbchar, void* context)
+{
+  //
+  // Check if buffer can accept nbchar chars.
+  // Increase buffer if not.
+  //
+  if ( mMemLog->BufferSize - (UINTN)(mMemLog->Cursor - mMemLog->Buffer) <= nbchar )
+  {
+    UINTN Offset;
+    // not enough place for max line - make buffer bigger
+    // but not too big (if something gets out of controll)
+    if (mMemLog->BufferSize + MEM_LOG_INITIAL_SIZE > MEM_LOG_MAX_SIZE) {
+    // Out of resources!
+    // Jief : Silent fail. TODO : At least put "Out of resource" at the end of the log
+      return;
+    }
+    Offset = mMemLog->Cursor - mMemLog->Buffer;
+    mMemLog->Buffer = ReallocatePool(mMemLog->BufferSize, mMemLog->BufferSize + MEM_LOG_INITIAL_SIZE, mMemLog->Buffer);
+    mMemLog->BufferSize += MEM_LOG_INITIAL_SIZE;
+    mMemLog->Cursor = mMemLog->Buffer + Offset;
+  }
+  CopyMem(mMemLog->Cursor, buf, nbchar);
+  mMemLog->Cursor += nbchar;
+}
+
+const char* printf_lite_get_timestamp(void)
+{
+  UINT64    dTStartSec;
+  UINT64    dTStartMs;
+  UINT64    dTLastSec;
+  UINT64    dTLastMs;
+  UINT64    CurrentTsc;
+
+  mTimingTxt[0] = '\0';
+
+  if (mMemLog != NULL && mMemLog->TscFreqSec != 0) {
+    CurrentTsc = AsmReadTsc();
+
+    dTStartMs = DivU64x64Remainder(MultU64x32(CurrentTsc - mMemLog->TscStart, 1000), mMemLog->TscFreqSec, NULL);
+    dTStartSec = DivU64x64Remainder(dTStartMs, 1000, &dTStartMs);
+
+    dTLastMs = DivU64x64Remainder(MultU64x32(CurrentTsc - mMemLog->TscLast, 1000), mMemLog->TscFreqSec, NULL);
+    dTLastSec = DivU64x64Remainder(dTLastMs, 1000, &dTLastMs);
+
+    snprintf(mTimingTxt, sizeof(mTimingTxt), "%lld:%03lld  %lld:%03lld  ", dTStartSec, dTStartMs, dTLastSec, dTLastMs);
+    mMemLog->TscLast = CurrentTsc;
+  }
+  return mTimingTxt;
+}
+
+/**
+  Prints a log message to memory buffer.
+
+  @param  Timing      TRUE to prepend timing to log.
+  @param  DebugMode   DebugMode will be passed to Callback function if it is set.
+  @param  Format      The format string for the debug message to print.
+  @param  Marker      VA_LIST with variable arguments for Format.
+
+**/
+VOID
+EFIAPI
+MemLogfVA (
+  IN  CONST BOOLEAN Timing,
+  IN  CONST INTN    DebugMode,
+  IN  CONST CHAR8   *Format,
+  IN  VA_LIST       Marker
+  )
+{
+  EFI_STATUS      Status;
+
+  if (Format == NULL) {
+    return;
+  }
+
   if (mMemLog == NULL) {
     Status = MemLogInit ();
-    if (EFI_ERROR (Status)) {
-      return 0;
+    if (EFI_ERROR(Status)) {
+      return;
     }
   }
-  return mMemLog->TscFreqSec;
+
+  //
+  // Add log to buffer
+  //
+  UINTN LastMessage = mMemLog->Cursor - mMemLog->Buffer;
+
+#ifdef JIEF_DEBUG
+  vprintf_with_callback_timestamp_emitcr(Format, Marker, transmitS8Printf, NULL, &printfNewline, 0, 1);
+#else
+  vprintf_with_callback_timestamp_emitcr(Format, Marker, transmitS8Printf, NULL, &printfNewline, Timing, 1);
+#endif
+  
+#ifdef DEBUG_ON_SERIAL_PORT
+  size_t DataWritten = mMemLog->Cursor - mMemLog->Buffer - LastMessage;
+#endif
+  //
+  // Check driver debug mask value and global mask
+  //
+//  DebugMode is not same as PrintErrorLevel
+//  if ((DebugMode & GetDebugPrintErrorLevel ()) == 0) {
+//    return;
+//  }
+  //
+  // Write to standard debug device also
+  //
+  // Jief : use SerialPortWrite instead of DebugPrint to avoid 256 chars message length limitation.
+  // Jief : do this before CallBack to preserve order of messages sent from inside callback.
+#ifdef DEBUG_ON_SERIAL_PORT
+  SerialPortWrite((UINT8*)(mMemLog->Buffer + LastMessage), DataWritten);
+#endif
+//  DebugPrint(DEBUG_INFO, "%a", LastMessage);
+
+  //
+  // Pass this last message to callback if defined
+  //
+  if (mMemLog->Callback != NULL) {
+    mMemLog->Callback(DebugMode,  mMemLog->Buffer + LastMessage);
+  }
+}
+
+/**
+  Prints a log to message memory buffer.
+
+  If Format is NULL, then does nothing.
+
+  @param  Timing      TRUE to prepend timing to log.
+  @param  DebugMode   DebugMode will be passed to Callback function if it is set.
+  @param  Format      The format string for the debug message to print.
+  @param  ...         The variable argument list whose contents are accessed
+  based on the format string specified by Format.
+
+ **/
+VOID
+EFIAPI
+MemLogf (
+  IN  CONST BOOLEAN Timing,
+  IN  CONST INTN    DebugMode,
+  IN  CONST CHAR8   *Format,
+  ...
+  )
+{
+  VA_LIST           Marker;
+
+  if (Format == NULL) {
+    return;
+  }
+
+  VA_START (Marker, Format);
+  MemLogfVA (Timing, DebugMode, Format, Marker);
+  VA_END (Marker);
 }

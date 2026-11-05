@@ -175,7 +175,7 @@ MergeGcdMmioEntry (
   NewGcdMemoryMapEntry = GcdMemoryMap;
   GcdMemoryMapEnd = (EFI_GCD_MEMORY_SPACE_DESCRIPTOR *) ((UINT8 *) GcdMemoryMap + (*NumberOfDescriptors) * sizeof(EFI_GCD_MEMORY_SPACE_DESCRIPTOR));
   while ((UINTN)GcdMemoryMapEntry < (UINTN)GcdMemoryMapEnd) {
-    CopyMem (NewGcdMemoryMapEntry, GcdMemoryMapEntry, sizeof(EFI_GCD_MEMORY_SPACE_DESCRIPTOR));
+    CopyMem(NewGcdMemoryMapEntry, GcdMemoryMapEntry, sizeof(EFI_GCD_MEMORY_SPACE_DESCRIPTOR));
     NextGcdMemoryMapEntry = GcdMemoryMapEntry + 1;
 
     do {
@@ -227,19 +227,19 @@ SmmIoLibInternalEndOfDxeNotify (
   EFI_STATUS                       Status;
 
   Status = gDS->GetMemorySpaceMap (&NumberOfDescriptors, &MemSpaceMap);
-  if (!EFI_ERROR (Status)) {
+  if (!EFI_ERROR(Status)) {
 
     MergeGcdMmioEntry (MemSpaceMap, &NumberOfDescriptors);
 
-    mSmmIoLibGcdMemSpace = AllocateCopyPool (NumberOfDescriptors * sizeof (EFI_GCD_MEMORY_SPACE_DESCRIPTOR), MemSpaceMap);
+    mSmmIoLibGcdMemSpace = AllocateCopyPool(NumberOfDescriptors * sizeof (EFI_GCD_MEMORY_SPACE_DESCRIPTOR), MemSpaceMap);
     ASSERT (mSmmIoLibGcdMemSpace != NULL);
     if (mSmmIoLibGcdMemSpace == NULL) {
-      gBS->FreePool (MemSpaceMap);
+      gBS->FreePool(MemSpaceMap);
       return EFI_OUT_OF_RESOURCES;
     }
 
     mSmmIoLibGcdMemNumberOfDesc = NumberOfDescriptors;
-    gBS->FreePool (MemSpaceMap);
+    gBS->FreePool(MemSpaceMap);
   }
 
   return EFI_SUCCESS;
@@ -293,13 +293,13 @@ SmmIoLibConstructor (
   // Register EndOfDxe to get GCD resource map
   //
   Status = gSmst->SmmRegisterProtocolNotify (&gEfiSmmEndOfDxeProtocolGuid, SmmIoLibInternalEndOfDxeNotify, &mSmmIoLibRegistrationEndOfDxe);
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   //
   // Register ready to lock so that we can know when to check valid resource region
   //
   Status = gSmst->SmmRegisterProtocolNotify (&gEfiSmmReadyToLockProtocolGuid, SmmIoLibInternalReadyToLockNotify, &mSmmIoLibRegistrationReadyToLock);
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   return EFI_SUCCESS;
 }

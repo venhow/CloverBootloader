@@ -964,7 +964,7 @@ Return
   // AH = status 00h successful
   // BX = video mode (see #0082,#0083)
   //
-  gBS->SetMem (&Regs, sizeof (Regs), 0);
+  SetMem(&Regs, sizeof (Regs), 0);
   Regs.X.AX = 0x4F03;
   LegacyBiosInt86 (0x10, &Regs);
   if (Regs.X.AX == 0x004F) {
@@ -977,7 +977,7 @@ Return
     // AL = display mode (see #0009 at AH=00h)
     // BH = active page (see AH=05h)
     //
-    gBS->SetMem (&Regs, sizeof (Regs), 0);
+    SetMem(&Regs, sizeof (Regs), 0);
     Regs.H.AH = 0x0F;
     LegacyBiosInt86 (0x10, &Regs);
     OriginalVideoMode = Regs.H.AL;
@@ -1000,7 +1000,7 @@ Return
     // 3Fh mode 6
     // AL = CRT controller mode byte (Phoenix 386 BIOS v1.10)
     //
-    gBS->SetMem (&Regs, sizeof (Regs), 0);
+    SetMem(&Regs, sizeof (Regs), 0);
     Regs.H.AH = 0x00;
     Regs.H.AL = (UINT8) NewVideoMode;
     LegacyBiosInt86 (0x10, &Regs);
@@ -1011,7 +1011,7 @@ Return
     // BL = block to load
     // Return:Nothing
     //
-    gBS->SetMem (&Regs, sizeof (Regs), 0);
+    SetMem(&Regs, sizeof (Regs), 0);
     Regs.H.AH = 0x11;
     Regs.H.AL = 0x14;
     Regs.H.BL = 0;
@@ -1028,7 +1028,7 @@ Return
     //    00h successful
     //    01h failed
     //
-    gBS->SetMem (&Regs, sizeof (Regs), 0);
+    SetMem(&Regs, sizeof (Regs), 0);
     Regs.X.AX = 0x4F02;
     Regs.X.BX = NewVideoMode;
     LegacyBiosInt86 (0x10, &Regs);
@@ -1137,8 +1137,8 @@ Returns:
   // Find the Legacy8259 protocol.
   //
   Status = gBS->LocateProtocol (&gEfiLegacy8259ProtocolGuid, NULL, (VOID **) &gLegacy8259);
-//  ASSERT_EFI_ERROR (Status);
-  if (EFI_ERROR (Status)) {
+//  ASSERT_EFI_ERROR(Status);
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -1146,8 +1146,8 @@ Returns:
   // Get the interrupt vector number corresponding to IRQ0 from the 8259 driver
   //
   Status = gLegacy8259->GetVector (gLegacy8259, Efi8259Irq0, (UINT8 *) &mTimerVector);
-//  ASSERT_EFI_ERROR (Status);
-  if (EFI_ERROR (Status)) {
+//  ASSERT_EFI_ERROR(Status);
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -1187,8 +1187,8 @@ Returns:
   for (Irq = Efi8259Irq1; Irq <= Efi8259Irq15; Irq++) {
     InterruptVector = 0;
     Status = gLegacy8259->GetVector (gLegacy8259, Irq, (UINT8 *) &InterruptVector);
-//    ASSERT_EFI_ERROR (Status);
-    if (EFI_ERROR (Status)) {
+//    ASSERT_EFI_ERROR(Status);
+    if (EFI_ERROR(Status)) {
       return Status;
     }
     InstallInterruptHandler (InterruptVector, SystemTimerHandler);
@@ -1206,7 +1206,7 @@ Returns:
                   &mCpu,
                   NULL
                   );
-//  ASSERT_EFI_ERROR (Status);
+//  ASSERT_EFI_ERROR(Status);
   return Status;
 }
 
@@ -1233,8 +1233,8 @@ InitializeBiosIntCaller (
                   EFI_SIZE_TO_PAGES(LegacyRegionSize),
                   &LegacyRegionBase
                   );
-//  ASSERT_EFI_ERROR (Status);
-  if (EFI_ERROR (Status)) {
+//  ASSERT_EFI_ERROR(Status);
+  if (EFI_ERROR(Status)) {
     mThunkContext.RealModeBuffer = 0;
     return;
   }
@@ -1283,7 +1283,7 @@ LegacyBiosInt86 (
   ThunkRegSet.E.DS   = Regs->E.DS;
   ThunkRegSet.E.ES   = Regs->E.ES;
 
-  CopyMem (&(ThunkRegSet.E.EFLAGS), &(Regs->E.EFlags), sizeof (UINT32));
+  CopyMem(&(ThunkRegSet.E.EFLAGS), &(Regs->E.EFlags), sizeof (UINT32));
  
   //
   // The call to Legacy16 is a critical section to EFI
@@ -1297,8 +1297,8 @@ LegacyBiosInt86 (
   // Set Legacy16 state. 0x08, 0x70 is legacy 8259 vector bases.
   //
   Status = gLegacy8259->SetMode (gLegacy8259, Efi8259LegacyMode, NULL, NULL);
-//  ASSERT_EFI_ERROR (Status);
-  if (EFI_ERROR (Status)) {
+//  ASSERT_EFI_ERROR(Status);
+  if (EFI_ERROR(Status)) {
     if ((Eflags & EFI_CPU_EFLAGS_IF) != 0) {
       EnableInterrupts ();
     }
@@ -1307,7 +1307,7 @@ LegacyBiosInt86 (
 
   Stack16 = (UINT16 *)((UINT8 *) mThunkContext.RealModeBuffer + mThunkContext.RealModeBufferSize - sizeof (UINT16));
   Stack16 -= sizeof (ThunkRegSet.E.EFLAGS) / sizeof (UINT16);
-  CopyMem (Stack16, &ThunkRegSet.E.EFLAGS, sizeof (ThunkRegSet.E.EFLAGS));
+  CopyMem(Stack16, &ThunkRegSet.E.EFLAGS, sizeof (ThunkRegSet.E.EFLAGS));
 
   ThunkRegSet.E.SS   = (UINT16) (((UINTN) Stack16 >> 16) << 12);
   ThunkRegSet.E.ESP  = (UINT16) (UINTN) Stack16;
@@ -1323,8 +1323,8 @@ LegacyBiosInt86 (
   // Restore protected mode interrupt state
   //
   Status = gLegacy8259->SetMode (gLegacy8259, Efi8259ProtectedMode, NULL, NULL);
-//  ASSERT_EFI_ERROR (Status);
-//  if (EFI_ERROR (Status)) {
+//  ASSERT_EFI_ERROR(Status);
+//  if (EFI_ERROR(Status)) {
 //    return FALSE;
 //  }
 
@@ -1347,7 +1347,7 @@ LegacyBiosInt86 (
   Regs->E.DS       = ThunkRegSet.E.DS;  
   Regs->E.ES       = ThunkRegSet.E.ES;
 
-  CopyMem (&(Regs->E.EFlags), &(ThunkRegSet.E.EFLAGS), sizeof (UINT32));
+  CopyMem(&(Regs->E.EFlags), &(ThunkRegSet.E.EFLAGS), sizeof (UINT32));
 
   Ret = (BOOLEAN) (Regs->E.EFlags.CF == 1);
 
@@ -1359,7 +1359,7 @@ VOID BiosPutC(CHAR8 ch)
 {
 	EFI_IA32_REGISTER_SET           Regs;
 	
-	gBS->SetMem (&Regs, sizeof (Regs), 0);
+	SetMem(&Regs, sizeof (Regs), 0);
     Regs.H.AH = 0x0e;
     Regs.H.AL = ch;
     Regs.H.BL = 0x0F;	/* foreground white */

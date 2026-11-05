@@ -50,26 +50,27 @@
 #ifndef __LIBSAIO_NVIDIA_H
 #define __LIBSAIO_NVIDIA_H
 
-#include "device_inject.h"
+//#include "device_inject.h"
+//#include "card_vlist.h"
+#include "../include/Pci.h"
 
 extern CHAR8* gDeviceProperties;
   
-//BOOLEAN setup_nvidia_devprop(pci_dt_t *nvda_dev);
+//XBool setup_nvidia_devprop(pci_dt_t *nvda_dev);
 
-struct nvidia_pci_info_t;
-typedef struct {
+typedef struct nvidia_pci_info_t
+{
   UINT32    device; // VendorID + DeviceID
-  CHAR8     *name_model;
+  CONST CHAR8     *name_model;
 } nvidia_pci_info_t;
 
-struct nvidia_card_info_t;
-typedef struct
+typedef struct nvidia_card_info_t
 {
   UINT32 device; // VendorID + DeviceID
   UINT32 subdev; // SubdeviceID + SubvendorID
-  CHAR8  *name_model;
+  CONST CHAR8  *name_model;
   UINT8  *custom_NVCAP;
-}nvidia_card_info_t;
+} nvidia_card_info_t;
 
 #define DCB_MAX_NUM_ENTRIES 16
 #define DCB_MAX_NUM_I2C_ENTRIES 16
@@ -171,9 +172,19 @@ struct bios {
 #define CHIPSET_C512        0x03D0
 #define CHIPSET_G73_BRIDGED 0x02E0
 
+#ifndef DONT_DEFINE_GLOBALS
 extern UINT8 default_NVCAP[];
-extern UINT8 default_NVPM[];
-extern UINT8 default_dcfg_0[];
-extern UINT8 default_dcfg_1[];
+#endif
+
+extern const UINT8 default_NVPM[];
+extern const UINT8 default_dcfg_0[];
+extern const UINT8 default_dcfg_1[];
+
+XBool
+setup_nvidia_devprop (
+  pci_dt_t *nvda_dev
+  );
+
+CONST CHAR8* get_nvidia_model(UINT32 device_id, UINT32 subsys_id);
 
 #endif /* !__LIBSAIO_NVIDIA_H */

@@ -35,7 +35,7 @@ AtapiPeimEntry (
   ATAPI_BLK_IO_DEV        *AtapiBlkIoDev;
 
   Status = PeiServicesRegisterForShadow (FileHandle);
-  if (!EFI_ERROR (Status)) {
+  if (!EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -45,7 +45,7 @@ AtapiPeimEntry (
               NULL,
               (VOID **) &AtaControllerPpi
               );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   AtapiBlkIoDev = AllocatePages (EFI_SIZE_TO_PAGES (sizeof (*AtapiBlkIoDev)));
   if (AtapiBlkIoDev == NULL) {
@@ -79,7 +79,7 @@ AtapiPeimEntry (
   DEBUG ((EFI_D_INFO, "Atatpi Device Count is %d\n", AtapiBlkIoDev->DeviceCount));
   if (AtapiBlkIoDev->DeviceCount != 0) {
     Status = PeiServicesInstallPpi (&AtapiBlkIoDev->PpiDescriptor);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return EFI_OUT_OF_RESOURCES;
     }
   }
@@ -214,7 +214,7 @@ AtapiGetBlockDeviceMediaInfo (
   //
   // Get media info from AtapiBlkIoDev
   //
-  CopyMem (MediaInfo, &AtapiBlkIoDev->DeviceInfo[Index].MediaInfo, sizeof(EFI_PEI_BLOCK_IO_MEDIA));
+  CopyMem(MediaInfo, &AtapiBlkIoDev->DeviceInfo[Index].MediaInfo, sizeof(EFI_PEI_BLOCK_IO_MEDIA));
 
   return EFI_SUCCESS;
 }
@@ -321,7 +321,7 @@ AtapiReadBlocks (
             NumberOfBlocks,
             BlockSize
             );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return EFI_DEVICE_ERROR;
   }
 
@@ -424,13 +424,13 @@ AtapiGetBlockDeviceMediaInfo2 (
              DeviceIndex,
              &Media
              );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
   //
   // Get media info from AtapiBlkIoDev
   //
-  CopyMem (MediaInfo, &AtapiBlkIoDev->DeviceInfo[DeviceIndex - 1].MediaInfo2, sizeof(EFI_PEI_BLOCK_IO2_MEDIA));
+  CopyMem(MediaInfo, &AtapiBlkIoDev->DeviceInfo[DeviceIndex - 1].MediaInfo2, sizeof(EFI_PEI_BLOCK_IO2_MEDIA));
 
   return EFI_SUCCESS;
 }
@@ -597,15 +597,15 @@ AtapiEnumerateDevices (
         // Retrieve Media Info
         //
         Status  = DetectMedia (AtapiBlkIoDev, DevicePosition, &MediaInfo, &MediaInfo2);
-        CopyMem (&(AtapiBlkIoDev->DeviceInfo[DeviceCount].MediaInfo), &MediaInfo, sizeof (MediaInfo));
-        CopyMem (&(AtapiBlkIoDev->DeviceInfo[DeviceCount].MediaInfo2), &MediaInfo2, sizeof (MediaInfo2));
+        CopyMem(&(AtapiBlkIoDev->DeviceInfo[DeviceCount].MediaInfo), &MediaInfo, sizeof (MediaInfo));
+        CopyMem(&(AtapiBlkIoDev->DeviceInfo[DeviceCount].MediaInfo2), &MediaInfo2, sizeof (MediaInfo2));
 
         DEBUG ((EFI_D_INFO, "Atatpi Device Position is %d\n", DevicePosition));
         DEBUG ((EFI_D_INFO, "Atatpi DeviceType is   %d\n", MediaInfo.DeviceType));
         DEBUG ((EFI_D_INFO, "Atatpi MediaPresent is %d\n", MediaInfo.MediaPresent));
         DEBUG ((EFI_D_INFO, "Atatpi BlockSize is  0x%x\n", MediaInfo.BlockSize));
 
-        if (EFI_ERROR (Status)) {
+        if (EFI_ERROR(Status)) {
           AtapiBlkIoDev->DeviceInfo[DeviceCount].MediaInfo.MediaPresent = FALSE;
           AtapiBlkIoDev->DeviceInfo[DeviceCount].MediaInfo.LastBlock    = 0;
           AtapiBlkIoDev->DeviceInfo[DeviceCount].MediaInfo2.MediaPresent = FALSE;
@@ -650,7 +650,7 @@ DiscoverAtapiDevice (
   if (ATAPIIdentify (AtapiBlkIoDev, DevicePosition) == EFI_SUCCESS) {
 
     Status = Inquiry (AtapiBlkIoDev, DevicePosition, MediaInfo, MediaInfo2);
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       return TRUE;
     }
   }
@@ -729,7 +729,7 @@ CheckPowerMode (
   IoWrite8 (CommandRegister, AtaCommand);
 
   Status = WaitForBSYClear (AtapiBlkIoDev, &(AtapiBlkIoDev->IdeIoPortReg[Channel]), 3000);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return EFI_TIMEOUT;
   }
 
@@ -818,7 +818,7 @@ DetectIDEController (
   //  Wait 31 seconds for BSY clear
   //
   Status = WaitForBSYClear (AtapiBlkIoDev, &(AtapiBlkIoDev->IdeIoPortReg[Channel]), 31000);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return FALSE;
   }
   //

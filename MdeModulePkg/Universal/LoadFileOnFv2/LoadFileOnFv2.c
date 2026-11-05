@@ -112,7 +112,7 @@ LoadFileOnFv2LoadFile (
                         &Pe32BufferSize,
                         &AuthenticationStatus
                         );
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -215,12 +215,12 @@ CreateFileDevicePath (
     FilePath = (FILEPATH_DEVICE_PATH *) FileDevicePath;
     FilePath->Header.Type    = MEDIA_DEVICE_PATH;
     FilePath->Header.SubType = MEDIA_FILEPATH_DP;
-    CopyMem (&FilePath->PathName, FileName, Size);
+    CopyMem(&FilePath->PathName, FileName, Size);
     SetDevicePathNodeLength (&FilePath->Header, Size + SIZE_OF_FILEPATH_DEVICE_PATH);
     SetDevicePathEndNode (NextDevicePathNode (&FilePath->Header));
 
     DevicePath = AppendDevicePath (DevicePath, FileDevicePath);
-    FreePool (FileDevicePath);
+    FreePool(FileDevicePath);
   }
 
   return DevicePath;
@@ -255,7 +255,7 @@ InstallFileLoadProtocol (
 
   DEBUG ((DEBUG_INFO, "LoadFileOnFv2:Find a FV!\n"));
   Status = gBS->HandleProtocol (Handle, &gEfiFirmwareVolume2ProtocolGuid, (VOID **)&Fv);
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
   Status = gBS->HandleProtocol (Handle, &gEfiFirmwareVolumeBlockProtocolGuid, (VOID **)&Fvb);
   Fvb->GetPhysicalAddress (Fvb, &Address);
   DEBUG ((DEBUG_INFO, "LoadFileOnFv2:Fvb->Address=%x \n", Address));
@@ -269,7 +269,7 @@ InstallFileLoadProtocol (
   Key = 0;
   while (TRUE) {
     Status = Fv->GetNextFile (Fv, &Key, &FileType, &NameGuid, &Attributes, &Size);
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       break;
     }
 
@@ -283,11 +283,11 @@ InstallFileLoadProtocol (
                    &UiNameSize,
                    &AuthenticationStatus
                    );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       continue;
     }
     if (!IsInPrivateList (&NameGuid)) {
-      Private = (LOAD_FILE_ON_FV2_PRIVATE_DATA *)AllocateCopyPool (sizeof (mLoadFileOnFv2PrivateDataTemplate), &mLoadFileOnFv2PrivateDataTemplate);
+      Private = (LOAD_FILE_ON_FV2_PRIVATE_DATA *)AllocateCopyPool(sizeof (mLoadFileOnFv2PrivateDataTemplate), &mLoadFileOnFv2PrivateDataTemplate);
       ASSERT (Private != NULL);
       Private->Fv = Fv;
       Private->DevicePath = CreateFileDevicePath (Handle, &NameGuid, UiName);
@@ -300,12 +300,12 @@ InstallFileLoadProtocol (
                       &gEfiLoadFileProtocolGuid, &Private->LoadFile,
                       NULL
                       );
-      if (!EFI_ERROR (Status)) {
+      if (!EFI_ERROR(Status)) {
         InsertTailList (&mPrivateDataList, &Private->Link);
       } else {
         DEBUG ((DEBUG_ERROR, "Application with the same name %s has been installed.!\n", UiName));
-        FreePool (Private->DevicePath);
-        FreePool (Private);
+        FreePool(Private->DevicePath);
+        FreePool(Private);
       }
     }
   }
@@ -338,7 +338,7 @@ FvNotificationEvent (
   Handle     = NULL;
   Index      = 0;
   BufferSize = sizeof (EFI_HANDLE);
-  Handle     = AllocateZeroPool (BufferSize);
+  Handle     = AllocateZeroPool(BufferSize);
   if (Handle == NULL) {
     return;
   }
@@ -350,8 +350,8 @@ FvNotificationEvent (
                     Handle
                     );
   if (EFI_BUFFER_TOO_SMALL == Status) {
-    FreePool (Handle);
-    Handle = AllocateZeroPool (BufferSize);
+    FreePool(Handle);
+    Handle = AllocateZeroPool(BufferSize);
     if (Handle == NULL) {
       return;
     }
@@ -362,10 +362,10 @@ FvNotificationEvent (
                     &BufferSize,
                     Handle
                     );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       return;
     }
-  } else if (EFI_ERROR (Status)) {
+  } else if (EFI_ERROR(Status)) {
     return;
   }
 
@@ -378,7 +378,7 @@ FvNotificationEvent (
     InstallFileLoadProtocol (*CurHandle);
   }
   if (Handle != NULL) {
-    FreePool (Handle);
+    FreePool(Handle);
   }
 }
 

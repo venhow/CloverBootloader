@@ -39,6 +39,7 @@
     SynchronizationLib
     DebugLib
     DevicePathLib
+	HdaDevicesLib
     MemoryAllocationLib
     PcdLib
     UefiBootServicesTableLib
@@ -67,10 +68,7 @@
     HdaController/HdaControllerHdaIo.c
     HdaController/HdaController.h
     HdaController/HdaController.c
-    HdaModels.c
+#    HdaModels.c
     AudioDxe.h
     AudioDxe.c
 
-[BuildOptions]
-  XCODE:*_*_*_CC_FLAGS = -Os -DMDEPKG_NDEBUG
-  GCC:*_*_*_CC_FLAGS = -Os -fno-lto -DMDEPKG_NDEBUG

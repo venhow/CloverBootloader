@@ -50,17 +50,17 @@ WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
 //   UINT64 Features = 0xFC07E136U; /* Model dependent */
 //   UINT32 SecurityPolicy;
 //   APPLE_PLATFORM_SECURITY_POLICY_PROTOCOL *Policy;
-//   if (!EFI_ERROR (gBS->LocateProtocol(&gApplePlatformSecurityPolicyProtocolGuid, NULL, (VOID **) &Policy))
-//     && (!EFI_ERROR (Policy->GetSecurityPolicy(Policy, &SecurityPolicy)))) {
+//   if (!EFI_ERROR(gBS->LocateProtocol(&gApplePlatformSecurityPolicyProtocolGuid, NULL, (VOID **) &Policy))
+//     && (!EFI_ERROR(Policy->GetSecurityPolicy(Policy, &SecurityPolicy)))) {
 //     if (SecurityPolicy & 1) Features |= 0x400U;
 //     if (SecurityPolicy & 2) Features |= 0x800U;
 //     Features |= 0x1000000U;
 //   }
 //   Features = ((*(UINT64 *)(0xFFFFFF80) != 0x4E15E2F599858AC6ULL) << 12U) | Features & 0xFFFFFFFFFFFFEFFFULL;
-//   if (!EFI_ERROR (gRT->SetVariable(L"FirmwareFeaturesMask", &gEfiAppleNvramGuid, 6, sizeof (UINT32), &Mask)))
+//   if (!EFI_ERROR(gRT->SetVariable(L"FirmwareFeaturesMask", &gEfiAppleNvramGuid, 6, sizeof (UINT32), &Mask)))
 //     gRT->SetVariable(L"FirmwareFeatures", &gEfiAppleNvramGuid, 6, sizeof (UINT32), &Features);
 //   if ((Features & 0x2000000U)
-//     && !EFI_ERROR (gRT->SetVariable(L"ExtendedFirmwareFeaturesMask", &gEfiAppleNvramGuid, 6, sizeof (UINT64), &Mask)))
+//     && !EFI_ERROR(gRT->SetVariable(L"ExtendedFirmwareFeaturesMask", &gEfiAppleNvramGuid, 6, sizeof (UINT64), &Mask)))
 //     gRT->SetVariable(L"ExtendedFirmwareFeatures", &gEfiAppleNvramGuid, 6, sizeof (UINT64), &Features);
 // }
 //
@@ -174,6 +174,11 @@ WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
 #define FW_FEATURE_DISABLE_BOOTSCRIPT_WORKAROUND      0x80000000U // 31
 
 //
+// Supports large BaseSystem. Checked by patchd. Required by macOS 12.
+//
+#define FW_FEATURE_SUPPORTS_LARGE_BASESYSTEM         0x800000000U // 35
+
+//
 // OEM Platform Feature Information - Platform feature bits
 // These bits are exposed via APPLE_SMBIOS_TABLE_TYPE133 FirmwareFeatures:
 // UINT64 PlatformFeature.
@@ -208,7 +213,7 @@ WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
 // Supports Power Chime sound at boot.
 //
 #define PT_FEATURE_SUPPORTS_POWER_CHIME        0x00000010 // 4
-#define PT_FEATURE_UNKNOWN_BIT5                0x00000020 // 5
+#define PT_FEATURE_HAS_T2_CHIP                 0x00000020 // 5
 #define PT_FEATURE_UNKNOWN_BIT6                0x00000040 // 6
 #define PT_FEATURE_UNKNOWN_BIT7                0x00000080 // 7
 #define PT_FEATURE_UNKNOWN_BIT8                0x00000100 // 8

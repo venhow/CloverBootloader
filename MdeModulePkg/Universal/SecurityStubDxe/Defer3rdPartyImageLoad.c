@@ -71,7 +71,7 @@ FileFromFv (
                   &TempDevicePath,
                   &DeviceHandle
                   );
-  if (!EFI_ERROR (Status)) {
+  if (!EFI_ERROR(Status)) {
     Status = gBS->OpenProtocol (
                     DeviceHandle,
                     &gEfiFirmwareVolume2ProtocolGuid,
@@ -80,7 +80,7 @@ FileFromFv (
                     NULL,
                     EFI_OPEN_PROTOCOL_TEST_PROTOCOL
                     );
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       return TRUE;
     }
   }
@@ -216,7 +216,7 @@ GetDefferedImageInfo (
     NewCount = 0;
     for (Index = 0; Index < mDeferred3rdPartyImage.Count; Index++) {
       if (!mDeferred3rdPartyImage.ImageInfo[Index].Loaded) {
-        CopyMem (
+        CopyMem(
           &mDeferred3rdPartyImage.ImageInfo[NewCount],
           &mDeferred3rdPartyImage.ImageInfo[Index],
           sizeof (DEFERRED_3RD_PARTY_IMAGE_INFO)
@@ -283,7 +283,7 @@ DxeSmmReadyToLock (
   VOID                      *Interface;
 
   Status = gBS->LocateProtocol (&gEfiDxeSmmReadyToLockProtocolGuid, NULL, &Interface);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     return;
   }
 
@@ -349,7 +349,7 @@ Defer3rdPartyImageLoad (
       DevicePathStr
       ));
     if (DevicePathStr != NULL) {
-      FreePool (DevicePathStr);
+      FreePool(DevicePathStr);
     }
     );
 
@@ -395,7 +395,7 @@ Defer3rdPartyImageLoadInitialize (
                   &mDeferredImageLoad,
                   NULL
                   );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   Status = gBS->CreateEventEx (
                   EVT_NOTIFY_SIGNAL,
@@ -405,7 +405,7 @@ Defer3rdPartyImageLoadInitialize (
                   &gEfiEndOfDxeEventGroupGuid,
                   &Event
                   );
-  ASSERT_EFI_ERROR (Status);
+  ASSERT_EFI_ERROR(Status);
 
   EfiCreateProtocolNotifyEvent (
     &gEfiDxeSmmReadyToLockProtocolGuid,

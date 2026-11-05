@@ -59,7 +59,7 @@ IsKeyOptionValid (
   // Check CRC for Boot Option
   //
   gBS->CalculateCrc32 (BootOptionVar, BootOptionSize, &Crc);
-  FreePool (BootOptionVar);
+  FreePool(BootOptionVar);
 
   return (BOOLEAN) ((KeyOption->BootOptionCrc == Crc) ? TRUE : FALSE);
 }
@@ -141,8 +141,8 @@ RegisterHotkey (
       //
       // Got the option, so just return
       //
-      FreePool (TempOption);
-      FreePool (KeyOrder);
+      FreePool(TempOption);
+      FreePool(KeyOrder);
       return EFI_SUCCESS;
     }
 
@@ -160,12 +160,12 @@ RegisterHotkey (
       }
     }
 
-    FreePool (TempOption);
+    FreePool(TempOption);
   }
 
   if (UpdateBootOption && (KeyOrder != NULL)) {
     RegisterOptionNumber = KeyOrder[Index];
-    FreePool (TempOption);
+    FreePool(TempOption);
   } else {
     Index = 0;
     RegisterOptionNumber = (UINT16) (MaxOptionNumber + 1);
@@ -186,8 +186,8 @@ RegisterHotkey (
                   KeyOptionSize,
                   KeyOption
                   );
-  if (EFI_ERROR (Status)) {
-    FreePool (KeyOrder);
+  if (EFI_ERROR(Status)) {
+    FreePool(KeyOrder);
     return Status;
   }
 
@@ -201,12 +201,12 @@ RegisterHotkey (
 
   NewKeyOrder = AllocatePool (KeyOrderSize);
   if (NewKeyOrder == NULL) {
-    FreePool (KeyOrder);
+    FreePool(KeyOrder);
     return EFI_OUT_OF_RESOURCES;
   }
 
   if (KeyOrder != NULL) {
-    CopyMem (NewKeyOrder, KeyOrder, KeyOrderSize);
+    CopyMem(NewKeyOrder, KeyOrder, KeyOrderSize);
   }
 
   NewKeyOrder[Index] = RegisterOptionNumber;
@@ -220,9 +220,9 @@ RegisterHotkey (
                   );
 
   if (KeyOrder != NULL) {
-    FreePool (KeyOrder);
+    FreePool(KeyOrder);
   }
-  FreePool (NewKeyOrder);
+  FreePool(NewKeyOrder);
 
   return Status;
 }
@@ -300,7 +300,7 @@ UnregisterHotkey (
                   KeyOrder
                   );
 
-  FreePool (KeyOrder);
+  FreePool(KeyOrder);
 
   return Status;
 }
@@ -332,7 +332,7 @@ HotkeyBoot (
 
     Status = BdsLibBootViaBootOption (mHotkeyBootOption, mHotkeyBootOption->DevicePath, &ExitDataSize, &ExitData);
 
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       //
       // Call platform action to indicate the boot fail
       //
@@ -345,10 +345,10 @@ HotkeyBoot (
       mHotkeyBootOption->StatusString = GetStringById (STRING_TOKEN (STR_BOOT_SUCCEEDED));
       PlatformBdsBootSuccess (mHotkeyBootOption);
     }
-    FreePool (mHotkeyBootOption->Description);
-    FreePool (mHotkeyBootOption->DevicePath);
-    FreePool (mHotkeyBootOption->LoadOptions);
-    FreePool (mHotkeyBootOption);
+    FreePool(mHotkeyBootOption->Description);
+    FreePool(mHotkeyBootOption->DevicePath);
+    FreePool(mHotkeyBootOption->LoadOptions);
+    FreePool(mHotkeyBootOption);
 
     mHotkeyBootOption = NULL;
 
@@ -482,7 +482,7 @@ HotkeyRegisterNotify (
                                  HotkeyCallback,
                                  &Hotkey->NotifyHandle
                                  );
-      if (EFI_ERROR (Status)) {
+      if (EFI_ERROR(Status)) {
         //
         // some of the hotkey registry failed
         //
@@ -525,7 +525,7 @@ HotkeyEvent (
                     &BufferSize,
                     &Handle
                     );
-    if (EFI_ERROR (Status)) {
+    if (EFI_ERROR(Status)) {
       //
       // If no more notification events exist
       //
@@ -537,8 +537,8 @@ HotkeyEvent (
                     &gEfiSimpleTextInputExProtocolGuid,
                     (VOID **) &SimpleTextInEx
                     );
-//    ASSERT_EFI_ERROR (Status);
-    if (EFI_ERROR (Status)) {
+//    ASSERT_EFI_ERROR(Status);
+    if (EFI_ERROR(Status)) {
       //
       // If no more notification events exist
       //
@@ -571,7 +571,7 @@ HotkeyInsertList (
   EFI_INPUT_KEY      *InputKey;
   EFI_KEY_DATA       *KeyData;
 
-  HotkeyLeft = AllocateZeroPool (sizeof (BDS_HOTKEY_OPTION));
+  HotkeyLeft = AllocateZeroPool(sizeof (BDS_HOTKEY_OPTION));
   if (HotkeyLeft == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
@@ -630,7 +630,7 @@ HotkeyInsertList (
     //
     // Need an extra hotkey for shift key on right
     //
-    HotkeyRight = AllocateCopyPool (sizeof (BDS_HOTKEY_OPTION), HotkeyLeft);
+    HotkeyRight = AllocateCopyPool(sizeof (BDS_HOTKEY_OPTION), HotkeyLeft);
     if (HotkeyRight == NULL) {
       return EFI_OUT_OF_RESOURCES;
     }
@@ -723,7 +723,7 @@ HotkeyGetOptionNumbers (
   OptionNumbers = NULL;
 
   NameSize = sizeof (CHAR16);
-  Name     = AllocateZeroPool (NameSize);
+  Name     = AllocateZeroPool(NameSize);
 //  ASSERT (Name != NULL);
   if (Name == NULL) {
     return NULL;
@@ -744,8 +744,8 @@ HotkeyGetOptionNumbers (
 //    if (Status == EFI_NOT_FOUND) {
 //      break;
 //    }
-//    ASSERT_EFI_ERROR (Status);
-    if (EFI_ERROR (Status)) {
+//    ASSERT_EFI_ERROR(Status);
+    if (EFI_ERROR(Status)) {
       break;
     }
     
@@ -765,13 +765,13 @@ HotkeyGetOptionNumbers (
           break;
         }
       }
-      CopyMem (&OptionNumbers[Index + 1], &OptionNumbers[Index], (*Count - Index) * sizeof (UINT16));
+      CopyMem(&OptionNumbers[Index + 1], &OptionNumbers[Index], (*Count - Index) * sizeof (UINT16));
       OptionNumbers[Index] = OptionNumber;
       (*Count)++;
     }
   }
 
-  FreePool (Name);
+  FreePool(Name);
 
   return OptionNumbers;
 }
@@ -817,8 +817,8 @@ InitializeHotkeyService (
   //
   // Platform needs to make sure setting volatile variable before calling 3rd party code shouldn't fail.
   //
-//  ASSERT_EFI_ERROR (Status);
-  if (EFI_ERROR (Status)) {
+//  ASSERT_EFI_ERROR(Status);
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -833,11 +833,11 @@ InitializeHotkeyService (
     if (IsKeyOptionValid (KeyOption)) {
       HotkeyInsertList (KeyOption);
     }
-    FreePool (KeyOption);
+    FreePool(KeyOption);
   }
 
   if (KeyOptionNumbers != NULL) {
-    FreePool (KeyOptionNumbers);
+    FreePool(KeyOptionNumbers);
   }
 
   //
@@ -850,8 +850,8 @@ InitializeHotkeyService (
                   NULL,
                   &mHotkeyEvent
                   );
-//  ASSERT_EFI_ERROR (Status);
-  if (EFI_ERROR (Status)) {
+//  ASSERT_EFI_ERROR(Status);
+  if (EFI_ERROR(Status)) {
     return Status;
   }
 
@@ -863,7 +863,7 @@ InitializeHotkeyService (
                   mHotkeyEvent,
                   &mHotkeyRegistration
                   );
-//  ASSERT_EFI_ERROR (Status);
+//  ASSERT_EFI_ERROR(Status);
 
   return Status;
 }

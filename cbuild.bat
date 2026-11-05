@@ -18,24 +18,26 @@ set EDK_BUILDINFOS=
 set EDK2SHELL=
 set BUILD_IA32=
 set BUILD_X64=
-set EDK2_BUILD_OPTIONS=-D NO_GRUB_DRIVERS
+set EDK2_BUILD_OPTIONS=-D NO_GRUB_DRIVERS -D MDEPKG_NDEBUG -D MSFT
 set VBIOSPATCHCLOVEREFI=0
 set ONLY_SATA_0=0
 set USE_BIOS_BLOCKIO=0
-set USE_LOW_EBDA=1
+set USE_LOW_EBDA=0
 set DISABLE_USB_SUPPORT=0
 set GENPAGE=0
 set MSG=
 set DEVSTAGE=
 set IASL_PREFIX=c:\ASL\
 
-set DEFAULT_CYGWIN_HOME=c:\cygwin
-set DEFAULT_PYTHONHOME=
-rem d:\Program File\Python37"
-set DEFAULT_PYTHON_FREEZER_PATH=%PYTHON_HOME%\Scripts
-set PYTHON3_ENABLE=FALSE
-set DEFAULT_NASM_PREFIX=
-rem C:\Program Files (x86)\NASM"
+set DEFAULT_CYGWIN_HOME=c:\cygwin 
+rem %WORKSPACE_TOOLS_PATH%\Bin\CYGWIN_NT-5.1-i686\
+rem set DEFAULT_PYTHONHOME=d:\Program File\Python38
+rem set DEFAULT_PYTHONPATH=d:\Program File\Python38\Lib
+rem set DEFAULT_PYTHON_FREEZER_PATH=%PYTHON_HOME%\Scripts
+rem set "PYTHONHOME=d:\Program File\Python37"
+rem set "PYTHON_FREEZER_PATH=%PYTHONHOME%\Scripts"
+set PYTHON3_ENABLE=TRUE
+set DEFAULT_NASM_PREFIX=C:\Program Files\NASM
 rem # %DEFAULT_CYGWIN_HOME%\bin
 set DEFAULT_TOOLCHAIN=VS2017
 set DEFAULT_BUILDTARGET=RELEASE
@@ -43,6 +45,8 @@ set DEFAULT_TARGETARCH=X64
 set DEFAULT_THREADNUMBER=%NUMBER_OF_PROCESSORS%
 set WIN_IASL_BIN=c:\ASL
 set WIN_ASL_BIN=c:\ASL
+
+rem set CYGWIN_HOME=%WORKSPACE_TOOLS_PATH%\Bin\CYGWIN_NT-5.1-i686\
 
 call:parseArguments %*
 if errorlevel 1 (
@@ -61,7 +65,7 @@ rem   git rev-list --tags --max-count=1 > revs.txt
 rem   set /p c=< revs.txt
 rem  del revs.txt
 rem  git describe --tags %c% > vers.txt
-  git describe --tags --abbrev=0 > vers.txt
+  git describe --always --abbrev=0 > vers.txt
   set /P s=< vers.txt
   del vers.txt
   
@@ -109,20 +113,21 @@ rem # initialize
   if ["%SHOW_USAGE%"] == ["1"] goto usage
 
   if not defined CYGWIN_HOME (
+    echo No cygwin_home....
     set CYGWIN_HOME=%DEFAULT_CYGWIN_HOME%
   )
-  if not defined PYTHONHOME (
-    set PYTHONHOME=%DEFAULT_PYTHONHOME%
-  )
-  if not defined PYTHON_HOME (
-    set PYTHON_HOME=%PYTHONHOME%
-  )
-  if not defined PYTHON_PATH (
-    set PYTHON_PATH=%PYTHON_HOME%
-  )
-  if not defined PYTHON_FREEZER_PATH (
-    set PYTHON_FREEZER_PATH=%DEFAULT_PYTHON_FREEZER_PATH%
-  )
+ rem  if not defined PYTHONHOME (
+rem     set PYTHONHOME=%DEFAULT_PYTHONHOME%
+rem   )
+rem   if not defined PYTHON_HOME (
+rem     set PYTHON_HOME=%PYTHONHOME%
+rem   )
+rem   if not defined PYTHON_PATH (
+rem     set PYTHON_PATH=%PYTHON_HOME%
+rem   )
+rem   if not defined PYTHON_FREEZER_PATH (
+rem     set PYTHON_FREEZER_PATH=%DEFAULT_PYTHON_FREEZER_PATH%
+rem   )
   if not defined NASM_PREFIX (
     set NASM_PREFIX=%DEFAULT_NASM_PREFIX%
   )
@@ -154,6 +159,7 @@ rem # setup build
 
   rem # fix any parameters not set
   set "BASETOOLS_DIR=%WORKSPACE_TOOLS_PATH%\Bin\Win32"
+  set "CYGWIN_HOME=%WORKSPACE_TOOLS_PATH%\Bin\CYGWIN_NT-5.1-i686"
   if defined EDK_TOOLS_BIN (
     set "BASETOOLS_DIR=%EDK_TOOLS_BIN%"
   )
@@ -247,15 +253,15 @@ rem # setup build
 
   set "TARGETARCH=X64"
   set UEFI_DRV_LIST=(FSInject OsxFatBinaryDrv VBoxHfs)
-  set UEFI_OFF_DRV_LIST=(CsmVideoDxe DataHubDxe EmuVariableUefi OsxAptioFixDrv OsxAptioFix2Drv OsxLowMemFixDrv PartitionDxe)
-  set DRV_LIST=(NvmExpressDxe Ps2MouseDxe UsbMouseDxe VBoxIso9600 VBoxExt2 VBoxExt4 XhciDxe)
+  set UEFI_OFF_DRV_LIST=(CsmVideoDxe EmuVariableUefi OsxAptioFixDrv OsxAptioFix2Drv OsxLowMemFixDrv PartitionDxe)
+  set DRV_LIST=(NvmExpressDxe Ps2MouseDxe UsbMouseDxe VBoxIso9600 VBoxExt2 Ext4Dxe XhciDxe)
   goto startbuild
 
 :build32
   set "TARGETARCH=IA32"
   set UEFI_DRV_LIST=(FSInject OsxFatBinaryDrv VBoxHfs)
   set UEFI_OFF_DRV_LIST=(CsmVideoDxe)
-  set DRV_LIST=(Ps2KeyboardDxe Ps2MouseAbsolutePointerDxe Ps2MouseDxe UsbMouseDxe VBoxExt2 VBoxExt4 XhciDxe)
+  set DRV_LIST=(Ps2KeyboardDxe Ps2MouseAbsolutePointerDxe Ps2MouseDxe UsbMouseDxe VBoxExt2 Ext4Dxe XhciDxe)
 
 :startbuild
   set "CMD_BUILD=build -a %TARGETARCH% -t %TOOLCHAIN% -b %BUILDTARGET% -n %THREADNUMBER% %CLEANING%"
@@ -294,6 +300,7 @@ rem # setup build
   echo #define FIRMWARE_REVISION L"%SVNREVISION%">>%F_VER_H%
   echo #define REVISION_STR "Clover revision: %SVNREVISION%">>%F_VER_H%
   echo #define BUILDINFOS_STR %clover_build_info%>>%F_VER_H%
+ rem # copy %F_VER_H% rEFIt_UEFI\%F_VER_H%
 
 :callbuild
   rem # launch build
@@ -384,7 +391,7 @@ rem # drop compiled files to EFI folder
     echo "ENABLE_SECURE_BOOT" doesnt work ATM ...
     echo.
   )
-  goto noboot
+ rem  goto noboot
   call:createDir %DEST_BOOTLOADERS%\%TARGETARCH%
 
   echo Compressing DUETEFIMainFv.FV ^(%TARGETARCH%^) ...
@@ -483,8 +490,8 @@ rem # drop compiled files to EFI folder
 
   call:copybin "%BUILD_DIR%\FV\boot%TARGETARCH_INT%" "%DEST_BOOTLOADERS%\%TARGETARCH%" "%cloverEFIFile%"
   call:copybin "%BUILD_DIR_ARCH%\bdmesg.efi" "%DEST_TOOLS%" "bdmesg-%TARGETARCH_INT%.efi"
-  call:copybin "%BUILD_DIR_ARCH%\CLOVER.efi" "%DEST_CLOVER%" "CLOVER%TARGETARCH%.efi"
-  call:copybin "%BUILD_DIR_ARCH%\CLOVER.efi" "%DEST_BOOT%" "BOOT%TARGETARCH%.efi"
+  call:copybin "%BUILD_DIR_ARCH%\CLOVERX64.efi" "%DEST_CLOVER%" "CLOVER%TARGETARCH%.efi"
+  call:copybin "%BUILD_DIR_ARCH%\CLOVERX64.efi" "%DEST_BOOT%" "BOOT%TARGETARCH%.efi"
 
   if not defined CLOVER_EDK2SHELL goto donebuild
 

@@ -6,20 +6,20 @@
 #ifndef __LIBSAIO_KERNEL_PATCHER_H
 #define __LIBSAIO_KERNEL_PATCHER_H
 
+#include "boot.h"
 
-#define CPUFAMILY_INTEL_6_13		0xaa33392b
-#define CPUFAMILY_INTEL_YONAH		0x73d67300
-#define CPUFAMILY_INTEL_MEROM		0x426f69ef
+//#define DBG_RT( ...)    if ((KernelAndKextPatches != NULL) && KernelAndKextPatches->KPDebug) { printf(__VA_ARGS__); }
+#define DBG_RT(...)    if ( gSettings.KernelAndKextPatches.KPDebug ) { printf(__VA_ARGS__); }
+
+
+#define CPUFAMILY_INTEL_6_13		  0xaa33392b
+#define CPUFAMILY_INTEL_YONAH		  0x73d67300
+#define CPUFAMILY_INTEL_MEROM		  0x426f69ef
 #define CPUFAMILY_INTEL_PENRYN		0x78ea4fbc
 #define CPUFAMILY_INTEL_NEHALEM		0x6b5a4cd2
 #define CPUFAMILY_INTEL_WESTMERE	0x573b5eec
 
 #define CPUIDFAMILY_DEFAULT 6
-
-#define CPUID_MODEL_6_13	 	    13
-#define CPUID_MODEL_YONAH			14
-#define CPUID_MODEL_MEROM			15
-#define CPUID_MODEL_PENRYN			35
 
 #define MACH_GET_MAGIC(hdr)        (((struct mach_header_64*)(hdr))->magic)
 #define MACH_GET_NCMDS(hdr)        (((struct mach_header_64*)(hdr))->ncmds)
@@ -28,26 +28,54 @@
 #define SC_GET_CMD(hdr)            (((struct segment_command_64*)(hdr))->cmd)
 
 
-#define kPrelinkTextSegment                "__PRELINK_TEXT"
-#define kPrelinkTextSection                "__text"
+const char   kPrelinkTextSegment[] =                "__PRELINK_TEXT";
+const char   kPrelinkTextSection[] =                "__text";
+const char   kPrelinkLinkStateSegment[] =           "__PRELINK_STATE";
+const char   kPrelinkKernelLinkStateSection[] =     "__kernel";
+const char   kPrelinkKextsLinkStateSection[] =      "__kexts";
+const char   kPrelinkInfoSegment[] =                "__PRELINK_INFO";
+const char   kPrelinkInfoSection[] =                "__info";
+const char   kLinkEditSegment[] =                   "__LINKEDIT";
+const char   kTextSegment[] =                       "__TEXT";
+const char   kDataSegment[] =                       "__DATA";
+const char   kDataConstSegment[] =                  "__DATA_CONST";
+const char   kKldSegment[] =                        "__KLD";
+const char   kHibSegment[] =                        "__HIB";
+const char   kTextExecSegment[] =                   "__TEXT_EXEC";
+const char   kConstSection[] =                      "__const";
+const char   kBssSection[] =                        "__bss";
+const char   kCommonSection[] =                     "__common";
+const char   kDataSection[] =                       "__data";
 
-#define kPrelinkLinkStateSegment           "__PRELINK_STATE"
-#define kPrelinkKernelLinkStateSection     "__kernel"
-#define kPrelinkKextsLinkStateSection      "__kexts"
+#define ID_SEG_STEXT                           0x010e
+#define ID_SEG_TEXT                            0x010f
+#define ID_SEG_TEXT2                           0x0124
 
-#define kPrelinkInfoSegment                "__PRELINK_INFO"
-#define kPrelinkInfoSection                "__info"
+#define ID_SEG_TEXT_CONST                      0x030e
+#define ID_SEG_DATA_DATA                       0x080e
+#define ID_SEG_DATA_DATA2                      0x081e
+#define ID_SEC_BSS                             0x0a0e
+#define ID_SEC_CONST                           0x070f
+#define ID_SEG_DATA_COMMON                     0x090f
+#define ID_SEG_DATA                            0x0f0f
+#define ID_SEG_DATA_CONST                      0x110f
+#define ID_SEG_HIB                             0x170f
+#define ID_SEG_KLD                             0x180f
+#define ID_SEG_KLD2                            0x1a0f
+#define ID_SEG_KLD3                            0x210f
 
-#define kPrelinkBundlePathKey              "_PrelinkBundlePath"
-#define kPrelinkExecutableRelativePathKey  "_PrelinkExecutableRelativePath"
-#define kPrelinkExecutableLoadKey          "_PrelinkExecutableLoadAddr"
-#define kPrelinkExecutableSourceKey        "_PrelinkExecutableSourceAddr"
-#define kPrelinkExecutableSizeKey          "_PrelinkExecutableSize"
-#define kPrelinkInfoDictionaryKey          "_PrelinkInfoDictionary"
-#define kPrelinkInterfaceUUIDKey           "_PrelinkInterfaceUUID"
-#define kPrelinkKmodInfoKey                "_PrelinkKmodInfo"
-#define kPrelinkLinkStateKey               "_PrelinkLinkState"
-#define kPrelinkLinkStateSizeKey           "_PrelinkLinkStateSize"
+
+const char  ctor_used[] =                           ".constructors_used";
+const char  kPrelinkBundlePathKey[] =               "_PrelinkBundlePath";
+const char  kPrelinkExecutableRelativePathKey[] =   "_PrelinkExecutableRelativePath";
+const char  kPrelinkExecutableLoadKey[] =           "_PrelinkExecutableLoadAddr";
+const char  kPrelinkExecutableSourceKey[] =         "_PrelinkExecutableSourceAddr";
+const char  kPrelinkExecutableSizeKey[] =           "_PrelinkExecutableSize";
+const char  kPrelinkInfoDictionaryKey[] =           "_PrelinkInfoDictionary";
+const char  kPrelinkInterfaceUUIDKey[] =            "_PrelinkInterfaceUUID";
+const char  kPrelinkKmodInfoKey[] =                 "_PrelinkKmodInfo";
+const char  kPrelinkLinkStateKey[] =                "_PrelinkLinkState";
+const char  kPrelinkLinkStateSizeKey[] =            "_PrelinkLinkStateSize";
 
 #define kPropCFBundleIdentifier ("CFBundleIdentifier")
 #define kPropCFBundleExecutable ("CFBundleExecutable")
@@ -65,55 +93,76 @@ typedef struct _BooterKextFileInfo {
     UINT32  bundlePathLength;
 } _BooterKextFileInfo;
 
-typedef struct _DeviceTreeBuffer {
-    uint32_t paddr;
-    uint32_t length;
-} _DeviceTreeBuffer;
+class _DeviceTreeBuffer
+{
+  public:
+    uint32_t paddr = 0;
+    uint32_t length = 0;
+
+    _DeviceTreeBuffer() { }
+    _DeviceTreeBuffer(const _DeviceTreeBuffer& other) = default; // default is fine if there is only native type and objects that have copy ctor
+    _DeviceTreeBuffer& operator = ( const _DeviceTreeBuffer & ) = default; // default is fine if there is only native type and objects that have copy ctor
+    ~_DeviceTreeBuffer() {}
+};
+
+typedef struct VTABLE {
+  UINT32 NameOffset;
+  UINT32 Seg;
+  UINT64 ProcAddr;
+} VTABLE;
+
+typedef struct SEGMENT {
+  CHAR8  Name[16];    //0
+  UINT64 SegAddress;  //0x10
+  UINT64 vmsize;      //0x18 0x16FB60
+  UINT32 fileoff;     //0x20 0xDDA000 //Slice - it is not UINT64. MachoLib is wrong
+  UINT32 fileoff64;   //0x24
+  UINT32 filesize;    //0x28 0x16FB60
+  UINT32 filesize64;  //0x2c
+  UINT32 maxprot;     //0x30 01-Cat 07-Moj
+  UINT32 initprot;    //0x34 01
+  UINT32 NumSects;    //0x38 00
+  UINT32 Flags;       //0x3C 00
+  UINT32 Cmd;         //0x40 02  //LC_SYMTAB link-edit stab symbol table info
+  UINT32 Cmdsize;     //0x44 18
+  UINT32 AddrVtable;  //0x48
+  UINT32 SizeVtable;  //0x4C
+  UINT32 AddrNames;   //0x50
+  UINT32 SizeNamesTable;
+} SEGMENT;
+
+//extern EFI_PHYSICAL_ADDRESS KernelRelocBase;
+//extern BootArgs1    *bootArgs1;
+//extern BootArgs2    *bootArgs2;
+//extern CHAR8        *dtRoot;
+//extern UINT32       *dtLength;
+//extern UINT8        *KernelData;
+//extern UINT32       KernelSlide;
+//extern XBool        isKernelcache;
+//extern XBool        is64BitKernel;
+//extern XBool        gSNBEAICPUFixRequire; // SandyBridge-E AppleIntelCpuPowerManagement patch require or not
+//extern XBool        gBDWEIOPCIFixRequire; // Broadwell-E IOPCIFamily fix require or not
 
 
+//extern UINT32       DisplayVendor[];
+//void findCPUfamily();
 
-extern EFI_PHYSICAL_ADDRESS KernelRelocBase;
-extern BootArgs1    *bootArgs1;
-extern BootArgs2    *bootArgs2;
-extern CHAR8        *dtRoot;
-extern VOID         *KernelData;
-extern UINT32       KernelSlide;
-extern BOOLEAN      isKernelcache;
-extern BOOLEAN      is64BitKernel;
-extern BOOLEAN      gSNBEAICPUFixRequire; // SandyBridge-E AppleIntelCpuPowerManagement patch require or not
-extern BOOLEAN      gBDWEIOPCIFixRequire; // Broadwell-E IOPCIFamily fix require or not
-
-// notes:
-// - 64bit segCmd64->vmaddr is 0xffffff80xxxxxxxx and we are taking
-//   only lower 32bit part into PrelinkTextAddr
-// - PrelinkTextAddr is segCmd64->vmaddr + KernelRelocBase
-extern UINT32       PrelinkTextLoadCmdAddr;
-extern UINT32       PrelinkTextAddr;
-extern UINT32       PrelinkTextSize;
-
-// notes:
-// - 64bit sect->addr is 0xffffff80xxxxxxxx and we are taking
-//   only lower 32bit part into PrelinkInfoAddr
-// - PrelinkInfoAddr is sect->addr + KernelRelocBase
-extern UINT32       PrelinkInfoLoadCmdAddr;
-extern UINT32       PrelinkInfoAddr;
-extern UINT32       PrelinkInfoSize;
-
-extern UINT32 DisplayVendor[];
-//VOID findCPUfamily();
+//extern XBool        SSSE3;
 
 
 //UINT64 kernelsize;
 
-VOID Patcher_SSE3_5(VOID* kernelData);
-VOID Patcher_SSE3_6(VOID* kernelData);
-VOID Patcher_SSE3_7(VOID* kernelData);
+//void Patcher_SSE3_5(void* kernelData);
+//void Patcher_SSE3_6(void* kernelData);
+//void Patcher_SSE3_7();
 
-VOID KernelAndKextsPatcherStart(IN LOADER_ENTRY *Entry);
+//#include "../gui/menu_items/menu_items.h" // for LOADER_ENTRY
+//class LOADER_ENTRY;
+//void KernelAndKextsPatcherStart(IN LOADER_ENTRY *Entry);
 
-//VOID register_kernel_symbol(CONST CHAR8* name);
+//void register_kernel_symbol(CONST CHAR8* name);
 //UINT64 symbol_handler(CHAR8* symbolName, UINT64 addr);
-//INTN locate_symbols(VOID* kernelData);
+//INTN locate_symbols(void* kernelData);
 
 
 /////////////////////
@@ -125,30 +174,16 @@ VOID KernelAndKextsPatcherStart(IN LOADER_ENTRY *Entry);
 // Called from SetFSInjection(), before boot.efi is started,
 // to allow patchers to prepare FSInject to force load needed kexts.
 //
-VOID KextPatcherRegisterKexts(FSINJECTION_PROTOCOL *FSInject, FSI_STRING_LIST *ForceLoadKexts, LOADER_ENTRY *Entry);
+//void KextPatcherRegisterKexts(FSINJECTION_PROTOCOL *FSInject, FSI_STRING_LIST *ForceLoadKexts, LOADER_ENTRY *Entry);
 
 //
 // Entry for all kext patches.
 // Will iterate through kext in prelinked kernel (kernelcache)
 // or DevTree (drivers boot) and do patches.
 //
-VOID KextPatcherStart(LOADER_ENTRY *Entry);
+//void KextPatcherStart(LOADER_ENTRY *Entry);
 
-//
-// Searches Source for Search pattern of size SearchSize
-// and returns the number of occurences.
-//
-UINTN SearchAndCount(UINT8 *Source, UINT64 SourceSize, UINT8 *Search, UINTN SearchSize);
+UINTN FindRelative32(const UINT8 *Source, UINTN Start, UINTN SourceSize, UINTN taskLocation);
 
-//
-// Searches Source for Search pattern of size SearchSize
-// and replaces it with Replace up to MaxReplaces times.
-// If MaxReplaces <= 0, then there is no restriction on number of replaces.
-// Replace should have the same size as Search.
-// Returns number of replaces done.
-//
-UINTN SearchAndReplace(UINT8 *Source, UINT64 SourceSize, UINT8 *Search, UINTN SearchSize, UINT8 *Replace, INTN MaxReplaces);
-
-UINTN SearchAndReplaceMask(UINT8 *Source, UINT64 SourceSize, UINT8 *Search, UINT8 *MaskSearch, UINTN SearchSize, UINT8 *Replace, UINT8 *MaskReplace, INTN MaxReplaces);
 
 #endif /* !__LIBSAIO_KERNEL_PATCHER_H */

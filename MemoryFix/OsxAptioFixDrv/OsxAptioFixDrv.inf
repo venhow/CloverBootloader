@@ -16,8 +16,10 @@
   ENTRY_POINT                    = OsxAptioFixDrvEntrypoint
 
 [Packages]
+  CloverPkg.dec
   MdePkg/MdePkg.dec
   MdeModulePkg/MdeModulePkg.dec
+  OpenCorePkg/OpenCorePkg.dec
 
 [LibraryClasses]
   UefiLib
@@ -29,6 +31,7 @@
   BaseLib
   CpuLib
   DevicePathLib
+  OcDeviceTreeLib
   
 [Sources]
   OsxAptioFixDrv.c
@@ -43,12 +46,12 @@
   VMem.h
   Lib.c
   Lib.h
-  FlatDevTree/device_tree.h
-  FlatDevTree/device_tree.c
+#  FlatDevTree/device_tree.h
+#  FlatDevTree/device_tree.c
   NVRAMDebug.h
   NVRAMDebug.c
-  Mach-O/UefiLoader.h
-  Mach-O/loader.h
+#  Mach-O/UefiLoader.h
+#  Mach-O/loader.h
   Mach-O/Mach-O.h
   Mach-O/Mach-O.c
   Hibernate.h
@@ -64,6 +67,7 @@
   gEfiFileSystemInfoGuid						## CONSUMES
   gEfiFileSystemVolumeLabelInfoIdGuid			## CONSUMES
   gEfiGlobalVariableGuid
+  gEfiMiscSubClassGuid
 
 [Protocols]
   gEfiLoadedImageProtocolGuid

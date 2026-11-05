@@ -57,7 +57,7 @@ func findCloverRevision(at EFIdir: String) -> String? {
         scanner.scanUpTo(terminatingCharacter, into: &rev)
         
         if (rev != nil), let revision = String(cString: (rev?.utf8String)!,
-                                               encoding: String.Encoding.utf8)/*&& rev?.length == 4 */{
+                                               encoding: String.Encoding.utf8) {
           if revision.count == 4 {
             return revision
           }
@@ -69,4 +69,96 @@ func findCloverRevision(at EFIdir: String) -> String? {
     
   }
   return nil
+}
+
+// MARK: find Clover gihub commit
+func findCloverHashCommit(at EFIdir: String) -> String? {
+  
+  let bootfiles : [String] = ["/BOOT/BOOTX64.efi",
+                              "/CLOVER/CLOVERX64.efi",
+                              "/BOOT/BOOTXIA32.efi",
+                              "/CLOVER/CLOVERIA32.efi"]
+  let preMatchString = ", commit "
+  let terminatingCharacter = ")"
+  for b in bootfiles {
+    if fm.fileExists(atPath: EFIdir + b) {
+      do {
+        var rev : NSString? = nil
+        let stringToSearch : String = try String(contentsOfFile: EFIdir + b, encoding: String.Encoding.ascii)
+        let scanner : Scanner = Scanner(string: stringToSearch)
+        scanner.scanUpTo(preMatchString, into: nil)
+        scanner.scanString(preMatchString, into: nil)
+        scanner.scanUpTo(terminatingCharacter, into: &rev)
+        
+        if (rev != nil), let revision = String(cString: (rev?.utf8String)!,
+                                               encoding: String.Encoding.utf8) {
+          if revision.count >= 4 && revision.count <= 40 {
+            return revision
+          }
+        }
+      } catch  {
+        print(error.localizedDescription)
+      }
+    }
+    
+  }
+  return nil
+}
+
+// MARK: get image from CoreType.bundle
+func getCoreTypeImage(named: String, isTemplate: Bool) -> NSImage? {
+  var image : NSImage? = nil
+  if let ctb = Bundle.init(path: "/System/Library/CoreServices/CoreTypes.bundle") {
+    image = NSImage(byReferencingFile: ctb.path(forResource: named, ofType: "icns", inDirectory: nil) ?? "")
+  }
+  image?.isTemplate = isTemplate
+  return image
+}
+
+// MARK: file scanner
+func gGetFiles(at path: String) -> [String] {
+  var isDir : ObjCBool = false
+  var files : [String] = [String]()
+  
+  if fm.fileExists(atPath: path, isDirectory: &isDir) {
+    if isDir.boolValue {
+      do {
+        let temp = try fm.contentsOfDirectory(atPath: path)
+        for i in  0..<temp.count {
+          let file = temp[i]
+          isDir = false
+          if fm.fileExists(atPath: path.addPath(file), isDirectory: &isDir) {
+            if !isDir.boolValue {
+              files.append(file)
+            }
+          }
+        }
+      } catch { }
+    }
+  }
+  return files.sorted()
+}
+
+// MARK: directories scanner
+func gGetDirs(at path: String) -> [String] {
+  var isDir : ObjCBool = false
+  var dirs : [String] = [String]()
+  
+  if fm.fileExists(atPath: path, isDirectory: &isDir) {
+    if isDir.boolValue {
+      do {
+        let temp = try fm.contentsOfDirectory(atPath: path)
+        for i in  0..<temp.count {
+          let dir = temp[i]
+          isDir = false
+          if fm.fileExists(atPath: path.addPath(dir), isDirectory: &isDir) {
+            if isDir.boolValue {
+              dirs.append(dir)
+            }
+          }
+        }
+      } catch { }
+    }
+  }
+  return dirs.sorted()
 }

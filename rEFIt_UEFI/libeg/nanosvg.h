@@ -42,24 +42,34 @@
 #ifndef NANOSVG_H
 #define NANOSVG_H
 
-#include "Platform.h"
+extern "C" {
+#include <Library/DebugLib.h>
+#include <Library/BaseMemoryLib.h>
+}
+#include "libeg.h"
 
 #define NANOSVG_ALL_COLOR_KEYWORDS 1
 #define NSVG_RGBA(r, g, b, a) (((unsigned int)b) | ((unsigned int)g << 8) | ((unsigned int)r << 16) | ((unsigned int)a << 24))
 
+//#define kMaxIDLength 64
+//#define kMaxTextLength 256
+//
+//
+//#define NSVG_MAX_ATTR 2048
+//#define NSVG_MAX_CLIP_PATHS 1024 // also note NSVGclipPathIndex
 
-//There are defines for compilation as first step. Must be revised
-#define memcpy(dest,source,count) CopyMem(dest,(void*)source,(UINTN)(count))
-#define memset(dest,ch,count)     SetMem(dest,(UINTN)(count),(UINT8)(ch))
-#define strcmp(a,b) AsciiStrCmp(a,b)
-#define strncmp(a,b,n) AsciiStrnCmp(a,b,n)
-#define strstr(a,b) AsciiStrStr(a,b)
+const int kMaxIDLength = 64;
+const int kMaxTextLength  = 256;
 
-#define strlen(s) AsciiStrLen(s)
-#define strncpy(a,b,n) AsciiSPrint(a,n,"%a",b)
 
-extern VOID *fontsDB;
-extern struct NSVGparser *mainParser;
+const int NSVG_MAX_ATTR = 2048;
+const int NSVG_MAX_CLIP_PATHS = 1024;  // also note NSVGclipPathIndex
+
+
+#ifdef JIEF_DEBUG
+#define NANOSVG_MEMORY_ALLOCATION_TRACE
+#define NANOSVG_MEMORY_ALLOCATION_TRACE_VERBOSE
+#endif
 
 enum NSVGpaintType {
   NSVG_PAINT_NONE = 0,
@@ -98,8 +108,17 @@ enum NSVGflags {
   NSVG_FLAGS_VISIBLE = 0x01
 };
 */
+
+typedef unsigned short NSVGclipPathIndex;
+
+// Структура для хранения списка clipPath для каждого shape
+typedef struct NSVGclipNode {
+    NSVGclipPathIndex index;           // Индекс clipPath
+    struct NSVGclipNode* next;         // Следующий clipPath в списке
+} NSVGclipNode;
+
 typedef struct NSVGgradientLink {
-  char id[64];
+  char id[kMaxIDLength];
   float xform[6];
 } NSVGgradientLink;
 
@@ -108,7 +127,7 @@ typedef struct NSVGgradientStop {
   float offset;
 } NSVGgradientStop;
 
-typedef struct NSVGgradient {
+typedef struct NSVGgradient {  //undefined sizeof
   float xform[6];
 //  float position[6];
   float fx, fy;
@@ -138,22 +157,20 @@ typedef struct NSVGpath
   struct NSVGpath* next;    // Pointer to next path, or NULL if last element.
 } NSVGpath;
 
-typedef unsigned char NSVGclipPathIndex;
+
 
 typedef struct NSVGclip
 {
-  NSVGclipPathIndex* index;  // Array of clip path indices (of related NSVGimage).
+  NSVGclipPathIndex index[NSVG_MAX_CLIP_PATHS]; // Array of clip path indices (of related NSVGimage).
   NSVGclipPathIndex count;  // Number of clip paths in this set.
-  char pad[7];
+  char pad[6];
 } NSVGclip;
 
-#define kMaxIDLength 64
-#define kMaxTextLength 256
 
 typedef struct NSVGshape NSVGshape;
 
 typedef struct NSVGpattern {
-  char id[64];
+  char id[kMaxIDLength];
   int nx, ny;  //repeat
   float width;
   float height;
@@ -164,9 +181,8 @@ typedef struct NSVGpattern {
 typedef struct NSVGgroup
 {
   char id[kMaxIDLength];
-  struct NSVGgroup* parent;      // Pointer to parent group or NULL
-  struct NSVGgroup* next;      // Pointer to next group or NULL
-  struct NSVGshape* shapeList; // list of shapes inside the group
+  struct NSVGgroup* next;      // Pointer to parent group or NULL
+  struct NSVGgroup* parent;      // Pointer to next group or NULL
   int visibility;
 } NSVGgroup;
 
@@ -184,16 +200,17 @@ typedef struct NSVGshape
   char strokeLineJoin;    // Stroke join type.
   char strokeLineCap;      // Stroke cap type.
   char fillRule;        // Fill rule, see NSVGfillRule.
-  unsigned char flags;    // Logical or of NSVG_FLAGS_* flags
-  BOOLEAN isText;
-  BOOLEAN debug;
-  BOOLEAN isSymbol;
+  UINT8 flags;    // Logical or of NSVG_FLAGS_* flags
+  int isText;
+  XBool debug;
+  XBool isSymbol;
   float miterLimit;      // Miter limit
   float bounds[4];      // Tight bounding box of the shape [minx,miny,maxx,maxy].
   float xform[6];
   NSVGpath* paths;      // Linked list of paths in the image. One shape - one path.
   NSVGgroup* group;      // Pointer to parent group or NULL
-  NSVGclip clip;
+//  NSVGclip clip;
+  NSVGclipNode* clipList;            // Список clipPath для этого shape
   struct NSVGshape* next;    // Pointer to next shape, or NULL if last element.
   struct NSVGshape* link;    // pointer for reference shape
   struct NSVGfont* fontFace; //one letter - one shape
@@ -202,7 +219,7 @@ typedef struct NSVGshape
 
 typedef struct NSVGclipPath
 {
-  char id[64];        // Unique id of this clip path (from SVG).
+  char id[kMaxIDLength];        // Unique id of this clip path (from SVG).
   NSVGclipPathIndex index;  // Unique internal index of this clip path.
   NSVGshape* shapes;      // Linked list of shapes in this clip path.
   NSVGgroup* group;      // Pointer to parent group or NULL
@@ -211,17 +228,18 @@ typedef struct NSVGclipPath
 
 typedef struct NSVGimage
 {
+  char id[kMaxIDLength];        // Unique id of this image
   float width;        // Width of the image.
   float height;        // Height of the image.
   float realBounds[4];
+  float scale;
   NSVGshape* shapes;      // Linked list of shapes in the image.
   NSVGgroup* groups;      // Linked list of all groups in the image
-  BOOLEAN isFont;
+  NSVGpath* paths;        // Linked list of paths in the image.
+  XBool isFont;
   NSVGclipPath* clipPaths;
+  NSVGclip clip;
 } NSVGimage;
-
-#define NSVG_MAX_ATTR 1024
-#define NSVG_MAX_CLIP_PATHS 255 // also note NSVGclipPathIndex
 
 enum NSVGgradientUnits {
   NSVG_USER_SPACE = 0,
@@ -309,7 +327,9 @@ typedef struct NSVGattrib
   char hasFill;
   char hasStroke;
   char visible;
-  NSVGclipPathIndex clipPathCount;
+//  NSVGclipPathIndex clipPathCount;
+//  NSVGclipPathIndex clipPathStack[NSVG_MAX_CLIP_PATHS];
+  NSVGclipNode* clipList;            // Список clipPath для атрибута
   NSVGgroup* group;
 //  NSVGpattern* pattern;
 } NSVGattrib;
@@ -331,10 +351,10 @@ typedef struct NSVGglyph {
 } NSVGglyph;
 
 typedef struct NSVGfont {
-  char id[64];
+  char id[kMaxIDLength];
   int horizAdvX;
   // --- font-face
-  char fontFamily[64];
+  char fontFamily[kMaxIDLength];
   float fontWeight; //usually 400 like stroke-width
   float fontSize; // 8,9,12,14...
   float unitsPerEm; //usually 1000
@@ -354,20 +374,23 @@ typedef struct NSVGfont {
   // -- glyphs
   NSVGglyph* missingGlyph;
   NSVGglyph* glyphs; // a chain
-  struct NSVGfont* next;
+//  struct NSVGfont* next;
 } NSVGfont;
 
-typedef struct textFaces {
+typedef struct NSVGfontChain {
   NSVGfont *font;
-  UINT32 color;
-  INTN   size;
-  BOOLEAN valid;
+  struct NSVGfontChain* next;
+} NSVGfontChain;
+
+typedef struct textFaces {
+  NSVGfont *font = NULL;
+  UINT32 color = 0;
+  INTN   size = 0;
+  XBool valid = false;
 } textFaces;
 
-extern textFaces textFace[]; //0-help 1-message 2-menu 3-test
-
 typedef struct NSVGtext {
-  char id[64];
+  char id[kMaxIDLength];
 //  char class[64];
   float x,y;
   float xform[6];
@@ -383,17 +406,19 @@ typedef struct NSVGtext {
   float strokeWidth;
   NSVGstyles* style;
   NSVGshape* shapes;
+  NSVGpath* paths;  //the paths for shapes. Shapes will have only handles
   struct NSVGtext *next;
   NSVGgroup* group;
 } NSVGtext;
 
 typedef struct NSVGsymbol {
-  char id[64];
+  char id[kMaxIDLength];
 //  float xform[6];
   float bounds[4];
   float viewBox[4];
   NSVGshape* shapes;
   NSVGshape* shapesTail;
+  NSVGpath* paths;
   struct NSVGsymbol *next;
 } NSVGsymbol;
 
@@ -404,12 +429,13 @@ typedef struct NSVGparser
   float* pts;
   int npts;
   int cpts;
-  NSVGpath* plist;
+  NSVGpath* pathList;
   NSVGimage* image;
   NSVGstyles* styles;
   NSVGgradientData* gradients;
   NSVGshape* shapesTail;
-  struct NSVGfont* font;
+  struct NSVGfont* currentFont;
+  NSVGfontChain* fontsDB;
   float opacity;
   // this is temporary set for Menu text, later each text will have own face
   float fontSize;
@@ -426,16 +452,43 @@ typedef struct NSVGparser
   char styleFlag;
   char patternFlag;
   char symbolFlag;
-  BOOLEAN isText;
+  int isText;
   char unknown[64];
   NSVGtext* text;
+  textFaces textFace[4]; //0-help 1-message 2-menu 3-test, far future it will be infinite list with id
+
   NSVGsymbol* symbols;
   NSVGpattern *patterns;
   NSVGclipPath* clipPath;
   NSVGclipPathIndex clipPathStack[NSVG_MAX_CLIP_PATHS];
+  int clipPathStackCount;  // текущая глубина стека
+  int useQuadraticOnly;  // Если TRUE, преобразуем C→Q
+  float quadraticTolerance; // Допуск для аппроксимации
 } NSVGparser;
 
+#ifdef NANOSVG_MEMORY_ALLOCATION_TRACE
+extern int nvsg__memoryallocation_verbose;
+void* nsvg__alloc(UINTN size, const XString8& msg);
+void* nsvg__alloczero(UINTN size, const XString8& msg);
+void* nsvg__alloccopy(UINTN size, const void* ref, const XString8& msg);
+void* nsvg__realloc(UINTN oldsize, UINTN newsize, void* ref, const XString8& msg);
+void nsvg__delete(void* buffer, const XString8& msg);
+size_t nsvg__nbDanglingPtr();
+void nsvg__outputDanglingPtr();
+#else
+  // When tracing allocation is not wanted (release version for exemple), we use macro. This way, the msg parameter is not compiled or evaluated.
+  // It prevents all the literal do be compiled and stored in the produced file.
+  #define nsvg__alloc(size, msg) AllocatePool(size)
+  #define nsvg__alloczero(size, msg) AllocateZeroPool(size)
+  #define nsvg__alloccopy(size, ref, msg) AllocateCopyPool(size, ref)
+  #define nsvg__realloc(oldsize, newsize, ref, msg) ReallocatePool(oldsize, newsize, ref)
+  #define nsvg__delete(buffer, msg) FreePool(buffer)
+#endif
 
+void nsvg__dumpFloat(CONST char* s, float* t, int N);
+
+bool nsvg__isShapeInGroup(NSVGshape* shape, const char* groupName);
+NSVGclipPath* nsvg__getClipPathWithIndex(NSVGimage* image, NSVGclipPathIndex idx);
 //---
 
 // Duplicates a path.
@@ -446,10 +499,11 @@ typedef struct NSVGparser
 
 // Parses SVG file from a null terminated string, returns SVG image as paths.
 // Important note: changes the string.
-NSVGparser* nsvgParse(char* input, /* const char* units,*/ float dpi, float opacity);
+NSVGparser* nsvg__parse(char* input, /* const char* units,*/ float dpi, float opacity);
+NSVGparser* nsvg__createParser();
 
 // Deletes list of paths.
-void nsvgDelete(NSVGimage* image);
+void nsvg__deleteImage(NSVGimage* image);
 void nsvg__xformIdentity(float* t);
 void nsvg__deleteParser(NSVGparser* p);
 void nsvg__xformInverse(float* inv, float* t);
@@ -457,9 +511,11 @@ void nsvg__xformSetScale(float* t, float sx, float sy);
 void nsvg__xformPremultiply(float* t, float* s);
 void nsvg__xformMultiply(float* t, float* s);
 void nsvg__deleteFont(NSVGfont* font);
-void nsvg__imageBounds(NSVGparser* p, float* bounds);
-float addLetter(NSVGparser* p, CHAR16 letter, float x, float y, float scale, UINT32 color);
-VOID RenderSVGfont(NSVGfont  *fontSVG, UINT32 color);
+void nsvg__deleteFontChain(NSVGfontChain *fontChain);
+void nsvg__imageBounds(NSVGimage* image, float* bounds);
+void nsvg__imageBounds(NSVGimage* image, float* bounds,const XString8& name);
+float nsvg__addLetter(NSVGparser* p, CHAR16 letter, float x, float y, float scale, UINT32 color);
+void RenderSVGfont(NSVGfont  *fontSVG, UINT32 color);
 
 //--------------- Rasterizer --------------
 typedef struct NSVGrasterizer NSVGrasterizer;
@@ -467,7 +523,7 @@ typedef void (*recursive_image)(const void *obj, NSVGrasterizer *r, const char *
 
 
 // Allocated rasterizer context.
-NSVGrasterizer* nsvgCreateRasterizer(VOID);
+NSVGrasterizer* nsvg__createRasterizer(void);
 
 // Rasterizes SVG image, returns RGBA image (non-premultiplied alpha)
 //   r - pointer to rasterizer context
@@ -479,14 +535,17 @@ NSVGrasterizer* nsvgCreateRasterizer(VOID);
 //   h - height of the image to render
 //   stride - number of bytes per scaleline in the destination buffer
 void nsvgRasterize(NSVGrasterizer* r,
+                   NSVGimage* image, float* bounds, const char* groupName, float tx, float ty, float scalex, float scaley,
+                   UINT8* dst, int w, int h, int stride);
+void nsvgRasterize(NSVGrasterizer* r,
                    NSVGimage* image, float tx, float ty, float scalex, float scaley,
-                   unsigned char* dst, int w, int h, int stride);
+                   UINT8* dst, int w, int h, int stride);
 
 // Deletes rasterizer context.
-void nsvgDeleteRasterizer(NSVGrasterizer*);
-NSVGparser* nsvg__createParser();
+void nsvg__deleteRasterizer(NSVGrasterizer*);
 
-#define NSVG__SUBSAMPLES  5
+
+#define NSVG__SUBSAMPLES  8
 #define NSVG__FIXSHIFT    14
 #define NSVG__FIX      (1 << NSVG__FIXSHIFT)
 #define NSVG__FIXMASK    (NSVG__FIX-1)
@@ -503,7 +562,7 @@ typedef struct NSVGpoint {
   float dx, dy;
   float len;
   float dmx, dmy;
-  unsigned char flags;
+  UINT8 flags;
   char pad[3];
 } NSVGpoint;
 
@@ -515,7 +574,7 @@ typedef struct NSVGactiveEdge {
 } NSVGactiveEdge;
 
 typedef struct NSVGmemPage {
-  unsigned char mem[NSVG__MEMPAGE_SIZE];
+  UINT8 mem[NSVG__MEMPAGE_SIZE];
   int size;
   struct NSVGmemPage* next;
 } NSVGmemPage;
@@ -533,8 +592,16 @@ typedef struct NSVGcachedPaint {
 } NSVGcachedPaint;
 
 typedef void (*NSVGscanlineFunction)(
-        unsigned char* dst, int count, unsigned char* cover, int x, int y,
+        UINT8* dst, int count, UINT8* cover, int x, int y,
     /*    float tx, float ty, float scalex, float scaley, */ NSVGcachedPaint* cache);
+
+typedef struct NSVGstencil
+{
+    UINT8* square;
+    int width, height, stride;
+    NSVGclipPathIndex index;
+    struct NSVGstencil* next;
+} NSVGstencil;
 
 struct NSVGrasterizer
 {
@@ -559,16 +626,23 @@ struct NSVGrasterizer
   NSVGmemPage* pages;
   NSVGmemPage* curpage;
 
-  unsigned char* scanline;
+  UINT8* scanline;
   int cscanline;
   NSVGscanlineFunction fscanline;
 
-  unsigned char* stencil;
-  int stencilSize;
-  int stencilStride;
+//  UINT8* stencil;
+  UINT8** stencilArray;     // Массив указателей на stencil-буферы
+  int stencilCount;         // Количество clipPath
+  int stencilSize;          // Размер одного буфера
+  int stencilStride;        // Ширина строки в байтах
 
-  unsigned char* bitmap;
+  UINT8* bitmap;
   int width, height, stride;
+
+//  NSVGstencil* stencilList;
+//  int stencilCount;  // количество clipPath
+
+  char currentShapeId[64];  // Идентификатор текущего shape для отладки
 };
 
 #endif

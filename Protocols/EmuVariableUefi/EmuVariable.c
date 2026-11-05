@@ -319,11 +319,11 @@ UpdateVariableInfo (
       // on the first call allocate a entry and place a pointer to it in
       // the EFI System Table
       //
-      gVariableInfo = AllocateZeroPool (sizeof (VARIABLE_INFO_ENTRY));
+      gVariableInfo = AllocateZeroPool(sizeof (VARIABLE_INFO_ENTRY));
  //     ASSERT (gVariableInfo != NULL);
 
       CopyGuid (&gVariableInfo->VendorGuid, VendorGuid);
-      gVariableInfo->Name = AllocateZeroPool (StrSize (VariableName));
+      gVariableInfo->Name = AllocateZeroPool(StrSize (VariableName));
  //     ASSERT (gVariableInfo->Name != NULL);
       StrnCpyS (gVariableInfo->Name, StrLen(VariableName)+1, VariableName, StrLen (VariableName));
       gVariableInfo->Volatile = Volatile;
@@ -357,11 +357,11 @@ UpdateVariableInfo (
         // If the entry is not in the table add it.
         // Next iteration of the loop will fill in the data
         //
-        Entry->Next = AllocateZeroPool (sizeof (VARIABLE_INFO_ENTRY));
+        Entry->Next = AllocateZeroPool(sizeof (VARIABLE_INFO_ENTRY));
  //       ASSERT (Entry->Next != NULL);
 
         CopyGuid (&Entry->Next->VendorGuid, VendorGuid);
-        Entry->Next->Name = AllocateZeroPool (StrSize (VariableName));
+        Entry->Next->Name = AllocateZeroPool(StrSize (VariableName));
  //       ASSERT (Entry->Next->Name != NULL);
         StrnCpyS (Entry->Next->Name, StrLen(VariableName)+1, VariableName, StrLen(VariableName));
         Entry->Next->Volatile = Volatile;
@@ -410,7 +410,7 @@ GetIndexFromSupportedLangCodes(
 
   if (Iso639Language) {
     CompareLength = ISO_639_2_ENTRY_SIZE;
-    for (Index = 0; Index < AsciiStrLen (SupportedLang); Index += CompareLength) {
+    for (Index = 0; Index < AsciiStrLen(SupportedLang); Index += CompareLength) {
       if (AsciiStrnCmp (Lang, SupportedLang + Index, CompareLength) == 0) {
         //
         // Successfully find the index of Lang string in SupportedLang string.
@@ -432,7 +432,8 @@ GetIndexFromSupportedLangCodes(
       //
       // Skip ';' characters in SupportedLang
       //
-      for (; *SupportedLang != '\0' && *SupportedLang == ';'; SupportedLang++);
+      //for (; *SupportedLang != '\0' && *SupportedLang == ';'; SupportedLang++);
+      while (*SupportedLang == ';') SupportedLang++; //no sense to check \0
       //
       // Determine the length of the next language code in SupportedLang
       //
@@ -498,7 +499,7 @@ GetLangFromSupportedLangCodes (
     //
     CompareLength = ISO_639_2_ENTRY_SIZE;
     mVariableModuleGlobal->Lang[CompareLength] = '\0';
-    return CopyMem (mVariableModuleGlobal->Lang, SupportedLang + Index * CompareLength, CompareLength);
+    return CopyMem(mVariableModuleGlobal->Lang, SupportedLang + Index * CompareLength, CompareLength);
 
   } else {
     while (TRUE) {
@@ -523,14 +524,15 @@ GetLangFromSupportedLangCodes (
         // In driver entry, it pre-allocates a runtime attribute memory to accommodate this string.
         //
         mVariableModuleGlobal->PlatformLang[CompareLength] = '\0';
-        return CopyMem (mVariableModuleGlobal->PlatformLang, Supported - CompareLength, CompareLength);
+        return CopyMem(mVariableModuleGlobal->PlatformLang, Supported - CompareLength, CompareLength);
       }
       SubIndex++;
       
       //
       // Skip ';' characters in Supported
       //
-      for (; *Supported != '\0' && *Supported == ';'; Supported++);
+      //for (; *Supported != '\0' && *Supported == ';'; Supported++);
+      while (*Supported == ';') Supported++;
     }
   }
 }
@@ -598,7 +600,7 @@ VariableGetBestLanguage (
     // Default to ISO 639-2 mode
     //
     CompareLength  = 3;
-    LanguageLength = MIN (3, AsciiStrLen (Language));
+    LanguageLength = MIN (3, AsciiStrLen(Language));
 
     //
     // If in RFC 4646 mode, then determine the length of the first RFC 4646 language code in Language
@@ -622,7 +624,8 @@ VariableGetBestLanguage (
           //
           // Skip ';' characters in Supported
           //
-          for (; *Supported != '\0' && *Supported == ';'; Supported++);
+          //for (; *Supported != '\0' && *Supported == ';'; Supported++);
+          while (*Supported == ';') Supported++;
           //
           // Determine the length of the next language code in Supported
           //
@@ -642,7 +645,7 @@ VariableGetBestLanguage (
 
           Buffer = Iso639Language ? mVariableModuleGlobal->Lang : mVariableModuleGlobal->PlatformLang;
           Buffer[CompareLength] = '\0';
-          return CopyMem (Buffer, Supported, CompareLength);
+          return CopyMem(Buffer, Supported, CompareLength);
         }
       }
 
@@ -721,7 +724,7 @@ AutoUpdateLangVariable(
     // Therefore, in variable driver, only store the original value for other use.
     //
     if (mVariableModuleGlobal->PlatformLangCodes != NULL) {
-      FreePool (mVariableModuleGlobal->PlatformLangCodes);
+      FreePool(mVariableModuleGlobal->PlatformLangCodes);
     }
     mVariableModuleGlobal->PlatformLangCodes = AllocateRuntimeCopyPool (DataSize, Data);
 //    ASSERT (mVariableModuleGlobal->PlatformLangCodes != NULL);
@@ -731,7 +734,7 @@ AutoUpdateLangVariable(
     // so the size of PlatformLangCodes is enough for the PlatformLang.
     //
     if (mVariableModuleGlobal->PlatformLang != NULL) {
-      FreePool (mVariableModuleGlobal->PlatformLang);
+      FreePool(mVariableModuleGlobal->PlatformLang);
     }
     mVariableModuleGlobal->PlatformLang = AllocateRuntimePool (DataSize);
 //    ASSERT (mVariableModuleGlobal->PlatformLang != NULL);
@@ -751,7 +754,7 @@ AutoUpdateLangVariable(
     // Therefore, in variable driver, only store the original value for other use.
     //
     if (mVariableModuleGlobal->LangCodes != NULL) {
-      FreePool (mVariableModuleGlobal->LangCodes);
+      FreePool(mVariableModuleGlobal->LangCodes);
     }
     mVariableModuleGlobal->LangCodes = AllocateRuntimeCopyPool (DataSize, Data);
 //    ASSERT (mVariableModuleGlobal->LangCodes != NULL);
@@ -765,7 +768,7 @@ AutoUpdateLangVariable(
     // Update PlatformLang if Lang is already set
     //
     Status = FindVariable (L"PlatformLang", &gEfiGlobalVariableGuid, &Variable, (VARIABLE_GLOBAL *) mVariableModuleGlobal);
-    if (!EFI_ERROR (Status)) {
+    if (!EFI_ERROR(Status)) {
       //
       // Update Lang
       //
@@ -774,7 +777,7 @@ AutoUpdateLangVariable(
       DataSize     = Variable.CurrPtr->DataSize;
     } else {
       Status = FindVariable (L"Lang", &gEfiGlobalVariableGuid, &Variable, (VARIABLE_GLOBAL *) mVariableModuleGlobal);
-      if (!EFI_ERROR (Status)) {
+      if (!EFI_ERROR(Status)) {
         //
         // Update PlatformLang
         //
@@ -857,7 +860,7 @@ AutoUpdateLangVariable(
                                  AsciiStrSize (BestPlatformLang), Attributes, &Variable);
 
         DEBUG ((EFI_D_INFO, "Variable Driver Auto Update Lang, Lang:%a, PlatformLang:%a\n", BestLang, BestPlatformLang));
- //       ASSERT_EFI_ERROR (Status);
+ //       ASSERT_EFI_ERROR(Status);
       }
     }
   }
@@ -1036,13 +1039,13 @@ UpdateVariable (
   NextVariable->NameSize  = (UINT32)VarNameSize;
   NextVariable->DataSize  = (UINT32)DataSize;
 
-  CopyMem (&NextVariable->VendorGuid, VendorGuid, sizeof (EFI_GUID));
-  CopyMem (
+  CopyMem(&NextVariable->VendorGuid, VendorGuid, sizeof (EFI_GUID));
+  CopyMem(
     (UINT8 *) ((UINTN) NextVariable + VarNameOffset),
     VariableName,
     VarNameSize
     );
-  CopyMem (
+  CopyMem(
     (UINT8 *) ((UINTN) NextVariable + VarDataOffset),
     Data,
     DataSize
@@ -1198,7 +1201,7 @@ EmuGetVariable (
   //
   Status = FindVariable (VariableName, VendorGuid, &Variable, Global);
 
-  if (Variable.CurrPtr == NULL || EFI_ERROR (Status)) {
+  if (Variable.CurrPtr == NULL || EFI_ERROR(Status)) {
     goto Done;
   }
   //
@@ -1213,7 +1216,7 @@ EmuGetVariable (
     VariableDataPtr = GetVariableDataPtr (Variable.CurrPtr);
 //   ASSERT (VariableDataPtr != NULL);
     
-    CopyMem (Data, VariableDataPtr, VarDataSize);
+    CopyMem(Data, VariableDataPtr, VarDataSize);
     if (Attributes != NULL) {
       *Attributes = Variable.CurrPtr->Attributes;
     }
@@ -1272,7 +1275,7 @@ EmuGetNextVariableName (
 
   Status = FindVariable (VariableName, VendorGuid, &Variable, Global);
 
-  if (Variable.CurrPtr == NULL || EFI_ERROR (Status)) {
+  if (Variable.CurrPtr == NULL || EFI_ERROR(Status)) {
     goto Done;
   }
 
@@ -1309,12 +1312,12 @@ EmuGetNextVariableName (
       if (!(VariableClassAtRuntime () && ((Variable.CurrPtr->Attributes & EFI_VARIABLE_RUNTIME_ACCESS) == 0))) {
         VarNameSize = Variable.CurrPtr->NameSize;
         if (VarNameSize <= *VariableNameSize) {
-          CopyMem (
+          CopyMem(
             VariableName,
             GET_VARIABLE_NAME_PTR (Variable.CurrPtr),
             VarNameSize
             );
-          CopyMem (
+          CopyMem(
             VendorGuid,
             &Variable.CurrPtr->VendorGuid,
             sizeof (EFI_GUID)
@@ -1688,7 +1691,7 @@ InitializeVariableStore (
   }
 
   if (FullyInitializeStore) {
-    SetMem (VariableStore, PcdGet32 (PcdVariableStoreSize), 0xff);
+    SetMem(VariableStore, PcdGet32 (PcdVariableStoreSize), 0xff);
   }
 
   //
@@ -1741,7 +1744,7 @@ InitializeVariableStore (
                      &mVariableModuleGlobal->VolatileLastVariableOffset,
                      &mVariableModuleGlobal->NonVolatileLastVariableOffset
                      );
-   //       ASSERT_EFI_ERROR (Status);
+   //       ASSERT_EFI_ERROR(Status);
         }
       }
     }
@@ -1788,7 +1791,7 @@ VariableCommonInitialize (
   // Intialize volatile variable store
   //
   Status = InitializeVariableStore (TRUE);
-  if (EFI_ERROR (Status)) {
+  if (EFI_ERROR(Status)) {
     FreePool(mVariableModuleGlobal);
     return Status;
   }
